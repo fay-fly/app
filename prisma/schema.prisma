@@ -20,6 +20,7 @@ model User {
   emailVerificationCode    String?
   emailVerificationExpiry  DateTime?
   emailVerified            Boolean   @default(false)
+  picturePath              String?
   posts                    Post[]
 }
 
