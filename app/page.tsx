@@ -1,5 +1,5 @@
 import Logo from "@/icons/Logo";
-import FormLabel from "@/components/FormLabel";
+import FormInput from "@/components/FormInput";
 import Link from "next/link";
 import Button from "@/components/Button";
 import GoogleLogo from "@/icons/GoogleLogo";
@@ -15,11 +15,11 @@ export default function Login() {
       </div>
       <div className="mt-[56px]">
         <div className="flex flex-col gap-[16px]">
-          <FormLabel
+          <FormInput
             label="Email or username"
             placeholder="Enter your email or username"
           />
-          <FormLabel
+          <FormInput
             type="password"
             label="Password"
             placeholder="Enter your password"

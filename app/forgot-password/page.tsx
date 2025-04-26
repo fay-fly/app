@@ -1,5 +1,5 @@
 import Logo from "@/icons/Logo";
-import FormLabel from "@/components/FormLabel";
+import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
 import Link from "next/link";
 import BackArrow from "@/icons/BackArrow";
@@ -15,9 +15,9 @@ export default function ForgotPassword() {
       </div>
       <div className="mt-[90px]">
         <p className="text-[14px] text-(--fly-text-secondary)">
-          Enter your email and we’ll send you password reset link
+          Enter your email and we’ll send you password reset link.
         </p>
-        <FormLabel
+        <FormInput
           label="Email"
           placeholder="john@fayfly.com"
           className="mt-[32px]"

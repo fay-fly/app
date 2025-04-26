@@ -20,4 +20,5 @@ body {
   --fly-text-secondary: rgba(50, 50, 50, 0.85);
   --fly-border-color: rgba(0, 0, 0, 0.08);
   --fly-input-placeholder-color: rgba(0, 0, 0, 0.4);
+  --fly-link: #1795F0
 }
