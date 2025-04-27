@@ -8,10 +8,14 @@ datasource db {
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String   @unique
+  birthDate DateTime
+  gender    String
+  password  String
+  role      String   @default("user")
+  posts     Post[]
 }
 
 model Post {

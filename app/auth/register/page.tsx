@@ -54,7 +54,7 @@ export default function Register() {
       </Button>
       <p className="mt-[64px] flex justify-center gap-[4px] text-[14px]">
         Have an account?{" "}
-        <Link href="/" className="text-(--fly-primary) underline">
+        <Link href="/public" className="text-(--fly-primary) underline">
           Log in
         </Link>
       </p>
