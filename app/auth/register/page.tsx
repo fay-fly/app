@@ -31,19 +31,8 @@ export default function Register() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/register', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(registrationPayload),
-    });
-
-    if (res.ok) {
-      router.push('/auth/login');
-    } else {
-      alert("Registration failed")
-    }
-    // axios.post("/api/register", registrationPayload)
-    //   .then(() => router.push('/auth/login'));
+    axios.post("/api/register", registrationPayload)
+      .then(() => router.push('/auth/login'));
   };
 
   const readyToSubmit = Object.values(registrationPayload).filter(v => v).length === Object.keys(registrationPayload).length;
