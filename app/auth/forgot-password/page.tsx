@@ -28,7 +28,7 @@ export default function ForgotPassword() {
         >
           Request link
         </Button>
-        <Link href="/" className="flex mt-[120px]">
+        <Link href="/auth/login" className="flex mt-[120px]">
           <BackArrow />
           Back
         </Link>

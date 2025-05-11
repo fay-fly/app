@@ -13,16 +13,20 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const result = await signIn('credentials', {
-      user: "test@test.com",
+    const result = await signIn("credentials", {
+      email: "test@test.com",
       password: "test",
       redirect: false,
     });
 
-    if (result?.ok) {
-      router.push('/dashboard');
+    alert(JSON.stringify(result));
+
+    console.log(result)
+
+    if(result?.error) {
+      console.log(result?.error);
     } else {
-      alert('Invalid credentials');
+      router.push("/");
     }
   };
 
@@ -48,7 +52,7 @@ export default function Login() {
           />
         </div>
         <Link
-          href="/forgot-password"
+          href="/auth/forgot-password"
           className="flex justify-end text-(--fly-primary) underline mt-[8px] text-[14px]"
         >
           Forgot password?
@@ -72,7 +76,7 @@ export default function Login() {
       </Button>
       <p className="mt-[64px] flex justify-center gap-[4px] text-[14px]">
         Don&apos;t have an account yet?{" "}
-        <Link href="/register" className="text-(--fly-primary) underline">
+        <Link href="/auth/register" className="text-(--fly-primary) underline">
           Register
         </Link>
       </p>
