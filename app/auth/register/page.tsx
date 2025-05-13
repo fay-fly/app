@@ -10,16 +10,11 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
+import { signIn } from "next-auth/react";
 
 export default function Register() {
   const router = useRouter();
-  const [registrationPayload, setRegistrationPayload] = useState<Partial<Prisma.UserCreateInput>>({
-    email: "",
-    username: "",
-    birthDate: "",
-    gender: "",
-    password: "",
-  })
+  const [registrationPayload, setRegistrationPayload] = useState<Partial<Prisma.UserCreateInput>>({})
 
   const handleChange = <T extends keyof Prisma.UserCreateInput>(label: T, value: Prisma.UserCreateInput[T]) => {
     setRegistrationPayload(prev => {
@@ -31,8 +26,13 @@ export default function Register() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    axios.post("/api/register", registrationPayload)
-      .then(() => router.push('/auth/login'));
+    await axios.post("/api/register", registrationPayload)
+    await signIn('credentials', {
+      email: registrationPayload.email,
+      password: registrationPayload.password,
+      redirect: false,
+    });
+    router.push('/')
   };
 
   const readyToSubmit = Object.values(registrationPayload).filter(v => v).length === Object.keys(registrationPayload).length;
