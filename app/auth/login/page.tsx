@@ -6,33 +6,40 @@ import Button from "@/components/Button";
 import GoogleLogo from "@/icons/GoogleLogo";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import {FormEvent, useState} from "react";
+
+type LoginDetails = {
+  username: string;
+  password: string;
+}
 
 export default function Login() {
   const router = useRouter();
+  const [loginDetails, setLoginDetails] = useState<LoginDetails>({
+    username: "",
+    password: "",
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onChange = <T extends keyof LoginDetails>(label: T, value: LoginDetails[T]) => {
+    setLoginDetails(prev => {
+      const update = { ...prev };
+      update[label] = value;
+      return update;
+    })
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    const result = await signIn("credentials", {
-      email: "test@test.com",
-      password: "test",
+    await signIn("credentials", {
+      email: loginDetails.username,
+      password: loginDetails.password,
       redirect: false,
     });
-
-    alert(JSON.stringify(result));
-
-    console.log(result)
-
-    if(result?.error) {
-      console.log(result?.error);
-    } else {
-      router.push("/");
-    }
+    router.push("/");
   };
 
   return (
     <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
-      <button type="submit">Test</button>
       <div className="flex flex-col items-center">
         <Logo />
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[24px] font-bold">
@@ -44,11 +51,17 @@ export default function Login() {
           <FormInput
             label="Email or username"
             placeholder="Enter your email or username"
+            required
+            value={loginDetails.username}
+            onChange={(e) => onChange("username", e.target.value)}
           />
           <FormInput
             type="password"
             label="Password"
             placeholder="Enter your password"
+            required
+            value={loginDetails.password}
+            onChange={(e) => onChange("password", e.target.value)}
           />
         </div>
         <Link
@@ -59,7 +72,7 @@ export default function Login() {
         </Link>
         <Button
           type="submit"
-          className="mt-[32px] bg-(--ply-primary-disabled) text-(--fly-text-white-disabled) pointer"
+          className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
         >
           Log in
         </Button>

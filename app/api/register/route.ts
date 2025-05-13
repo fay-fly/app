@@ -1,13 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
+import UserCreateInput = Prisma.UserCreateInput;
 
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
 });
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const user = await req.body;
+export async function POST(req: Request) {
+  const user = await req.json() as UserCreateInput;
   const hashedPassword = await hash(user.password, 12);
   await prisma.user.create({
     data: {
@@ -16,5 +16,5 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
       password: hashedPassword
     },
   });
-  return res.status(200);
+  return new Response(null, { status: 200 });
 }

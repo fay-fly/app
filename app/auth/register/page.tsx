@@ -35,34 +35,37 @@ export default function Register() {
     router.push('/')
   };
 
-  const readyToSubmit = Object.values(registrationPayload).filter(v => v).length === Object.keys(registrationPayload).length;
-
   return (
     <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
       <div className="flex flex-col items-center">
-        <Logo />
+        <Logo/>
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[24px] font-bold text-center max-w-[350px]">
-          Sign up to view your friends&apos; <span className="text-(--fly-link)">photos</span> and <span className="text-(--fly-primary)">videos</span>
+          Sign up to view your friends&apos; <span className="text-(--fly-link)">photos</span> and <span
+          className="text-(--fly-primary)">videos</span>
         </h1>
       </div>
       <div className="mt-[56px]">
         <div className="flex flex-col gap-[16px]">
-          <FormInput label="Email" placeholder="Enter your email" onChange={(e) => handleChange("email", e.target.value)} />
+          <FormInput label="Email" placeholder="Enter your email" required
+                     onChange={(e) => handleChange("email", e.target.value)}/>
           <div className="flex gap-[24px] justify-between">
-            <FormInput type="date" label="Birth date" className="flex-1" onChange={(e) => handleChange("birthDate", e.target.value)} />
-            <FormSelect label="Gender" data={[
-              { label: "Male", value: "male" },
-              { label: "Female", value: "female" },
-            ]} className="flex-1" onChange={(e) => handleChange("gender", e.target.value)} />
+            <FormInput type="date" label="Birth date" className="flex-1" required
+                       onChange={(e) => handleChange("birthDate", e.target.value)}/>
+            <FormSelect label="Gender" required data={[
+              {label: "Male", value: "male"},
+              {label: "Female", value: "female"},
+            ]} className="flex-1" onChange={(e) => handleChange("gender", e.target.value)}/>
           </div>
-          <FormInput label="Username" placeholder="Enter your username" onChange={(e) => handleChange("username", e.target.value)} />
+          <FormInput label="Username" placeholder="Enter your username" required
+            onChange={(e) => handleChange("username", e.target.value)}/>
           <p className="mt-[32px] text-[14px] text-(--fly-text-secondary)">
             Make sure your new password is strong - use 8 characters, including letters and numbers.
           </p>
-          <FormInput type="password" label="Password" placeholder="Create password" onChange={(e) => handleChange("password", e.target.value)} />
-          <FormInput type="password" label="Repeat password" placeholder="Repeat password" />
+          <FormInput type="password" label="Password" placeholder="Create password" required
+            onChange={(e) => handleChange("password", e.target.value)}/>
+          <FormInput type="password" label="Repeat password" placeholder="Repeat password" required />
           <label className="flex gap-[8px] text-[12px]">
-            <input type="checkbox"/>
+            <input type="checkbox" required />
             <p>
               By continuing, you accept our
               <Link href="/privacy-policy" className="text-(--fly-primary) underline">Privacy Policy</Link> and
@@ -74,11 +77,9 @@ export default function Register() {
           type="submit"
           className={clsx(
             "mt-[32px] pointer",
-            !readyToSubmit
-              ? "bg-(--ply-primary-disabled) text-(--fly-text-white-disabled)"
-              : "bg-(--fly-primary) text-(--fly-white)"
+            "disabled:bg-(--ply-primary-disabled) disabled:text-(--fly-text-white-disabled)",
+            "bg-(--fly-primary) text-(--fly-white)"
           )}
-          disabled={!readyToSubmit}
         >
           Sign up
         </Button>
@@ -95,7 +96,7 @@ export default function Register() {
         type="submit"
         className="mt-[32px] bg-(--fly-white) text-(--fly-text-secondary) font-normal cursor-pointer"
       >
-        <GoogleLogo />
+        <GoogleLogo/>
         Continue with Google
       </Button>
       <p className="mt-[64px] flex justify-center gap-[4px] text-[14px]">

@@ -17,7 +17,8 @@ export default function Button({
       type={type}
       {...props}
       className={clsx(
-        "flex justify-center items-center gap-[12px] rounded-full w-full min-h-[48px]",
+        "flex justify-center items-center gap-[12px] rounded-full w-full",
+        "min-h-[48px] cursor-pointer disabled:cursor-not-allowed",
         className
       )}
     >

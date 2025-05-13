@@ -18,7 +18,6 @@ export default function RootLayout({
     <div className="flex flex-col h-full">
       <div
         className="flex flex-col items-center justify-center w-full flex-1"
-        style={{background: `url(/auth-bg.png) no-repeat center`}}
       >
         {children}
       </div>
