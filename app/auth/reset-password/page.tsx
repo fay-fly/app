@@ -1,11 +1,10 @@
+'use client';
 import Logo from "@/icons/Logo";
 import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
-import Link from "next/link";
-import BackArrow from "@/icons/BackArrow";
 import {FormEvent} from "react";
 
-export default function ForgotPassword() {
+export default function ResetPassword() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
   };
@@ -20,23 +19,28 @@ export default function ForgotPassword() {
       </div>
       <div className="mt-[90px]">
         <p className="text-[14px] text-(--fly-text-secondary)">
-          Enter your email and we’ll send you password reset link.
+          Make sure your password is at least 8 characters, with letters and numbers.
         </p>
         <FormInput
-          label="Email"
-          placeholder="john@fayfly.com"
+          type="password"
+          label="New Password"
+          placeholder="Create new password"
+          required
+          className="mt-[32px]"
+        />
+        <FormInput
+          type="password"
+          label="Repeat new password"
+          placeholder="Repaet password"
+          required
           className="mt-[32px]"
         />
         <Button
           type="submit"
-          className="mt-[32px] bg-(--ply-primary-disabled) text-(--fly-text-white-disabled) pointer"
+          className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
         >
-          Request link
+          Confirm
         </Button>
-        <Link href="/auth/login" className="flex mt-[120px]">
-          <BackArrow />
-          Back
-        </Link>
       </div>
     </form>
   );
