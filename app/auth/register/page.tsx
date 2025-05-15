@@ -26,7 +26,7 @@ export default function Register() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await axios.post("/api/register", registrationPayload)
+    await axios.post("/api/auth/register", registrationPayload)
     await signIn('credentials', {
       email: registrationPayload.email,
       password: registrationPayload.password,
