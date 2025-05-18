@@ -1,13 +1,16 @@
+"use client";
 import Logo from "@/icons/Logo";
 import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
 import Link from "next/link";
 import BackArrow from "@/icons/BackArrow";
 import {FormEvent} from "react";
+import axios from "axios";
 
 export default function ForgotPassword() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    await axios.post("/api/auth/forgot-password", { email: "la.stepanovs@gmail.com" })
   };
 
   return (
