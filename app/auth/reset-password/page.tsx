@@ -2,19 +2,27 @@
 import Logo from "@/icons/Logo";
 import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
-import {FormEvent} from "react";
+import {FormEvent, useEffect, useState} from "react";
+import axios from "axios";
+import {useSearchParams} from "next/navigation";
 
-export default function ResetPassword() {
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-  };
+function ResetPasswordForm({ token }: { token: string }) {
+  const [password, setPassword] = useState('')
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    axios.post('/api/auth/reset-password', {
+      token,
+      newPassword: password,
+    })
+  }
 
   return (
-    <form className="flex flex-col max-w-[424px] w-full" onChange={handleSubmit}>
+    <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
       <div className="flex flex-col items-center">
         <Logo />
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
-          Reset Password
+          Reset Password ({token})
         </h1>
       </div>
       <div className="mt-[90px]">
@@ -27,6 +35,7 @@ export default function ResetPassword() {
           placeholder="Create new password"
           required
           className="mt-[32px]"
+          onChange={(e) => setPassword(e.target.value)}
         />
         <FormInput
           type="password"
@@ -44,4 +53,37 @@ export default function ResetPassword() {
       </div>
     </form>
   );
+}
+
+export default function ResetPassword() {
+  const searchParams = useSearchParams()
+  const token = searchParams.get('token') ?? ''
+  const [valid, setValid] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!token) {
+      setError('Token not provided.')
+      setLoading(false)
+      return
+    }
+
+    axios.get(`/api/auth/verify-reset?token=${encodeURIComponent(token)}`)
+      .then(res => {
+        if (res.data.valid) setValid(true)
+        else setError(res.data.error || 'Invalid or expired token')
+      })
+      .catch(() => {
+        setError('Could not verify token.')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [token])
+
+  if (loading) return <p>Checking reset link...</p>
+  if (!valid) return <p style={{ color: 'red' }}>{error}</p>
+
+  return token && <ResetPasswordForm token={token} />
 }
