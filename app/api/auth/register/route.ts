@@ -12,13 +12,13 @@ const prisma = new PrismaClient({
 
 export async function POST(req: Request) {
   const user = await req.json() as UserCreateInput;
-  const hashedPassword = await hash(user.password, 12);
+  const hashedPassword = await hash(user.password!, 12);
   const code = Math.floor(1000 + Math.random() * 9000).toString()
   const expiry = addMinutes(new Date(), 15)
   await prisma.user.create({
     data: {
       ...user,
-      birthDate: new Date(user.birthDate),
+      birthDate: new Date(user.birthDate!),
       password: hashedPassword,
       emailVerificationCode: code,
       emailVerificationExpiry: expiry,

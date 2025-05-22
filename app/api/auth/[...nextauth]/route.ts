@@ -1,7 +1,10 @@
-import NextAuth from "next-auth";
+import NextAuth, {AuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import GoogleProvider from "next-auth/providers/google";
+import {JWT} from "next-auth/jwt";
+import {base} from "next/dist/build/webpack/config/blocks/base";
 
 declare module "next-auth" {
   interface Session {
@@ -9,6 +12,8 @@ declare module "next-auth" {
       id: string;
       email: string;
       role: string;
+      redirectToAgeVerification?: boolean;
+      redirectToChooseUsername?: boolean;
     };
   }
 
@@ -24,13 +29,15 @@ declare module "next-auth/jwt" {
     id: string;
     email: string;
     role: string;
+    redirectToAgeVerification?: boolean;
+    redirectToChooseUsername?: boolean;
   }
 }
 
 
 const prisma = new PrismaClient();
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -52,6 +59,10 @@ const handler = NextAuth({
           throw new Error("No user found with this email");
         }
 
+        if (!user.password) {
+          throw new Error("User doesn't have password set");
+        }
+
         const isValidPassword = await compare(credentials.password, user.password);
 
         if (!isValidPassword) {
@@ -65,10 +76,28 @@ const handler = NextAuth({
         };
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ""
+    })
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, account }) {
+      if (account?.provider === "google") {
+        console.log("google")
+        const dbUser = await prisma.user.findUnique({ where: { email: user.email! } })
+
+        if (dbUser) {
+          token.id = dbUser.id.toString();
+          token.email = dbUser.email;
+          token.role = dbUser.role;
+          if (!dbUser.birthDate) {
+            token.redirectToAgeVerification = true;
+          } else if (!dbUser.username) {
+            token.redirectToChooseUsername = true;
+          }
+        }
+      } else if (user) {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role;
@@ -80,8 +109,34 @@ const handler = NextAuth({
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.role = token.role as string;
+        if (token.redirectToAgeVerification) {
+          session.user.redirectToAgeVerification = true;
+        } else if (token.redirectToChooseUsername) {
+          session.user.redirectToChooseUsername = true;
+        }
       }
       return session;
+    },
+    async signIn({ user, account }) {
+      if (account?.provider === 'google') {
+        let existingUser = await prisma.user.findUnique({ where: { email: user.email! } })
+
+        if (!existingUser) {
+          existingUser = await prisma.user.create({
+            data: {
+              email: user.email!,
+              username: user.email!,
+              emailVerified: true,
+            },
+          });
+        }
+      }
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      console.log(url, baseUrl);
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      return baseUrl
     },
   },
   session: {
@@ -91,6 +146,8 @@ const handler = NextAuth({
   pages: {
     signIn: "/auth/login",
   },
-});
+}
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

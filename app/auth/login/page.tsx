@@ -5,7 +5,6 @@ import Link from "next/link";
 import Button from "@/components/Button";
 import GoogleLogo from "@/icons/GoogleLogo";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import {FormEvent, useState} from "react";
 
 type LoginDetails = {
@@ -14,7 +13,6 @@ type LoginDetails = {
 }
 
 export default function Login() {
-  const router = useRouter();
   const [loginDetails, setLoginDetails] = useState<LoginDetails>({
     username: "",
     password: "",
@@ -33,10 +31,12 @@ export default function Login() {
     await signIn("credentials", {
       email: loginDetails.username,
       password: loginDetails.password,
-      redirect: false,
     });
-    router.push("/");
   };
+
+  const signInWithGoogle = async () => {
+    await signIn("google");
+  }
 
   return (
     <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
@@ -81,7 +81,8 @@ export default function Login() {
         Or
       </div>
       <Button
-        type="submit"
+        type="button"
+        onClick={() => signInWithGoogle()}
         className="mt-[32px] bg-(--fly-white) text-(--fly-text-secondary) font-normal cursor-pointer"
       >
         <GoogleLogo />
