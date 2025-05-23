@@ -3,8 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import GoogleProvider from "next-auth/providers/google";
-import {JWT} from "next-auth/jwt";
-import {base} from "next/dist/build/webpack/config/blocks/base";
 
 declare module "next-auth" {
   interface Session {
@@ -12,8 +10,6 @@ declare module "next-auth" {
       id: string;
       email: string;
       role: string;
-      redirectToAgeVerification?: boolean;
-      redirectToChooseUsername?: boolean;
     };
   }
 
@@ -29,8 +25,6 @@ declare module "next-auth/jwt" {
     id: string;
     email: string;
     role: string;
-    redirectToAgeVerification?: boolean;
-    redirectToChooseUsername?: boolean;
   }
 }
 
@@ -84,18 +78,11 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (account?.provider === "google") {
-        console.log("google")
         const dbUser = await prisma.user.findUnique({ where: { email: user.email! } })
-
         if (dbUser) {
           token.id = dbUser.id.toString();
           token.email = dbUser.email;
           token.role = dbUser.role;
-          if (!dbUser.birthDate) {
-            token.redirectToAgeVerification = true;
-          } else if (!dbUser.username) {
-            token.redirectToChooseUsername = true;
-          }
         }
       } else if (user) {
         token.id = user.id;
@@ -109,11 +96,6 @@ export const authOptions: AuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.role = token.role as string;
-        if (token.redirectToAgeVerification) {
-          session.user.redirectToAgeVerification = true;
-        } else if (token.redirectToChooseUsername) {
-          session.user.redirectToChooseUsername = true;
-        }
       }
       return session;
     },
@@ -126,6 +108,7 @@ export const authOptions: AuthOptions = {
             data: {
               email: user.email!,
               username: user.email!,
+              role: "lead",
               emailVerified: true,
             },
           });
