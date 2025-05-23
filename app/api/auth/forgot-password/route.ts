@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
   const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?token=${token}`;
   const { error } = await resend.emails.send({
-    from: 'fayflay@thelauris.com',
+    from: 'fayfly@thelauris.com',
     to: email,
     subject: 'Password Reset',
     html: `<p>Password reset link: <a href="${resetLink}">${resetLink}</a><p>`,
