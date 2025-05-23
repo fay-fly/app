@@ -40,7 +40,6 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log(credentials?.email)
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing email or password");
         }
@@ -101,7 +100,7 @@ export const authOptions: AuthOptions = {
     },
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
-        let existingUser = await prisma.user.findUnique({ where: { email: user.email! } })
+        let existingUser = await prisma.user.findUnique({ where: { email: user.email! } });
 
         if (!existingUser) {
           existingUser = await prisma.user.create({
@@ -113,11 +112,16 @@ export const authOptions: AuthOptions = {
             },
           });
         }
+
+        if (!existingUser.birthDate) {
+          return `/auth/onboarding?${new URLSearchParams({
+            userId: existingUser.id.toString(),
+          })}`
+        }
       }
       return true;
     },
     async redirect({ url, baseUrl }) {
-      console.log(url, baseUrl);
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       return baseUrl
     },
