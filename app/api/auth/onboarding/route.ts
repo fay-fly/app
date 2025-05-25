@@ -11,6 +11,7 @@ export async function POST(req: Request) {
     data: {
       username,
       birthDate: new Date(birthDate),
+      role: "user",
     },
   })
   return new Response(null, { status: 200 });
