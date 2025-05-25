@@ -3,6 +3,13 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import GoogleProvider from "next-auth/providers/google";
+import path from "node:path";
+import * as fs from "node:fs";
+import * as https from "node:https";
+import * as http from "node:http";
+import {promisify} from "node:util";
+import {pipeline} from "node:stream";
+import {IncomingMessage} from "node:http";
 
 declare module "next-auth" {
   interface Session {
@@ -10,6 +17,7 @@ declare module "next-auth" {
       id: string;
       email: string;
       role: string;
+      image: string | null;
     };
   }
 
@@ -17,6 +25,7 @@ declare module "next-auth" {
     id: string;
     email: string;
     role: string;
+    image: string | null;
   }
 }
 
@@ -25,7 +34,37 @@ declare module "next-auth/jwt" {
     id: string;
     email: string;
     role: string;
+    image: string | null;
   }
+}
+
+const streamPipeline = promisify(pipeline);
+
+export async function saveImageFromUrl(imageUrl: string) {
+  if (!imageUrl) throw new Error('No image URL provided');
+
+  const ext = path.extname(new URL(imageUrl).pathname).split('?')[0] || '.jpg';
+  const filename = `${crypto.randomUUID()}${ext}`;
+  const uploadDir = path.join(process.cwd(), 'public/uploads/profiles');
+  const filePath = path.join(uploadDir, filename);
+
+  fs.mkdirSync(uploadDir, { recursive: true });
+
+  const client = imageUrl.startsWith('https') ? https : http;
+
+  const response: IncomingMessage = await new Promise((resolve, reject) => {
+    client.get(imageUrl, (res) => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`Failed to get image. Status code: ${res.statusCode}`));
+      } else {
+        resolve(res);
+      }
+    }).on('error', reject);
+  });
+
+  await streamPipeline(response, fs.createWriteStream(filePath));
+
+  return `/uploads/profiles/${filename}`;
 }
 
 
@@ -66,6 +105,7 @@ export const authOptions: AuthOptions = {
           id: user.id.toString(),
           email: user.email,
           role: user.role,
+          image: `${user.picturePath}`
         };
       },
     }),
@@ -82,11 +122,15 @@ export const authOptions: AuthOptions = {
           token.id = dbUser.id.toString();
           token.email = dbUser.email;
           token.role = dbUser.role;
+          token.image = dbUser.picturePath
+            ? `${dbUser.picturePath}`
+            : null;
         }
       } else if (user) {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role;
+        token.image = user.image;
       }
       return token;
     },
@@ -95,6 +139,7 @@ export const authOptions: AuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.role = token.role as string;
+        session.user.image = token.image;
       }
       return session;
     },
@@ -102,13 +147,18 @@ export const authOptions: AuthOptions = {
       if (account?.provider === 'google') {
         let existingUser = await prisma.user.findUnique({ where: { email: user.email! } });
 
+
         if (!existingUser) {
+          let savedImagePath = null;
+          if (user.image) {
+            savedImagePath = await saveImageFromUrl(user.image);
+          }
           existingUser = await prisma.user.create({
             data: {
               email: user.email!,
-              username: user.email!,
               role: "lead",
               emailVerified: true,
+              picturePath: savedImagePath
             },
           });
         }
