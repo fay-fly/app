@@ -40,7 +40,7 @@ declare module "next-auth/jwt" {
 
 const streamPipeline = promisify(pipeline);
 
-export async function saveImageFromUrl(imageUrl: string) {
+async function saveImageFromUrl(imageUrl: string) {
   if (!imageUrl) throw new Error('No image URL provided');
 
   const ext = path.extname(new URL(imageUrl).pathname).split('?')[0] || '.jpg';
@@ -70,7 +70,7 @@ export async function saveImageFromUrl(imageUrl: string) {
 
 const prisma = new PrismaClient();
 
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",

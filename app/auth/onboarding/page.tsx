@@ -2,7 +2,7 @@
 import Logo from "@/icons/Logo";
 import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
-import {FormEvent, useState} from "react";
+import {FormEvent, Suspense, useState} from "react";
 import axios from "axios";
 import {useSearchParams} from "next/navigation";
 import {signIn} from "next-auth/react";
@@ -12,7 +12,7 @@ type OnboardingData = {
   birthDate: string | null;
 }
 
-export default function Onboarding() {
+function OnboardingForm() {
   const searchParams = useSearchParams()
   const userId = searchParams.get('userId') ?? ''
 
@@ -76,4 +76,10 @@ export default function Onboarding() {
       </Button>
     </div>
   </form>;
+}
+
+export default function Onboarding() {
+  return <Suspense>
+    <OnboardingForm />
+  </Suspense>;
 }

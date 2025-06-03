@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import {FormEvent, useEffect, useState} from "react";
 import axios from "axios";
 import {useSearchParams} from "next/navigation";
+import { Suspense } from 'react'
 
 function ResetPasswordForm({ token }: { token: string }) {
   const [password, setPassword] = useState('')
@@ -55,7 +56,7 @@ function ResetPasswordForm({ token }: { token: string }) {
   );
 }
 
-export default function ResetPassword() {
+function VerifyPassword() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token') ?? ''
   const [valid, setValid] = useState(false)
@@ -86,4 +87,10 @@ export default function ResetPassword() {
   if (!valid) return <p style={{ color: 'red' }}>{error}</p>
 
   return token && <ResetPasswordForm token={token} />
+}
+
+export default function ResetPassword() {
+  return <Suspense>
+    <VerifyPassword />
+  </Suspense>
 }
