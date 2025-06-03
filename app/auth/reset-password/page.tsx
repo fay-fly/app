@@ -8,14 +8,20 @@ import {useSearchParams} from "next/navigation";
 import { Suspense } from 'react'
 
 function ResetPasswordForm({ token }: { token: string }) {
+  const [isProcessing, setIsProcessing] = useState(false);
   const [password, setPassword] = useState('')
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    axios.post('/api/auth/reset-password', {
-      token,
-      newPassword: password,
-    })
+    try {
+      setIsProcessing(true);
+      await axios.post('/api/auth/reset-password', {
+        token,
+        newPassword: password,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   return (
@@ -48,8 +54,9 @@ function ResetPasswordForm({ token }: { token: string }) {
         <Button
           type="submit"
           className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
+          isProcessing={isProcessing}
         >
-          Confirm
+          Reset
         </Button>
       </div>
     </form>
@@ -60,13 +67,13 @@ function VerifyPassword() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token') ?? ''
   const [valid, setValid] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [isProcessing, setIsProcessing] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
     if (!token) {
       setError('Token not provided.')
-      setLoading(false)
+      setIsProcessing(false)
       return
     }
 
@@ -79,11 +86,11 @@ function VerifyPassword() {
         setError('Could not verify token.')
       })
       .finally(() => {
-        setLoading(false)
+        setIsProcessing(false)
       })
   }, [token])
 
-  if (loading) return <p>Checking reset link...</p>
+  if (isProcessing) return <p>Checking reset link...</p>
   if (!valid) return <p style={{ color: 'red' }}>{error}</p>
 
   return token && <ResetPasswordForm token={token} />
