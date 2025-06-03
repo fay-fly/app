@@ -23,7 +23,7 @@ function ResetPasswordForm({ token }: { token: string }) {
       <div className="flex flex-col items-center">
         <Logo />
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
-          Reset Password ({token})
+          Reset Password
         </h1>
       </div>
       <div className="mt-[90px]">

@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 import GoogleLogo from "@/icons/GoogleLogo";
 import { signIn } from "next-auth/react";
 import {FormEvent, useState} from "react";
+import {AuthSeparator} from "@/components/auth/AuthSeparator";
 
 type LoginDetails = {
   username: string;
@@ -13,10 +14,11 @@ type LoginDetails = {
 }
 
 export default function Login() {
+  const [isProcessing, setIsProcessing] = useState(false);
   const [loginDetails, setLoginDetails] = useState<LoginDetails>({
     username: "",
     password: "",
-  })
+  });
 
   const onChange = <T extends keyof LoginDetails>(label: T, value: LoginDetails[T]) => {
     setLoginDetails(prev => {
@@ -28,10 +30,16 @@ export default function Login() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await signIn("credentials", {
-      email: loginDetails.username,
-      password: loginDetails.password,
-    });
+    try {
+      setIsProcessing(true);
+      await signIn("credentials", {
+        email: loginDetails.username,
+        password: loginDetails.password,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+
   };
 
   const signInWithGoogle = async () => {
@@ -41,54 +49,55 @@ export default function Login() {
   return (
     <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
       <div className="flex flex-col items-center">
-        <Logo />
+        <Logo/>
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[24px] font-bold">
           Welcome back!
         </h1>
       </div>
-      <div className="mt-[56px]">
-        <div className="flex flex-col gap-[16px]">
-          <FormInput
-            label="Email or username"
-            placeholder="Enter your email or username"
-            required
-            value={loginDetails.username}
-            onChange={(e) => onChange("username", e.target.value)}
-          />
-          <FormInput
-            type="password"
-            label="Password"
-            placeholder="Enter your password"
-            required
-            value={loginDetails.password}
-            onChange={(e) => onChange("password", e.target.value)}
-          />
-        </div>
-        <Link
-          href="/auth/forgot-password"
-          className="flex justify-end text-(--fly-primary) underline mt-[8px] text-[14px]"
-        >
-          Forgot password?
-        </Link>
+      <div className="my-[64px]">
         <Button
-          type="submit"
-          className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
+          type="button"
+          onClick={() => signInWithGoogle()}
+          className="bg-(--fly-white) text-(--fly-text-secondary) font-normal cursor-pointer"
         >
-          Log in
+          <GoogleLogo/>
+          Continue with Google
         </Button>
+        <AuthSeparator />
+        <div className="mt-[32px]">
+          <div className="flex flex-col gap-[16px]">
+            <FormInput
+              label="Email or username"
+              placeholder="Enter your email or username"
+              required
+              value={loginDetails.username}
+              onChange={(e) => onChange("username", e.target.value)}
+            />
+            <FormInput
+              type="password"
+              label="Password"
+              placeholder="Enter your password"
+              required
+              value={loginDetails.password}
+              onChange={(e) => onChange("password", e.target.value)}
+            />
+          </div>
+          <Link
+            href="/auth/forgot-password"
+            className="flex justify-end text-(--fly-primary) underline mt-[8px] text-[14px]"
+          >
+            Forgot password?
+          </Link>
+          <Button
+            type="submit"
+            isProcessing={isProcessing}
+            className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
+          >
+            Log in
+          </Button>
+        </div>
       </div>
-      <div className="mt-[32px] py-3 flex items-center text-xs text-(--fly-text-primary) uppercase before:flex-1 before:border-t before:border-(--fly-text-primary) before:me-6 after:flex-1 after:border-t after:border-(--fly-text-primary) after:ms-6 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600">
-        Or
-      </div>
-      <Button
-        type="button"
-        onClick={() => signInWithGoogle()}
-        className="mt-[32px] bg-(--fly-white) text-(--fly-text-secondary) font-normal cursor-pointer"
-      >
-        <GoogleLogo />
-        Continue with Google
-      </Button>
-      <p className="mt-[64px] flex justify-center gap-[4px] text-[14px]">
+      <p className="flex justify-center gap-[4px] text-[14px]">
         Don&apos;t have an account yet?{" "}
         <Link href="/auth/register" className="text-(--fly-primary) underline">
           Register

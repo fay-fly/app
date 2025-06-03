@@ -4,7 +4,6 @@ import Logo from "@/icons/Logo";
 import FormInput from "@/components/FormInput";
 import Link from "next/link";
 import Button from "@/components/Button";
-import GoogleLogo from "@/icons/GoogleLogo";
 import FormSelect from "@/components/FormSelect";
 import { FormEvent, useState } from "react";
 import axios from "axios";
@@ -16,7 +15,8 @@ type RegisterFormProps = {
 }
 
 export default function RegisterForm({ onRegistrationSuccessAction }: RegisterFormProps) {
-  const [registrationPayload, setRegistrationPayload] = useState<Partial<Prisma.UserCreateInput>>({})
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [registrationPayload, setRegistrationPayload] = useState<Partial<Prisma.UserCreateInput>>({});
 
   const handleChange = <T extends keyof Prisma.UserCreateInput>(label: T, value: Prisma.UserCreateInput[T]) => {
     setRegistrationPayload(prev => {
@@ -28,11 +28,16 @@ export default function RegisterForm({ onRegistrationSuccessAction }: RegisterFo
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await axios.post("/api/auth/register", registrationPayload);
-    onRegistrationSuccessAction({
-      email: registrationPayload.email ?? "",
-      password: registrationPayload.password ?? "",
-    })
+    try {
+      setIsProcessing(true);
+      await axios.post("/api/auth/register", registrationPayload);
+      onRegistrationSuccessAction({
+        email: registrationPayload.email ?? "",
+        password: registrationPayload.password ?? "",
+      })
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -40,8 +45,7 @@ export default function RegisterForm({ onRegistrationSuccessAction }: RegisterFo
       <div className="flex flex-col items-center">
         <Logo/>
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[24px] font-bold text-center max-w-[350px]">
-          Sign up to view your friends&apos; <span className="text-(--fly-link)">photos</span> and <span
-          className="text-(--fly-primary)">videos</span>
+          Creating a new account
         </h1>
       </div>
       <div className="mt-[56px]">
@@ -58,23 +62,21 @@ export default function RegisterForm({ onRegistrationSuccessAction }: RegisterFo
           </div>
           <FormInput label="Username" placeholder="Enter your username" required
                      onChange={(e) => handleChange("username", e.target.value)}/>
-          <p className="mt-[32px] text-[14px] text-(--fly-text-secondary)">
-            Make sure your new password is strong - use 8 characters, including letters and numbers.
-          </p>
           <FormInput type="password" label="Password" placeholder="Create password" required
                      onChange={(e) => handleChange("password", e.target.value)}/>
           <FormInput type="password" label="Repeat password" placeholder="Repeat password" required />
           <label className="flex gap-[8px] text-[12px]">
             <input type="checkbox" required />
             <p>
-              By continuing, you accept our
-              <Link href="/privacy-policy" className="text-(--fly-primary) underline">Privacy Policy</Link> and
+              By continuing, you accept our{" "}
+              <Link href="/privacy-policy" className="text-(--fly-primary) underline">Privacy Policy</Link> and{" "}
               <Link href="/terms-of-use" className="text-(--fly-primary) underline">Terms of Use</Link>
             </p>
           </label>
         </div>
         <Button
           type="submit"
+          isProcessing={isProcessing}
           className={clsx(
             "mt-[32px] pointer",
             "disabled:bg-(--ply-primary-disabled) disabled:text-(--fly-text-white-disabled)",
@@ -84,21 +86,6 @@ export default function RegisterForm({ onRegistrationSuccessAction }: RegisterFo
           Sign up
         </Button>
       </div>
-      <div className={clsx(
-        "mt-[32px] py-3 flex items-center text-xs text-(--fly-text-primary)",
-        "uppercase before:flex-1 before:border-t before:border-(--fly-text-primary)",
-        "before:me-6 after:flex-1 after:border-t after:border-(--fly-text-primary)",
-        "after:ms-6 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600"
-      )}>
-        Or
-      </div>
-      <Button
-        type="submit"
-        className="mt-[32px] bg-(--fly-white) text-(--fly-text-secondary) font-normal cursor-pointer"
-      >
-        <GoogleLogo/>
-        Continue with Google
-      </Button>
       <p className="mt-[64px] flex justify-center gap-[4px] text-[14px]">
         Have an account?{" "}
         <Link href="/auth/login" className="text-(--fly-primary) underline">

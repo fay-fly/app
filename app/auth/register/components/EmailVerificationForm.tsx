@@ -13,19 +13,25 @@ type EmailVerificationFormProps = {
 
 export default function EmailVerificationForm({ login }: EmailVerificationFormProps) {
   const router = useRouter();
+  const [isProcessing, setIsProcessing] = useState(false);
   const [emailVerificationCode, setEmailVerificationCode] = useState('')
 
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    await axios.post('/api/auth/verify-email', {
-      code: emailVerificationCode,
-      email: login.email
-    })
-    await signIn('credentials', {
-      ...login,
-      redirect: false,
-    });
-    router.push('/')
+    e.preventDefault();
+    try {
+      setIsProcessing(true);
+      await axios.post('/api/auth/verify-email', {
+        code: emailVerificationCode,
+        email: login.email
+      })
+      await signIn('credentials', {
+        ...login,
+        redirect: false,
+      });
+      router.push('/');
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   return <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
@@ -49,6 +55,7 @@ export default function EmailVerificationForm({ login }: EmailVerificationFormPr
       />
       <Button
         type="submit"
+        isProcessing={isProcessing}
         className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
       >
         Confirm

@@ -7,7 +7,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-(--fly-bg-primary)">
       <div
         className="flex flex-col items-center justify-center w-full flex-1"
       >

@@ -2,7 +2,6 @@
 import {SessionProvider, signOut} from "next-auth/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import Image from 'next/image'
 
 function HomeContent() {
   const { data: session, status } = useSession();
@@ -11,7 +10,7 @@ function HomeContent() {
   if (!session) return <Link href="/auth/login">Login</Link>;
   return <div>
     {JSON.stringify(session)}
-    {session.user.image && <Image src={session.user.image} alt="profile image" width="50" height="50"/>}
+    {/*{session.user.image && <Image src={session.user.image} alt="profile image" width="50" height="50"/>}*/}
     <button onClick={() => signOut({callbackUrl: '/'})}>Sign Out</button>
   </div>
 }
