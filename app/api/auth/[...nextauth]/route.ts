@@ -43,10 +43,11 @@ declare module "next-auth/jwt" {
 
 const streamPipeline = promisify(pipeline);
 
-async function saveImageFromUrl(imageUrl: string) {
-  if (!imageUrl) throw new Error('No image URL provided');
+async function saveImageFromUrl(imageUrl: string): Promise<string | undefined> {
+  if (!imageUrl) return;
 
-  const ext = path.extname(new URL(imageUrl).pathname).split('?')[0] || '.jpg';
+  const parsedUrl = new URL(imageUrl);
+  const ext = path.extname(parsedUrl.pathname).split('?')[0] || '.jpg';
   const filename = `${crypto.randomUUID()}${ext}`;
   const uploadDir = path.join(process.cwd(), 'public/uploads/profiles');
   const filePath = path.join(uploadDir, filename);
@@ -64,11 +65,10 @@ async function saveImageFromUrl(imageUrl: string) {
       }
     }).on('error', reject);
   });
-
   await streamPipeline(response, fs.createWriteStream(filePath));
-
   return `/uploads/profiles/${filename}`;
 }
+
 
 
 const prisma = new PrismaClient();
