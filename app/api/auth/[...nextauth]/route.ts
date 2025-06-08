@@ -3,13 +3,13 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import GoogleProvider from "next-auth/providers/google";
-import path from "node:path";
-import * as fs from "node:fs";
-import * as https from "node:https";
-import * as http from "node:http";
-import {promisify} from "node:util";
-import {pipeline} from "node:stream";
-import {IncomingMessage} from "node:http";
+// import path from "node:path";
+// import * as fs from "node:fs";
+// import * as https from "node:https";
+// import * as http from "node:http";
+// import {promisify} from "node:util";
+// import {pipeline} from "node:stream";
+// import {IncomingMessage} from "node:http";
 
 declare module "next-auth" {
   interface Session {
