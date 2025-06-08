@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const { email } = await req.json();
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return new Response("Email doesn't exist", { status: 404 });
+    return new Response(JSON.stringify({ error: "Email doesn't exist" }), { status: 404 });
   }
   const token = uuidv4();
   const expiry = addHours(new Date(), 1);
@@ -30,9 +30,14 @@ export async function POST(req: Request) {
     from: 'fayfly@thelauris.com',
     to: email,
     subject: 'Password Reset',
-    html: `<p>Password reset link: <a href="${resetLink}">${resetLink}</a><p>`,
+    html: `<div>
+        <p>We received a request to reset your password. You can reset your password by clicking the link below:</p>
+        <a href="${resetLink}">${resetLink}</a>
+        <p>If you did not request a password reset, please ignore this email. This link will expire in 1 hour for security reasons.</p>
+    <div>`,
   });
-
-  console.log("failed", error);
+  if (!error) {
+    return new Response(JSON.stringify({ error: "Failed to send reset email" }), { status: 500 });
+  }
   return new Response(null, { status: 200 });
 }

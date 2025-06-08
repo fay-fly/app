@@ -4,9 +4,10 @@ import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
 import Link from "next/link";
 import {FormEvent, useState} from "react";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import clsx from "clsx";
 import SuccessIcon from "@/icons/SuccessIcon";
+import {showToast} from "@/utils/toastify";
 
 export default function ForgotPassword() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -19,6 +20,13 @@ export default function ForgotPassword() {
       setIsProcessing(true);
       await axios.post("/api/auth/forgot-password", { email })
       setShowSuccessMessage(true);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ error?: string; message?: string }>;
+      const message =
+        axiosError?.response?.data?.error ||
+        axiosError?.response?.data?.message ||
+        "Unexpected error happened";
+      showToast("error", message);
     } finally {
       setIsProcessing(false);
     }
