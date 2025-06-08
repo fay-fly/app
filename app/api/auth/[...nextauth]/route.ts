@@ -16,6 +16,7 @@ declare module "next-auth" {
     user: {
       id: string;
       email: string;
+      username: string | null;
       role: string;
       image: string | null;
     };
@@ -24,6 +25,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     email: string;
+    username: string | null;
     role: string;
     image: string | null;
   }
@@ -33,6 +35,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     email: string;
+    username: string | null;
     role: string;
     image: string | null;
   }
@@ -105,7 +108,8 @@ const authOptions: AuthOptions = {
           id: user.id.toString(),
           email: user.email,
           role: user.role,
-          image: `${user.picturePath}`
+          username: user.username,
+          image: user.picturePath
         };
       },
     }),
@@ -122,13 +126,15 @@ const authOptions: AuthOptions = {
           token.id = dbUser.id.toString();
           token.email = dbUser.email;
           token.role = dbUser.role;
+          token.username = dbUser.username;
           token.image = dbUser.picturePath
-            ? `${dbUser.picturePath}`
+            ? dbUser.picturePath
             : null;
         }
       } else if (user) {
         token.id = user.id;
         token.email = user.email;
+        token.username = user.username;
         token.role = user.role;
         token.image = user.image;
       }
@@ -140,14 +146,13 @@ const authOptions: AuthOptions = {
         session.user.email = token.email as string;
         session.user.role = token.role as string;
         session.user.image = token.image;
+        session.user.username = token.username;
       }
       return session;
     },
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
         let existingUser = await prisma.user.findUnique({ where: { email: user.email! } });
-
-
         if (!existingUser) {
           let savedImagePath = null;
           if (user.image) {
