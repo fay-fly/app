@@ -40,7 +40,7 @@ export default function RegisterForm({ onRegistrationSuccessAction }: RegisterFo
     }
   };
 
-  return (
+  return <>
     <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
       <div className="flex flex-col items-center">
         <Logo/>
@@ -64,34 +64,31 @@ export default function RegisterForm({ onRegistrationSuccessAction }: RegisterFo
                      onChange={(e) => handleChange("username", e.target.value)}/>
           <FormInput type="password" label="Password" placeholder="Create password" required
                      onChange={(e) => handleChange("password", e.target.value)}/>
-          <FormInput type="password" label="Repeat password" placeholder="Repeat password" required />
-          <label className="flex gap-[8px] text-[12px]">
-            <input type="checkbox" required />
-            <p>
-              By continuing, you accept our{" "}
-              <Link href="/privacy-policy" className="text-(--fly-primary) underline">Privacy Policy</Link> and{" "}
-              <Link href="/terms-of-use" className="text-(--fly-primary) underline">Terms of Use</Link>
-            </p>
-          </label>
+          <FormInput type="password" label="Repeat password" placeholder="Repeat password" required/>
         </div>
-        <Button
-          type="submit"
-          isProcessing={isProcessing}
-          className={clsx(
-            "mt-[32px] pointer",
-            "disabled:bg-(--ply-primary-disabled) disabled:text-(--fly-text-white-disabled)",
-            "bg-(--fly-primary) text-(--fly-white)"
-          )}
-        >
-          Sign up
-        </Button>
+        <div className="flex flex-col gap-[16px] items-center">
+          <Button
+            type="submit"
+            isProcessing={isProcessing}
+            className={clsx(
+              "mt-[32px] pointer",
+              "disabled:bg-(--ply-primary-disabled) disabled:text-(--fly-text-white-disabled)",
+              "bg-(--fly-primary) text-(--fly-white)"
+            )}
+          >
+            Sign up
+          </Button>
+          <Link href="/auth/login"
+                className="min-h-[48px] flex items-center justify-center rounded-full w-full text-(--fly-primary) font-semibold">
+            Back
+          </Link>
+        </div>
       </div>
-      <p className="mt-[64px] flex justify-center gap-[4px] text-[14px]">
-        Have an account?{" "}
-        <Link href="/auth/login" className="text-(--fly-primary) underline">
-          Log in
-        </Link>
-      </p>
     </form>
-  );
+    <p className="text-[14px] mt-[64px]">
+      By continuing, you accept our{" "}
+      <Link href="/privacy-policy" className="text-(--fly-primary) underline">Privacy Policy</Link> and{" "}
+      <Link href="/terms-of-use" className="text-(--fly-primary) underline">Terms of Use</Link>
+    </p>
+  </>;
 }

@@ -48,5 +48,5 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  return NextResponse.json({ success: true }, { status: 200 })
+  return NextResponse.json({ email: user.email }, { status: 200 })
 }

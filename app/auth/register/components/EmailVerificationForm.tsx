@@ -4,7 +4,6 @@ import Button from "@/components/Button";
 import {FormEvent, useState} from "react";
 import axios from "axios";
 import { signIn } from "next-auth/react";
-import {useRouter} from "next/navigation";
 import {LoginDetails} from "@/app/auth/register/page";
 
 type EmailVerificationFormProps = {
@@ -12,7 +11,6 @@ type EmailVerificationFormProps = {
 }
 
 export default function EmailVerificationForm({ login }: EmailVerificationFormProps) {
-  const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [emailVerificationCode, setEmailVerificationCode] = useState('')
 
@@ -26,9 +24,7 @@ export default function EmailVerificationForm({ login }: EmailVerificationFormPr
       })
       await signIn('credentials', {
         ...login,
-        redirect: false,
       });
-      router.push('/');
     } finally {
       setIsProcessing(false);
     }
@@ -43,12 +39,12 @@ export default function EmailVerificationForm({ login }: EmailVerificationFormPr
     </div>
     <div className="mt-[90px]">
       <p className="text-[14px] text-(--fly-text-secondary)">
-        Enter 4 number code to send to your email
+        We sent 4 digits code to your email
       </p>
       <FormInput
         type="number"
-        label="Verification Code"
         required
+        placeholder="0000"
         value={emailVerificationCode}
         className="mt-[32px]"
         onChange={(e) => setEmailVerificationCode(e.target.value)}

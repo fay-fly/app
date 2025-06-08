@@ -6,6 +6,7 @@ import {FormEvent, useEffect, useState} from "react";
 import axios from "axios";
 import {useSearchParams} from "next/navigation";
 import { Suspense } from 'react'
+import {signIn} from "next-auth/react";
 
 function ResetPasswordForm({ token }: { token: string }) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -15,9 +16,14 @@ function ResetPasswordForm({ token }: { token: string }) {
     e.preventDefault()
     try {
       setIsProcessing(true);
-      await axios.post('/api/auth/reset-password', {
+      const { data } = await axios.post<{ email: string }>('/api/auth/reset-password', {
         token,
         newPassword: password,
+      });
+      alert("Password successfully changed!");
+      await signIn("credentials", {
+        email: data.email,
+        password: password,
       });
     } finally {
       setIsProcessing(false);
@@ -29,11 +35,11 @@ function ResetPasswordForm({ token }: { token: string }) {
       <div className="flex flex-col items-center">
         <Logo />
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
-          Reset Password
+          Set new password
         </h1>
       </div>
-      <div className="mt-[90px]">
-        <p className="text-[14px] text-(--fly-text-secondary)">
+      <div className="mt-[64px]">
+        <p className="text-[14px] text-center text-(--fly-text-secondary)">
           Make sure your password is at least 8 characters, with letters and numbers.
         </p>
         <FormInput
@@ -46,10 +52,10 @@ function ResetPasswordForm({ token }: { token: string }) {
         />
         <FormInput
           type="password"
-          label="Repeat new password"
+          label="Repeat password"
           placeholder="Repaet password"
           required
-          className="mt-[32px]"
+          className="mt-[24px]"
         />
         <Button
           type="submit"
