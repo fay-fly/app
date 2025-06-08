@@ -20,13 +20,15 @@ function UserCard() {
       </div>
       <span className="text-(--fly-text-primary) text-semibold">{session.user.username}</span>
     </div>
-    <Button type="button" onClick={() => signOut({callbackUrl: '/'})} className="text-(--fly-primary)">Sign Out</Button>
+    <Button type="button" onClick={() => signOut({callbackUrl: '/auth/login'})} className="text-(--fly-primary)">Sign Out</Button>
   </div>
 }
 
 
 export default function RightSidebar() {
   return <SessionProvider>
-    <UserCard />
+    <div className="h-full w-[308px] p-[16px] border-l-1 border-(--fly-border-color)">
+      <UserCard/>
+    </div>
   </SessionProvider>;
 }
