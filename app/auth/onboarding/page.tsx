@@ -50,7 +50,7 @@ function OnboardingForm() {
 
   const nextStep = () => {
     if (onboardingData.birthDate && getAgeFromDob(onboardingData.birthDate) < 18) {
-      alert("To continue you have to be at lease 18 years old.");
+      alert("Sorry, our service is intended for adult audiences only. We look forward to seeing you when you turn 18.");
       return;
     }
     setStepIndex(1)
@@ -59,13 +59,18 @@ function OnboardingForm() {
   return <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
     <div className="flex flex-col items-center">
       <Logo/>
-    </div>
-    {stepIndex === 0 && <div className="mt-[90px]">
       <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
-        Age verification
+        {stepIndex === 0 && <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
+          Age verification
+        </h1>}
+        {stepIndex === 1 && <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
+          Choose your username
+        </h1>}
       </h1>
-      <p className="text-[14px] text-(--fly-text-secondary)">
-        Please, enter your date of birth.
+    </div>
+    {stepIndex === 0 && <div className="mt-[64px]">
+      <p className="text-[14px] text-(--fly-text-secondary) text-center">
+        Please, enter your date of birth
       </p>
       <FormInput
         label="Birth date"
@@ -82,12 +87,9 @@ function OnboardingForm() {
           Continue
       </Button>
     </div>}
-    {stepIndex === 1 && <div className="mt-[90px]">
-        <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
-            Choose username
-        </h1>
-        <p className="text-[14px] text-(--fly-text-secondary)">
-            Please, enter your date of birth.
+    {stepIndex === 1 && <div className="mt-[64px]">
+        <p className="text-[14px] text-(--fly-text-secondary) text-center">
+            This will be your unique name on the platform. You can always change it in the settings.
         </p>
         <FormInput
             label="Username"
