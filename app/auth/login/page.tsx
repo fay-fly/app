@@ -7,6 +7,8 @@ import GoogleLogo from "@/icons/GoogleLogo";
 import { signIn } from "next-auth/react";
 import {FormEvent, useState} from "react";
 import {AuthSeparator} from "@/components/auth/AuthSeparator";
+import {showToast} from "@/utils/toastify";
+import { useRouter } from 'next/navigation';
 
 type LoginDetails = {
   username: string;
@@ -14,6 +16,7 @@ type LoginDetails = {
 }
 
 export default function Login() {
+  const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [loginDetails, setLoginDetails] = useState<LoginDetails>({
     username: "",
@@ -32,14 +35,23 @@ export default function Login() {
     e.preventDefault();
     try {
       setIsProcessing(true);
-      await signIn("credentials", {
+      const res = await signIn("credentials", {
+        redirect: false,
         email: loginDetails.username,
         password: loginDetails.password,
       });
+      if (res?.ok) {
+        await router.push("/");
+      } else if (res?.error) {
+        showToast("error", res.error);
+      } else {
+        showToast("error", "Unexpected error happened")
+      }
+    } catch {
+      showToast("error", "Connection error");
     } finally {
       setIsProcessing(false);
     }
-
   };
 
   const signInWithGoogle = async () => {
