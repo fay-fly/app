@@ -41,33 +41,33 @@ declare module "next-auth/jwt" {
   }
 }
 
-const streamPipeline = promisify(pipeline);
+// const streamPipeline = promisify(pipeline);
 
-async function saveImageFromUrl(imageUrl: string): Promise<string | undefined> {
-  if (!imageUrl) return;
-
-  const parsedUrl = new URL(imageUrl);
-  const ext = path.extname(parsedUrl.pathname).split('?')[0] || '.jpg';
-  const filename = `${crypto.randomUUID()}${ext}`;
-  const uploadDir = path.join(process.cwd(), 'public/uploads/profiles');
-  const filePath = path.join(uploadDir, filename);
-
-  fs.mkdirSync(uploadDir, { recursive: true });
-
-  const client = imageUrl.startsWith('https') ? https : http;
-
-  const response: IncomingMessage = await new Promise((resolve, reject) => {
-    client.get(imageUrl, (res) => {
-      if (res.statusCode !== 200) {
-        reject(new Error(`Failed to get image. Status code: ${res.statusCode}`));
-      } else {
-        resolve(res);
-      }
-    }).on('error', reject);
-  });
-  await streamPipeline(response, fs.createWriteStream(filePath));
-  return `/uploads/profiles/${filename}`;
-}
+// async function saveImageFromUrl(imageUrl: string): Promise<string | undefined> {
+//   if (!imageUrl) return;
+//
+//   const parsedUrl = new URL(imageUrl);
+//   const ext = path.extname(parsedUrl.pathname).split('?')[0] || '.jpg';
+//   const filename = `${crypto.randomUUID()}${ext}`;
+//   const uploadDir = path.join(process.cwd(), 'public/uploads/profiles');
+//   const filePath = path.join(uploadDir, filename);
+//
+//   fs.mkdirSync(uploadDir, { recursive: true });
+//
+//   const client = imageUrl.startsWith('https') ? https : http;
+//
+//   const response: IncomingMessage = await new Promise((resolve, reject) => {
+//     client.get(imageUrl, (res) => {
+//       if (res.statusCode !== 200) {
+//         reject(new Error(`Failed to get image. Status code: ${res.statusCode}`));
+//       } else {
+//         resolve(res);
+//       }
+//     }).on('error', reject);
+//   });
+//   await streamPipeline(response, fs.createWriteStream(filePath));
+//   return `/uploads/profiles/${filename}`;
+// }
 
 
 
@@ -154,16 +154,16 @@ const authOptions: AuthOptions = {
       if (account?.provider === 'google') {
         let existingUser = await prisma.user.findUnique({ where: { email: user.email! } });
         if (!existingUser) {
-          let savedImagePath = null;
-          if (user.image) {
-            savedImagePath = await saveImageFromUrl(user.image);
-          }
+          // let savedImagePath = null;
+          // if (user.image) {
+          //   savedImagePath = await saveImageFromUrl(user.image);
+          // }
           existingUser = await prisma.user.create({
             data: {
               email: user.email!,
               role: "lead",
               emailVerified: true,
-              picturePath: savedImagePath
+              picturePath: user.image
             },
           });
         }
