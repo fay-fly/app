@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         <p>If you did not request a password reset, please ignore this email. This link will expire in 1 hour for security reasons.</p>
     <div>`,
   });
-  if (!error) {
+  if (error) {
     return new Response(JSON.stringify({ error: "Failed to send reset email" }), { status: 500 });
   }
   return new Response(null, { status: 200 });

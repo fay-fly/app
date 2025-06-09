@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     subject: 'Email verification',
     html: `<p>${code}<p>`,
   });
-  if (!error) {
+  if (error) {
     return new Response(JSON.stringify({ error: "Failed to send reset email" }), { status: 500 });
   }
   return new Response(null, { status: 200 });
