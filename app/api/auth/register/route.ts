@@ -29,7 +29,11 @@ export async function POST(req: Request) {
     from: 'fayflay@thelauris.com',
     to: user.email,
     subject: 'Email verification',
-    html: `<p>${code}<p>`,
+    html: `<div>
+      <p>Thanks for registration! To complete your registration, please verify your email address using the code below:</p>      
+      <p>${code}<p>
+      <p>This code will expire in 10 minutes. If you didn’t request this, you can safely ignore this email.</p>
+    </div>`,
   });
   if (error) {
     return new Response(JSON.stringify({ error: "Failed to send reset email" }), { status: 500 });
