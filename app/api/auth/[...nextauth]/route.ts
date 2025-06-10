@@ -79,7 +79,8 @@ const authOptions: AuthOptions = {
               picturePath: user.image,
             },
           });
-        } else if (!existingUser.birthDate) {
+        }
+        if (!existingUser.birthDate) {
           return `/auth/onboarding?${new URLSearchParams({
             userId: existingUser.id.toString(),
           })}`;

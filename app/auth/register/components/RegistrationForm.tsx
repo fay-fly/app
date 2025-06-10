@@ -67,7 +67,7 @@ export default function RegisterForm({
               required
               onChange={(e) => handleChange("email", e.target.value)}
             />
-            <div className="flex gap-[24px] justify-between">
+            <div className="flex gap-[16px] justify-between flex-wrap">
               <FormInput
                 type="date"
                 label="Birth date"
@@ -79,6 +79,7 @@ export default function RegisterForm({
                 label="Gender"
                 required
                 data={[
+                  { label: "", value: "" },
                   { label: "Male", value: "male" },
                   { label: "Female", value: "female" },
                 ]}
@@ -127,7 +128,7 @@ export default function RegisterForm({
           </div>
         </div>
       </form>
-      <p className="text-[14px] mt-[64px]">
+      <p className="text-[14px] mt-[64px] text-center">
         By continuing, you accept our{" "}
         <Link href="/privacy-policy" className="text-(--fly-primary) underline">
           Privacy Policy

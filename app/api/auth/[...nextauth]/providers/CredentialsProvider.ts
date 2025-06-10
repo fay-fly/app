@@ -42,7 +42,6 @@ export default CredentialsProvider({
       email: user.email,
       role: user.role,
       username: user.username,
-      image: user.picturePath,
     };
   },
 });

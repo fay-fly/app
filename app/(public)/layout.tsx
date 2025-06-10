@@ -12,8 +12,6 @@ import Messages from "@/icons/menu/Messages";
 import {SessionProvider} from "next-auth/react";
 import UserCard from "@/app/(public)/components/UserCard";
 
-
-
 export default function PublicLayout({ children }: LayoutProps) {
   return (
     <SessionProvider>
