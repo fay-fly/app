@@ -1,8 +1,7 @@
 import NextAuth, { AuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
-import GoogleProvider from "next-auth/providers/google";
+import GoogleProvider from "./providers/GoogleProvider";
+import CredentialsProvider from "./providers/CredentialsProvider";
 
 declare module "next-auth" {
   interface Session {
@@ -11,7 +10,6 @@ declare module "next-auth" {
       email: string;
       username: string | null;
       role: string;
-      image: string | null;
     };
   }
 
@@ -20,7 +18,6 @@ declare module "next-auth" {
     email: string;
     username: string | null;
     role: string;
-    image: string | null;
   }
 }
 
@@ -30,7 +27,6 @@ declare module "next-auth/jwt" {
     email: string;
     username: string | null;
     role: string;
-    image: string | null;
   }
 }
 
@@ -38,51 +34,8 @@ const prisma = new PrismaClient();
 
 const authOptions: AuthOptions = {
   providers: [
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Missing email or password");
-        }
-
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-
-        if (!user) {
-          throw new Error("No user found with this email");
-        }
-
-        if (!user.password) {
-          throw new Error("User doesn't have password set");
-        }
-
-        const isValidPassword = await compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isValidPassword) {
-          throw new Error("Invalid password");
-        }
-
-        return {
-          id: user.id.toString(),
-          email: user.email,
-          role: user.role,
-          username: user.username,
-          image: user.picturePath,
-        };
-      },
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    }),
+    CredentialsProvider,
+    GoogleProvider,
   ],
   callbacks: {
     async jwt({ token, user, account }) {
@@ -111,7 +64,6 @@ const authOptions: AuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.role = token.role as string;
-        session.user.image = token.image;
         session.user.username = token.username;
       }
       return session;
@@ -122,10 +74,6 @@ const authOptions: AuthOptions = {
           where: { email: user.email! },
         });
         if (!existingUser) {
-          // let savedImagePath = null;
-          // if (user.image) {
-          //   savedImagePath = await saveImageFromUrl(user.image);
-          // }
           existingUser = await prisma.user.create({
             data: {
               email: user.email!,
@@ -134,9 +82,7 @@ const authOptions: AuthOptions = {
               picturePath: user.image,
             },
           });
-        }
-
-        if (!existingUser.birthDate) {
+        } else if (!existingUser.birthDate) {
           return `/auth/onboarding?${new URLSearchParams({
             userId: existingUser.id.toString(),
           })}`;
@@ -144,18 +90,11 @@ const authOptions: AuthOptions = {
       }
       return true;
     },
-    async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      return baseUrl;
-    },
   },
   session: {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/auth/login",
-  },
 };
 
 const handler = NextAuth(authOptions);

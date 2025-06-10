@@ -1,11 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Onest:wght@100..900&display=swap");
 @import "tailwindcss";
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
+html {
   font-family: "Inter", sans-serif;
 }
 
@@ -13,13 +9,13 @@ body {
   --fly-white: #fff;
   --fly-bg-primary: #f9f9f9;
   --fly-primary: #7c89ff;
-  --fly-text-primary: #323232;
-  --fly-text-white-disabled: rgba(255, 255, 255, 0.6);
-  --fly-text-disabled: rgba(0, 0, 0, 0.5);
   --ply-primary-disabled: rgba(0, 0, 0, 0.3);
   --fly-text-secondary: rgba(50, 50, 50, 0.85);
   --fly-border-color: rgba(0, 0, 0, 0.08);
   --fly-input-placeholder-color: rgba(0, 0, 0, 0.4);
   --fly-link: #1795f0;
   --fly-success: #55bd5f;
+  --fly-text-primary: #323232;
+  --fly-text-white-disabled: rgba(255, 255, 255, 0.6);
+  --fly-text-disabled: rgba(0, 0, 0, 0.5);
 }
