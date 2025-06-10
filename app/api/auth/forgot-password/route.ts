@@ -3,11 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import { addHours } from "date-fns";
 import { Resend } from "resend";
 
-const resend = new Resend("re_SvQEsLZP_3s8N5odQ9dAqZoMU3KsB97LC");
+const resend = new Resend(process.env.RESEND_KEY);
 
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   const { email } = await req.json();
