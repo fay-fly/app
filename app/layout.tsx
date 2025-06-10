@@ -5,7 +5,7 @@ import ToastProvider from "@/providers/ToastProvider";
 export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang="en" className="h-full bg-(--fly-bg-primary)">
-      <body>
+      <body className="h-full">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
