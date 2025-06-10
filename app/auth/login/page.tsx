@@ -6,7 +6,7 @@ import Button from "@/components/Button";
 import GoogleLogo from "@/icons/GoogleLogo";
 import { signIn } from "next-auth/react";
 import { FormEvent, useState } from "react";
-import { AuthSeparator } from "@/components/auth/AuthSeparator";
+import { AuthSeparator } from "@/app/auth/login/components/AuthSeparator";
 import { showToast } from "@/utils/toastify";
 import { useRouter } from "next/navigation";
 

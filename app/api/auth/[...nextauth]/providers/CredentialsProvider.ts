@@ -1,6 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import {compare} from "bcryptjs";
-import {PrismaClient} from "@prisma/client";
+import { compare } from "bcryptjs";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -11,7 +11,7 @@ export default CredentialsProvider({
     password: { label: "Password", type: "password" },
   },
   async authorize(credentials) {
-    if(!credentials) {
+    if (!credentials) {
       throw new Error("Credentials must be provided");
     }
 
@@ -31,10 +31,7 @@ export default CredentialsProvider({
       throw new Error("User doesn't have password set");
     }
 
-    const isValidPassword = await compare(
-      credentials.password,
-      user.password
-    );
+    const isValidPassword = await compare(credentials.password, user.password);
 
     if (!isValidPassword) {
       throw new Error("Invalid password");
@@ -48,4 +45,4 @@ export default CredentialsProvider({
       image: user.picturePath,
     };
   },
-})
+});

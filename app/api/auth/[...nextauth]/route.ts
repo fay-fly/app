@@ -33,10 +33,7 @@ declare module "next-auth/jwt" {
 const prisma = new PrismaClient();
 
 const authOptions: AuthOptions = {
-  providers: [
-    CredentialsProvider,
-    GoogleProvider,
-  ],
+  providers: [CredentialsProvider, GoogleProvider],
   callbacks: {
     async jwt({ token, user, account }) {
       if (account?.provider === "google") {
@@ -89,6 +86,10 @@ const authOptions: AuthOptions = {
         }
       }
       return true;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      return baseUrl;
     },
   },
   session: {
