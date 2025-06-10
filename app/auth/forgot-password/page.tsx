@@ -3,11 +3,11 @@ import Logo from "@/icons/Logo";
 import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
 import Link from "next/link";
-import {FormEvent, useState} from "react";
-import axios, {AxiosError} from "axios";
+import { FormEvent, useState } from "react";
+import axios, { AxiosError } from "axios";
 import clsx from "clsx";
 import SuccessIcon from "@/icons/SuccessIcon";
-import {showToast} from "@/utils/toastify";
+import { showToast } from "@/utils/toastify";
 
 export default function ForgotPassword() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -18,10 +18,13 @@ export default function ForgotPassword() {
     e.preventDefault();
     try {
       setIsProcessing(true);
-      await axios.post("/api/auth/forgot-password", { email })
+      await axios.post("/api/auth/forgot-password", { email });
       setShowSuccessMessage(true);
     } catch (error) {
-      const axiosError = error as AxiosError<{ error?: string; message?: string }>;
+      const axiosError = error as AxiosError<{
+        error?: string;
+        message?: string;
+      }>;
       const message =
         axiosError?.response?.data?.error ||
         axiosError?.response?.data?.message ||
@@ -33,7 +36,10 @@ export default function ForgotPassword() {
   };
 
   return (
-    <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col max-w-[424px] w-full"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col items-center">
         <Logo />
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
@@ -41,12 +47,16 @@ export default function ForgotPassword() {
         </h1>
       </div>
       <div className="mt-[64px]">
-        {showSuccessMessage
-          ? <div className="flex text-(--fly-success) gap-[10px] items-start">
+        {showSuccessMessage ? (
+          <div className="flex text-(--fly-success) gap-[10px] items-start">
             <SuccessIcon />
-            <p className="leading-none">Password reset link was successfully sent to your email: <strong>{email}</strong>.</p>
+            <p className="leading-none">
+              Password reset link was successfully sent to your email:{" "}
+              <strong>{email}</strong>.
+            </p>
           </div>
-          : <>
+        ) : (
+          <>
             <FormInput
               label="Email"
               placeholder="Enter your email"
@@ -66,11 +76,15 @@ export default function ForgotPassword() {
               >
                 Request link
               </Button>
-              <Link href="/auth/login" className="min-h-[48px] flex items-center justify-center rounded-full w-full text-(--fly-primary) font-semibold">
+              <Link
+                href="/auth/login"
+                className="min-h-[48px] flex items-center justify-center rounded-full w-full text-(--fly-primary) font-semibold"
+              >
                 Back
               </Link>
             </div>
-          </>}
+          </>
+        )}
       </div>
     </form>
   );

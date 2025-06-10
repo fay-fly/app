@@ -15,7 +15,7 @@ type ToastType = "success" | "error" | "info" | "warning" | "default";
 export const showToast = (
   type: ToastType,
   content: ToastContent,
-  options: Partial<ToastOptions> = {},
+  options: Partial<ToastOptions> = {}
 ): Id => {
   const optionsToApply = { ...defaultToastOptions, ...options };
 

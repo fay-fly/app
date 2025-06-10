@@ -1,19 +1,19 @@
-'use client';
+"use client";
 import Logo from "@/icons/Logo";
 import FormInput from "@/components/FormInput";
 import Link from "next/link";
 import Button from "@/components/Button";
 import GoogleLogo from "@/icons/GoogleLogo";
 import { signIn } from "next-auth/react";
-import {FormEvent, useState} from "react";
-import {AuthSeparator} from "@/components/auth/AuthSeparator";
-import {showToast} from "@/utils/toastify";
-import { useRouter } from 'next/navigation';
+import { FormEvent, useState } from "react";
+import { AuthSeparator } from "@/components/auth/AuthSeparator";
+import { showToast } from "@/utils/toastify";
+import { useRouter } from "next/navigation";
 
 type LoginDetails = {
   username: string;
   password: string;
-}
+};
 
 export default function Login() {
   const router = useRouter();
@@ -23,13 +23,16 @@ export default function Login() {
     password: "",
   });
 
-  const onChange = <T extends keyof LoginDetails>(label: T, value: LoginDetails[T]) => {
-    setLoginDetails(prev => {
+  const onChange = <T extends keyof LoginDetails>(
+    label: T,
+    value: LoginDetails[T]
+  ) => {
+    setLoginDetails((prev) => {
       const update = { ...prev };
       update[label] = value;
       return update;
-    })
-  }
+    });
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -45,7 +48,7 @@ export default function Login() {
       } else if (res?.error) {
         showToast("error", res.error);
       } else {
-        showToast("error", "Unexpected error happened")
+        showToast("error", "Unexpected error happened");
       }
     } catch {
       showToast("error", "Connection error");
@@ -56,12 +59,15 @@ export default function Login() {
 
   const signInWithGoogle = async () => {
     await signIn("google");
-  }
+  };
 
   return (
-    <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col max-w-[424px] w-full"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col items-center">
-        <Logo/>
+        <Logo />
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[24px] font-bold">
           Welcome back!
         </h1>
@@ -72,7 +78,7 @@ export default function Login() {
           onClick={() => signInWithGoogle()}
           className="bg-(--fly-white) text-(--fly-text-secondary) font-normal cursor-pointer"
         >
-          <GoogleLogo/>
+          <GoogleLogo />
           Continue with Google
         </Button>
         <AuthSeparator />

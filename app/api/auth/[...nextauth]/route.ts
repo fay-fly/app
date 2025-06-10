@@ -1,15 +1,8 @@
-import NextAuth, {AuthOptions} from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import GoogleProvider from "next-auth/providers/google";
-// import path from "node:path";
-// import * as fs from "node:fs";
-// import * as https from "node:https";
-// import * as http from "node:http";
-// import {promisify} from "node:util";
-// import {pipeline} from "node:stream";
-// import {IncomingMessage} from "node:http";
 
 declare module "next-auth" {
   interface Session {
@@ -41,36 +34,6 @@ declare module "next-auth/jwt" {
   }
 }
 
-// const streamPipeline = promisify(pipeline);
-
-// async function saveImageFromUrl(imageUrl: string): Promise<string | undefined> {
-//   if (!imageUrl) return;
-//
-//   const parsedUrl = new URL(imageUrl);
-//   const ext = path.extname(parsedUrl.pathname).split('?')[0] || '.jpg';
-//   const filename = `${crypto.randomUUID()}${ext}`;
-//   const uploadDir = path.join(process.cwd(), 'public/uploads/profiles');
-//   const filePath = path.join(uploadDir, filename);
-//
-//   fs.mkdirSync(uploadDir, { recursive: true });
-//
-//   const client = imageUrl.startsWith('https') ? https : http;
-//
-//   const response: IncomingMessage = await new Promise((resolve, reject) => {
-//     client.get(imageUrl, (res) => {
-//       if (res.statusCode !== 200) {
-//         reject(new Error(`Failed to get image. Status code: ${res.statusCode}`));
-//       } else {
-//         resolve(res);
-//       }
-//     }).on('error', reject);
-//   });
-//   await streamPipeline(response, fs.createWriteStream(filePath));
-//   return `/uploads/profiles/${filename}`;
-// }
-
-
-
 const prisma = new PrismaClient();
 
 const authOptions: AuthOptions = {
@@ -98,7 +61,10 @@ const authOptions: AuthOptions = {
           throw new Error("User doesn't have password set");
         }
 
-        const isValidPassword = await compare(credentials.password, user.password);
+        const isValidPassword = await compare(
+          credentials.password,
+          user.password
+        );
 
         if (!isValidPassword) {
           throw new Error("Invalid password");
@@ -109,27 +75,27 @@ const authOptions: AuthOptions = {
           email: user.email,
           role: user.role,
           username: user.username,
-          image: user.picturePath
+          image: user.picturePath,
         };
       },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ""
-    })
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
   ],
   callbacks: {
     async jwt({ token, user, account }) {
       if (account?.provider === "google") {
-        const dbUser = await prisma.user.findUnique({ where: { email: user.email! } })
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
         if (dbUser) {
           token.id = dbUser.id.toString();
           token.email = dbUser.email;
           token.role = dbUser.role;
           token.username = dbUser.username;
-          token.image = dbUser.picturePath
-            ? dbUser.picturePath
-            : null;
+          token.image = dbUser.picturePath ? dbUser.picturePath : null;
         }
       } else if (user) {
         token.id = user.id;
@@ -151,8 +117,10 @@ const authOptions: AuthOptions = {
       return session;
     },
     async signIn({ user, account }) {
-      if (account?.provider === 'google') {
-        let existingUser = await prisma.user.findUnique({ where: { email: user.email! } });
+      if (account?.provider === "google") {
+        let existingUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
         if (!existingUser) {
           // let savedImagePath = null;
           // if (user.image) {
@@ -163,7 +131,7 @@ const authOptions: AuthOptions = {
               email: user.email!,
               role: "lead",
               emailVerified: true,
-              picturePath: user.image
+              picturePath: user.image,
             },
           });
         }
@@ -171,14 +139,14 @@ const authOptions: AuthOptions = {
         if (!existingUser.birthDate) {
           return `/auth/onboarding?${new URLSearchParams({
             userId: existingUser.id.toString(),
-          })}`
+          })}`;
         }
       }
       return true;
     },
     async redirect({ url, baseUrl }) {
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-      return baseUrl
+      return baseUrl;
     },
   },
   session: {
@@ -188,7 +156,7 @@ const authOptions: AuthOptions = {
   pages: {
     signIn: "/auth/login",
   },
-}
+};
 
 const handler = NextAuth(authOptions);
 

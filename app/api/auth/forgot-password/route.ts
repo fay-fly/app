@@ -1,19 +1,21 @@
 import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 import { addHours } from "date-fns";
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
 const resend = new Resend("re_SvQEsLZP_3s8N5odQ9dAqZoMU3KsB97LC");
 
 const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+  log: ["query", "info", "warn", "error"],
 });
 
 export async function POST(req: Request) {
   const { email } = await req.json();
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return new Response(JSON.stringify({ error: "Email doesn't exist" }), { status: 404 });
+    return new Response(JSON.stringify({ error: "Email doesn't exist" }), {
+      status: 404,
+    });
   }
   const token = uuidv4();
   const expiry = addHours(new Date(), 1);
@@ -27,9 +29,9 @@ export async function POST(req: Request) {
 
   const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?token=${token}`;
   const { error } = await resend.emails.send({
-    from: 'fayfly@thelauris.com',
+    from: "fayfly@thelauris.com",
     to: email,
-    subject: 'Password Reset',
+    subject: "Password Reset",
     html: `<div>
         <p>We received a request to reset your password. You can reset your password by clicking the link below:</p>
         <a href="${resetLink}">${resetLink}</a>
@@ -37,7 +39,10 @@ export async function POST(req: Request) {
     <div>`,
   });
   if (error) {
-    return new Response(JSON.stringify({ error: "Failed to send reset email" }), { status: 500 });
+    return new Response(
+      JSON.stringify({ error: "Failed to send reset email" }),
+      { status: 500 }
+    );
   }
   return new Response(null, { status: 200 });
 }

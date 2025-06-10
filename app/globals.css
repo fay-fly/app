@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Onest:wght@100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Onest:wght@100..900&display=swap");
 @import "tailwindcss";
 
 html,
@@ -11,8 +11,8 @@ body {
 
 :root {
   --fly-white: #fff;
-  --fly-bg-primary: #F9F9F9;
-  --fly-primary: #7C89FF;
+  --fly-bg-primary: #f9f9f9;
+  --fly-primary: #7c89ff;
   --fly-text-primary: #323232;
   --fly-text-white-disabled: rgba(255, 255, 255, 0.6);
   --fly-text-disabled: rgba(0, 0, 0, 0.5);
@@ -20,6 +20,6 @@ body {
   --fly-text-secondary: rgba(50, 50, 50, 0.85);
   --fly-border-color: rgba(0, 0, 0, 0.08);
   --fly-input-placeholder-color: rgba(0, 0, 0, 0.4);
-  --fly-link: #1795F0;
-  --fly-success: #55BD5F;
+  --fly-link: #1795f0;
+  --fly-success: #55bd5f;
 }

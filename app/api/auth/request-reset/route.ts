@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { addHours } from "date-fns";
 
 const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+  log: ["query", "info", "warn", "error"],
 });
 
 export async function POST(req: Request) {

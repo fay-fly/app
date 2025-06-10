@@ -10,9 +10,7 @@ export default function RootLayout({
   return (
     <ToastProvider>
       <div className="flex flex-col min-h-screen">
-        <main
-          className="flex flex-col items-center justify-center w-full flex-1 p-[24px]"
-        >
+        <main className="flex flex-col items-center justify-center w-full flex-1 p-[24px]">
           {children}
         </main>
         <footer className="w-full p-[32px] border-t-[1px] border-(--fly-border-color)">

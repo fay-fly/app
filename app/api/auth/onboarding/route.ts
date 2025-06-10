@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+  log: ["query", "info", "warn", "error"],
 });
 
 export async function POST(req: Request) {
@@ -13,6 +13,6 @@ export async function POST(req: Request) {
       birthDate: new Date(birthDate),
       role: "user",
     },
-  })
+  });
   return new Response(null, { status: 200 });
 }

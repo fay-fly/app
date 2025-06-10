@@ -4,7 +4,7 @@ import clsx from "clsx";
 export type Option = {
   label: string;
   value: string;
-}
+};
 
 type FormSelectProps = InputHTMLAttributes<HTMLSelectElement> & {
   data: Option[];
@@ -27,7 +27,11 @@ export default function FormSelect({
         {...props}
       >
         {data.map((option) => {
-          return <option key={option.value} value={option.value}>{option.label}</option>
+          return (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          );
         })}
       </select>
     </label>

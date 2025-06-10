@@ -1,25 +1,28 @@
-'use client';
+"use client";
 import Logo from "@/icons/Logo";
 import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
-import {FormEvent, useEffect, useState} from "react";
+import { FormEvent, useEffect, useState } from "react";
 import axios from "axios";
-import {useSearchParams} from "next/navigation";
-import { Suspense } from 'react'
-import {signIn} from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { signIn } from "next-auth/react";
 
 function ResetPasswordForm({ token }: { token: string }) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [password, setPassword] = useState('')
+  const [password, setPassword] = useState("");
 
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     try {
       setIsProcessing(true);
-      const { data } = await axios.post<{ email: string }>('/api/auth/reset-password', {
-        token,
-        newPassword: password,
-      });
+      const { data } = await axios.post<{ email: string }>(
+        "/api/auth/reset-password",
+        {
+          token,
+          newPassword: password,
+        }
+      );
       alert("Password successfully changed!");
       await signIn("credentials", {
         email: data.email,
@@ -31,7 +34,10 @@ function ResetPasswordForm({ token }: { token: string }) {
   }
 
   return (
-    <form className="flex flex-col max-w-[424px] w-full" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col max-w-[424px] w-full"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col items-center">
         <Logo />
         <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
@@ -40,7 +46,8 @@ function ResetPasswordForm({ token }: { token: string }) {
       </div>
       <div className="mt-[64px]">
         <p className="text-[14px] text-center text-(--fly-text-secondary)">
-          Make sure your password is at least 8 characters, with letters and numbers.
+          Make sure your password is at least 8 characters, with letters and
+          numbers.
         </p>
         <FormInput
           type="password"
@@ -70,40 +77,43 @@ function ResetPasswordForm({ token }: { token: string }) {
 }
 
 function VerifyPassword() {
-  const searchParams = useSearchParams()
-  const token = searchParams.get('token') ?? ''
-  const [valid, setValid] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(true)
-  const [error, setError] = useState('')
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
+  const [valid, setValid] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!token) {
-      setError('Token not provided.')
-      setIsProcessing(false)
-      return
+      setError("Token not provided.");
+      setIsProcessing(false);
+      return;
     }
 
-    axios.get(`/api/auth/verify-reset?token=${encodeURIComponent(token)}`)
-      .then(res => {
-        if (res.data.valid) setValid(true)
-        else setError(res.data.error || 'Invalid or expired token')
+    axios
+      .get(`/api/auth/verify-reset?token=${encodeURIComponent(token)}`)
+      .then((res) => {
+        if (res.data.valid) setValid(true);
+        else setError(res.data.error || "Invalid or expired token");
       })
       .catch(() => {
-        setError('Could not verify token.')
+        setError("Could not verify token.");
       })
       .finally(() => {
-        setIsProcessing(false)
-      })
-  }, [token])
+        setIsProcessing(false);
+      });
+  }, [token]);
 
-  if (isProcessing) return <p>Checking reset link...</p>
-  if (!valid) return <p style={{ color: 'red' }}>{error}</p>
+  if (isProcessing) return <p>Checking reset link...</p>;
+  if (!valid) return <p style={{ color: "red" }}>{error}</p>;
 
-  return token && <ResetPasswordForm token={token} />
+  return token && <ResetPasswordForm token={token} />;
 }
 
 export default function ResetPassword() {
-  return <Suspense>
-    <VerifyPassword />
-  </Suspense>
+  return (
+    <Suspense>
+      <VerifyPassword />
+    </Suspense>
+  );
 }

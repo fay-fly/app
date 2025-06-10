@@ -1,21 +1,21 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 import UserCreateInput = Prisma.UserCreateInput;
-import {addMinutes} from "date-fns";
-import {Resend} from "resend";
+import { addMinutes } from "date-fns";
+import { Resend } from "resend";
 
 const resend = new Resend("re_SvQEsLZP_3s8N5odQ9dAqZoMU3KsB97LC");
 
 const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+  log: ["query", "info", "warn", "error"],
 });
 
 export async function POST(req: Request) {
-  const user = await req.json() as UserCreateInput;
+  const user = (await req.json()) as UserCreateInput;
   const hashedPassword = await hash(user.password!, 12);
   console.log("user", user);
-  const code = Math.floor(1000 + Math.random() * 9000).toString()
-  const expiry = addMinutes(new Date(), 15)
+  const code = Math.floor(1000 + Math.random() * 9000).toString();
+  const expiry = addMinutes(new Date(), 15);
   await prisma.user.create({
     data: {
       ...user,
@@ -26,9 +26,9 @@ export async function POST(req: Request) {
     },
   });
   const { error } = await resend.emails.send({
-    from: 'fayflay@thelauris.com',
+    from: "fayflay@thelauris.com",
     to: user.email,
-    subject: 'Email verification',
+    subject: "Email verification",
     html: `<div>
       <p>Thanks for registration! To complete your registration, please verify your email address using the code below:</p>      
       <p>${code}<p>
@@ -36,7 +36,10 @@ export async function POST(req: Request) {
     </div>`,
   });
   if (error) {
-    return new Response(JSON.stringify({ error: "Failed to send reset email" }), { status: 500 });
+    return new Response(
+      JSON.stringify({ error: "Failed to send reset email" }),
+      { status: 500 }
+    );
   }
   return new Response(null, { status: 200 });
 }
