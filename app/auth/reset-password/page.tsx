@@ -7,6 +7,7 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { signIn } from "next-auth/react";
+import {handleError} from "@/utils/errors";
 
 function ResetPasswordForm({ token }: { token: string }) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -16,9 +17,7 @@ function ResetPasswordForm({ token }: { token: string }) {
     e.preventDefault();
     try {
       setIsProcessing(true);
-      const { data } = await axios.post<{ email: string }>(
-        "/api/auth/reset-password",
-        {
+      const { data } = await axios.post<{ email: string }>("/api/auth/reset-password", {
           token,
           newPassword: password,
         }
@@ -28,6 +27,8 @@ function ResetPasswordForm({ token }: { token: string }) {
         email: data.email,
         password: password,
       });
+    } catch (error) {
+      handleError(error);
     } finally {
       setIsProcessing(false);
     }
@@ -78,35 +79,25 @@ function ResetPasswordForm({ token }: { token: string }) {
 
 function VerifyPassword() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "";
-  const [valid, setValid] = useState(false);
+  const [token, setToken] = useState<string>();
   const [isProcessing, setIsProcessing] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
-    if (!token) {
-      setError("Token not provided.");
-      setIsProcessing(false);
-      return;
-    }
-
+    const currentToken = searchParams.get("token") ?? ""
+    setToken(currentToken);
     axios
-      .get(`/api/auth/verify-reset?token=${encodeURIComponent(token)}`)
-      .then((res) => {
-        if (res.data.valid) setValid(true);
-        else setError(res.data.error || "Invalid or expired token");
-      })
+      .get(`/api/auth/verify-reset?token=${encodeURIComponent(currentToken)}`)
       .catch(() => {
         setError("Could not verify token.");
       })
       .finally(() => {
         setIsProcessing(false);
       });
-  }, [token]);
+  }, []);
 
   if (isProcessing) return <p>Checking reset link...</p>;
-  if (!valid) return <p style={{ color: "red" }}>{error}</p>;
-
+  if (error) return <p className="text-red-50">{error}</p>;
   return token && <ResetPasswordForm token={token} />;
 }
 

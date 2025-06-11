@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import { signIn } from "next-auth/react";
 import { LoginDetails } from "@/app/auth/register/page";
+import {handleError} from "@/utils/errors";
 
 type EmailVerificationFormProps = {
   login: LoginDetails;
@@ -27,6 +28,8 @@ export default function EmailVerificationForm({
       await signIn("credentials", {
         ...login,
       });
+    } catch (error) {
+      handleError(error);
     } finally {
       setIsProcessing(false);
     }

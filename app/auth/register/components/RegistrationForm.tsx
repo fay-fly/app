@@ -9,6 +9,7 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import { LoginDetails } from "@/app/auth/register/page";
+import {handleError} from "@/utils/errors";
 
 type RegisterFormProps = {
   onRegistrationSuccessAction: (login: LoginDetails) => void;
@@ -42,6 +43,8 @@ export default function RegisterForm({
         email: registrationPayload.email ?? "",
         password: registrationPayload.password ?? "",
       });
+    } catch (error) {
+      handleError(error);
     } finally {
       setIsProcessing(false);
     }

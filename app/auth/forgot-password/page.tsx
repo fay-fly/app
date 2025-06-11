@@ -4,15 +4,15 @@ import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import clsx from "clsx";
 import SuccessIcon from "@/icons/SuccessIcon";
-import { showToast } from "@/utils/toastify";
+import {handleError} from "@/utils/errors";
 
 export default function ForgotPassword() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [email, setEmail] = useState<string>();
+  const [email, setEmail] = useState<string>("");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -21,15 +21,7 @@ export default function ForgotPassword() {
       await axios.post("/api/auth/forgot-password", { email });
       setShowSuccessMessage(true);
     } catch (error) {
-      const axiosError = error as AxiosError<{
-        error?: string;
-        message?: string;
-      }>;
-      const message =
-        axiosError?.response?.data?.error ||
-        axiosError?.response?.data?.message ||
-        "Unexpected error happened";
-      showToast("error", message);
+      handleError(error)
     } finally {
       setIsProcessing(false);
     }
@@ -58,6 +50,7 @@ export default function ForgotPassword() {
         ) : (
           <>
             <FormInput
+              type="email"
               label="Email"
               placeholder="Enter your email"
               value={email}

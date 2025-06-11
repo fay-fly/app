@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   if (!user) {
     return NextResponse.json(
       { message: "Invalid reset link" },
-      { status: 404 }
+      { status: 401 }
     );
   }
   const now = new Date();

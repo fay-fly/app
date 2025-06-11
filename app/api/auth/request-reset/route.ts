@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     return NextResponse.json(
-      { error: "Email doesn't exist" },
+      { message: "Email doesn't exist" },
       { status: 404 }
     );
   }

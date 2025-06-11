@@ -24,18 +24,18 @@ export async function POST(req: NextRequest) {
     },
   });
   const { error } = await resend.emails.send({
-    from: "fayflay@thelauris.com",
+    from: "fayfly@thelauris.com",
     to: user.email,
     subject: "Email verification",
     html: `<div>
       <p>Thanks for registration! To complete your registration, please verify your email address using the code below:</p>      
       <p>${code}<p>
-      <p>This code will expire in 10 minutes. If you didn’t request this, you can safely ignore this email.</p>
+      <p>This code will expire in 15 minutes. If you didn’t request this, you can safely ignore this email.</p>
     </div>`,
   });
   if (error) {
     return NextResponse.json(
-      { error: "Failed to send reset email" },
+      { message: "Failed to send reset email" },
       { status: 500 }
     );
   }

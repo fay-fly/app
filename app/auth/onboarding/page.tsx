@@ -7,6 +7,7 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { getAgeFromDob } from "@/utils/dates";
+import {handleError} from "@/utils/errors";
 
 type OnboardingData = {
   username: string | null;
@@ -34,6 +35,8 @@ function OnboardingForm() {
           ...onboardingData,
         });
         await signIn("google");
+      } catch (error) {
+        handleError(error);
       } finally {
         setIsProcessing(false);
       }

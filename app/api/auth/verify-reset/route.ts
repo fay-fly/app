@@ -8,22 +8,28 @@ export async function GET(req: NextRequest) {
   const token = searchParams.get("token");
   if (!token) {
     return NextResponse.json(
-      { error: "Token missing" },
+      { message: "Token missing" },
       { status: 400 }
     );
   }
   const user = await prisma.user.findFirst({
     where: { resetToken: token },
   });
-  if (!user || user.resetTokenExpiry! < new Date()) {
-    if (user) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { resetToken: null, resetTokenExpiry: null },
-      });
-    }
+
+  if (!user) {
     return NextResponse.json(
-      { error: "Invalid or expired token" },
+      { message: "Invalid token" },
+      { status: 401 }
+    );
+  }
+
+  if (user.resetTokenExpiry! < new Date()) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { resetToken: null, resetTokenExpiry: null },
+    });
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
       { status: 401 }
     );
   }

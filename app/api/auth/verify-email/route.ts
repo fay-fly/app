@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   const { email, code } = await req.json();
   if (!email || !code) {
     return NextResponse.json(
-      { error: "Email and code are required" },
+      { message: "Email and code are required" },
       { status: 400 }
     );
   }
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     user.emailVerificationExpiry < new Date()
   ) {
     return NextResponse.json(
-      { error: "Invalid or expired code" },
+      { message: "Invalid or expired code" },
       { status: 401 }
     );
   }

@@ -12,9 +12,10 @@ export async function POST(req: NextRequest) {
   const { email } = await req.json();
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return NextResponse.json({ error: "Email doesn't exist" }, {
-      status: 404,
-    });
+    return NextResponse.json(
+      { message: "Email doesn't exist" },
+      { status: 404,}
+    );
   }
   const token = uuidv4();
   const expiry = addHours(new Date(), 1);
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
   });
   if (error) {
     return NextResponse.json(
-      { error: "Failed to send reset email" },
+      { message: "Failed to send reset email" },
       { status: 500 }
     );
   }
