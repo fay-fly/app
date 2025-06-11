@@ -94,7 +94,7 @@ function VerifyPassword() {
       .finally(() => {
         setIsProcessing(false);
       });
-  }, []);
+  }, [searchParams]);
 
   if (isProcessing) return <p>Checking reset link...</p>;
   if (error) return <p className="text-red-50">{error}</p>;

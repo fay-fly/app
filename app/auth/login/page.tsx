@@ -9,7 +9,6 @@ import { FormEvent, useState } from "react";
 import { AuthSeparator } from "@/app/auth/login/components/AuthSeparator";
 import { showToast } from "@/utils/toastify";
 import { useRouter } from "next/navigation";
-import {handleError} from "@/utils/errors";
 
 type LoginDetails = {
   identifier: string;
@@ -49,7 +48,7 @@ export default function Login() {
       } else if (res?.error) {
         showToast("error", res.error);
       }
-    } catch(error) {
+    } catch {
       showToast("error", "Connection error");
     } finally {
       setIsProcessing(false);
