@@ -40,7 +40,7 @@ export default function RegisterForm({
       setIsProcessing(true);
       await axios.post("/api/auth/register", registrationPayload);
       onRegistrationSuccessAction({
-        email: registrationPayload.email ?? "",
+        identifier: registrationPayload.email ?? "",
         password: registrationPayload.password ?? "",
       });
     } catch (error) {

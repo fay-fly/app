@@ -4,7 +4,7 @@ import RegisterForm from "@/app/auth/register/components/RegistrationForm";
 import EmailVerificationForm from "@/app/auth/register/components/EmailVerificationForm";
 
 export type LoginDetails = {
-  email: string;
+  identifier: string;
   password: string;
 };
 

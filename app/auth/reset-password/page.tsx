@@ -24,7 +24,7 @@ function ResetPasswordForm({ token }: { token: string }) {
       );
       alert("Password successfully changed!");
       await signIn("credentials", {
-        email: data.email,
+        identifier: data.email,
         password: password,
       });
     } catch (error) {

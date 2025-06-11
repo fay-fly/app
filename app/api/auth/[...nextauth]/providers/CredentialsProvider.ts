@@ -5,43 +5,43 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export default CredentialsProvider({
-  name: "credentials",
+  name: "Credentials",
   credentials: {
-    email: { label: "Email", type: "email" },
+    identifier: { label: "Username or Email", type: "text" },
     password: { label: "Password", type: "password" },
   },
   async authorize(credentials) {
-    if (!credentials) {
-      throw new Error("Credentials must be provided");
+    if (!credentials?.identifier || !credentials.password) {
+      throw new Error("Missing username/email or password");
     }
 
-    if (!credentials.email || !credentials.password) {
-      throw new Error("Missing email or password");
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: credentials.email },
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: credentials.identifier },
+          { username: credentials.identifier },
+        ],
+      },
     });
 
     if (!user) {
-      throw new Error("No user found with this email");
+      throw new Error("No user found with this username or email");
     }
 
     if (!user.password) {
-      throw new Error("User doesn't have password set");
+      throw new Error("User does not have a password set");
     }
 
-    const isValidPassword = await compare(credentials.password, user.password);
-
-    if (!isValidPassword) {
+    const isValid = await compare(credentials.password, user.password);
+    if (!isValid) {
       throw new Error("Invalid password");
     }
 
     return {
       id: user.id.toString(),
       email: user.email,
-      role: user.role,
       username: user.username,
+      role: user.role,
     };
   },
 });

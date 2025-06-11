@@ -23,7 +23,7 @@ export default function EmailVerificationForm({
       setIsProcessing(true);
       await axios.post("/api/auth/verify-email", {
         code: emailVerificationCode,
-        email: login.email,
+        email: login.identifier,
       });
       await signIn("credentials", {
         ...login,

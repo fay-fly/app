@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import {handleError} from "@/utils/errors";
 
 type LoginDetails = {
-  username: string;
+  identifier: string;
   password: string;
 };
 
@@ -20,7 +20,7 @@ export default function Login() {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [loginDetails, setLoginDetails] = useState<LoginDetails>({
-    username: "",
+    identifier: "",
     password: "",
   });
 
@@ -41,13 +41,13 @@ export default function Login() {
       setIsProcessing(true);
       const res = await signIn("credentials", {
         redirect: false,
-        email: loginDetails.username,
+        identifier: loginDetails.identifier,
         password: loginDetails.password,
       });
       if (res?.ok) {
         await router.push("/");
       } else if (res?.error) {
-        handleError(res.error)
+        showToast("error", res.error);
       }
     } catch(error) {
       showToast("error", "Connection error");
@@ -87,8 +87,8 @@ export default function Login() {
               label="Email or username"
               placeholder="Enter your email or username"
               required
-              value={loginDetails.username}
-              onChange={(e) => onChange("username", e.target.value)}
+              value={loginDetails.identifier}
+              onChange={(e) => onChange("identifier", e.target.value)}
             />
             <FormInput
               type="password"
