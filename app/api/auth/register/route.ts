@@ -4,6 +4,7 @@ import UserCreateInput = Prisma.UserCreateInput;
 import { addMinutes } from "date-fns";
 import { Resend } from "resend";
 import {NextRequest, NextResponse} from "next/server";
+import {getAgeFromDob} from "@/utils/dates";
 
 const resend = new Resend(process.env.RESEND_KEY);
 
@@ -14,6 +15,26 @@ export async function POST(req: NextRequest) {
   const hashedPassword = await hash(user.password!, 12);
   const code = Math.floor(1000 + Math.random() * 9000).toString();
   const expiry = addMinutes(new Date(), 15);
+  const emailExists = await prisma.user.findUnique({ where: { email: user.email } });
+  if (emailExists) {
+    return NextResponse.json(
+      { message: `${user.email} is already taken` },
+      { status: 404,}
+    );
+  }
+  const usernameExists = await prisma.user.findUnique({ where: { username: user.username ?? "" } });
+  if (usernameExists) {
+    return NextResponse.json(
+      { message: `${user.username} is already taken` },
+      { status: 404,}
+    );
+  }
+  if (getAgeFromDob(new Date(user.birthDate!)) < 18) {
+    return NextResponse.json(
+      { message: `Sorry, our service is intended for adult audiences only. We look forward to seeing you when you turn 18.` },
+      { status: 404,}
+    );
+  }
   await prisma.user.create({
     data: {
       ...user,

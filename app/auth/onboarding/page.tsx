@@ -74,18 +74,16 @@ function OnboardingForm() {
     >
       <div className="flex flex-col items-center">
         <Logo />
-        <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
-          {stepIndex === 0 && (
-            <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
-              Age verification
-            </h1>
-          )}
-          {stepIndex === 1 && (
-            <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
-              Choose your username
-            </h1>
-          )}
-        </h1>
+        {stepIndex === 0 && (
+          <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
+            Age verification
+          </h1>
+        )}
+        {stepIndex === 1 && (
+          <h1 className="mt-[16px] text-(--fly-text-secondary) text-[16px] font-bold">
+            Choose your username
+          </h1>
+        )}
       </div>
       {stepIndex === 0 && (
         <div className="mt-[64px]">
