@@ -2,16 +2,17 @@ import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 import { addHours } from "date-fns";
 import { Resend } from "resend";
+import {NextRequest, NextResponse} from "next/server";
 
 const resend = new Resend(process.env.RESEND_KEY);
 
 const prisma = new PrismaClient();
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { email } = await req.json();
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return new Response(JSON.stringify({ error: "Email doesn't exist" }), {
+    return NextResponse.json({ error: "Email doesn't exist" }, {
       status: 404,
     });
   }
@@ -24,8 +25,7 @@ export async function POST(req: Request) {
       resetTokenExpiry: expiry,
     },
   });
-
-  const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?token=${token}`;
+  const resetLink = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
   const { error } = await resend.emails.send({
     from: "fayfly@thelauris.com",
     to: email,
@@ -37,10 +37,10 @@ export async function POST(req: Request) {
     <div>`,
   });
   if (error) {
-    return new Response(
-      JSON.stringify({ error: "Failed to send reset email" }),
+    return NextResponse.json(
+      { error: "Failed to send reset email" },
       { status: 500 }
     );
   }
-  return new Response(null, { status: 200 });
+  return NextResponse.json({ status: 200 });
 }

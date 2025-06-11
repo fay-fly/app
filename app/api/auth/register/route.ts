@@ -3,15 +3,15 @@ import { hash } from "bcryptjs";
 import UserCreateInput = Prisma.UserCreateInput;
 import { addMinutes } from "date-fns";
 import { Resend } from "resend";
+import {NextRequest, NextResponse} from "next/server";
 
 const resend = new Resend(process.env.RESEND_KEY);
 
 const prisma = new PrismaClient();
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const user = (await req.json()) as UserCreateInput;
   const hashedPassword = await hash(user.password!, 12);
-  console.log("user", user);
   const code = Math.floor(1000 + Math.random() * 9000).toString();
   const expiry = addMinutes(new Date(), 15);
   await prisma.user.create({
@@ -34,10 +34,10 @@ export async function POST(req: Request) {
     </div>`,
   });
   if (error) {
-    return new Response(
-      JSON.stringify({ error: "Failed to send reset email" }),
+    return NextResponse.json(
+      { error: "Failed to send reset email" },
       { status: 500 }
     );
   }
-  return new Response(null, { status: 200 });
+  return NextResponse.json({ status: 200 });
 }
