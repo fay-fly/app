@@ -1,5 +1,8 @@
+'use client';
 import Link from "next/link";
 import { ReactNode } from "react";
+import clsx from "clsx";
+import { usePathname } from "next/navigation";
 
 type MenuLinkProps = Readonly<{
   href: string;
@@ -7,8 +10,15 @@ type MenuLinkProps = Readonly<{
 }>;
 
 export default function MenuLink({ href, children }: MenuLinkProps) {
+  const pathname = usePathname();
+
+  const isActive = pathname === href;
+
   return (
-    <Link href={href} className="flex text-[#A0A0A0] gap-[8px] p-[8px]">
+    <Link href={href} className={clsx(
+      "flex gap-[8px] p-[8px]",
+      isActive ? "text-(--fly-primary)" : "text-[#A0A0A0]",
+    )}>
       {children}
     </Link>
   );

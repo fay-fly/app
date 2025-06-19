@@ -11,6 +11,7 @@ import Notifications from "@/icons/menu/Notifications";
 import Messages from "@/icons/menu/Messages";
 import {SessionProvider} from "next-auth/react";
 import UserCard from "@/app/(public)/components/UserCard";
+import MenuLink from "@/app/(public)/components/MenuLink";
 
 export default function PublicLayout({ children }: LayoutProps) {
   return (
@@ -26,11 +27,11 @@ export default function PublicLayout({ children }: LayoutProps) {
         <RightSidebar/>
         <div
           className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-[48px] z-50 md:hidden w-full">
-          <Home />
-          <Discover/>
-          <AddPost />
-          <Notifications />
-          <Messages />
+          <MenuLink href="/"><Home /></MenuLink>
+          <MenuLink href="/discover"><Discover/></MenuLink>
+          <MenuLink href="/add-post"><AddPost /></MenuLink>
+          <MenuLink href="/notifications"><Notifications /></MenuLink>
+          <MenuLink href="/messages"><Messages /></MenuLink>
         </div>
       </div>
     </SessionProvider>
