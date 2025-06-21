@@ -33,11 +33,11 @@ export default function Post() {
     <img src="/foto.png" alt="foto" className="w-full"/>
     <div className="flex justify-between text-[#A0A0A0]">
       <div className="flex">
-        <div className="flex gap-[4px] m-[8px]"><Fire/>82</div>
-        <div className="flex gap-[4px] m-[8px]"><Comments/>12</div>
+        <div className="flex gap-[4px] m-[8px] items-center"><Fire/>82</div>
+        <div className="flex gap-[4px] m-[8px] items-center"><Comments/>12</div>
       </div>
       <div>
-        <div className="flex gap-[4px] m-[8px]"><Pin/>48</div>
+        <div className="flex gap-[4px] m-[8px] items-center"><Pin/>48</div>
       </div>
     </div>
     <div className="px-[16px] text-[#A0A0A0]">December 14</div>
