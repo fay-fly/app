@@ -67,7 +67,7 @@ function ResetPasswordForm({ token }: { token: string }) {
         />
         <Button
           type="submit"
-          className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
+          className="mt-[32px] bg-(--fly-primary) text-(--fly-white) min-h-[48px]"
           isProcessing={isProcessing}
         >
           Reset

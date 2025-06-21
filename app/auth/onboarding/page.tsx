@@ -100,7 +100,7 @@ function OnboardingForm() {
           <Button
             type="button"
             onClick={() => nextStep()}
-            className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
+            className="mt-[32px] bg-(--fly-primary) text-(--fly-white) min-h-[48px]"
           >
             Continue
           </Button>
@@ -122,7 +122,7 @@ function OnboardingForm() {
           <Button
             type="submit"
             isProcessing={isProcessing}
-            className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
+            className="mt-[32px] bg-(--fly-primary) text-(--fly-white) min-h-[48px]"
           >
             Submit
           </Button>

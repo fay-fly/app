@@ -22,7 +22,7 @@ export default function Button({
       {...props}
       className={clsx(
         "flex justify-center items-center gap-[12px] rounded-full w-full font-semibold",
-        "min-h-[48px] cursor-pointer disabled:cursor-not-allowed disabled:bg-(--ply-primary-disabled)",
+        "cursor-pointer disabled:cursor-not-allowed disabled:bg-(--ply-primary-disabled)",
         className
       )}
     >

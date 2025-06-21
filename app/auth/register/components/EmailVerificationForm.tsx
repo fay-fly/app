@@ -61,7 +61,7 @@ export default function EmailVerificationForm({
         <Button
           type="submit"
           isProcessing={isProcessing}
-          className="mt-[32px] bg-(--fly-primary) text-(--fly-white)"
+          className="mt-[32px] bg-(--fly-primary) text-(--fly-white) min-h-[48px]"
         >
           Confirm
         </Button>

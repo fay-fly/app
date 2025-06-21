@@ -117,7 +117,7 @@ export default function RegisterForm({
               className={clsx(
                 "mt-[32px] pointer",
                 "disabled:bg-(--ply-primary-disabled) disabled:text-(--fly-text-white-disabled)",
-                "bg-(--fly-primary) text-(--fly-white)"
+                "bg-(--fly-primary) text-(--fly-white) min-h-[48px]"
               )}
             >
               Sign up
