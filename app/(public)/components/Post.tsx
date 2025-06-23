@@ -93,7 +93,7 @@ export default function Post({ post }: PostProps) {
             onClick={() => setShowFullText(!showFullText)}
             className="text-blue-500 hover:underline mt-2 cursor-pointer"
           >
-            {showFullText ? "\nShow less" : "Show more"}
+            {!showFullText && "Show more"}
           </span>
         )}
       </p>
