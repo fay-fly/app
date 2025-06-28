@@ -15,22 +15,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  try {
-    const blob = await put(file.name, file, {
-      access: "public",
-    });
+  const blob = await put(file.name, file, {
+    access: "public",
+  });
 
-    const post = await prisma.post.create({
-      data: {
-        text,
-        imageUrl: blob.url,
-        authorId: parseInt(authorId),
-      },
-    });
+  const post = await prisma.post.create({
+    data: {
+      text,
+      imageUrl: blob.url,
+      authorId: parseInt(authorId),
+    },
+  });
 
-    return NextResponse.json({ success: true, post });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
-  }
+  return NextResponse.json({ success: true, post });
 }
