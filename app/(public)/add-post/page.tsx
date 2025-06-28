@@ -1,17 +1,20 @@
 "use client";
-
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import Button from "@/components/Button";
 import UploadCloud from "@/icons/UploadCloud";
+import Close from "@/icons/Close";
+import axios from "axios";
+import {useRouter} from "next/navigation";
+import {useSession} from "next-auth/react";
 
 export default function AddPost() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [text, setText] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -33,32 +36,20 @@ export default function AddPost() {
   async function handlePublish(e: React.FormEvent) {
     e.preventDefault();
     if (!image || !text.trim()) {
-      setStatus("error");
       return;
     }
 
-    setStatus("loading");
-
+    setIsProcessing(true);
     try {
       const formData = new FormData();
       formData.append("image", image);
       formData.append("text", text);
-      formData.append("authorId", String(1));
+      formData.append("authorId", String(session?.user.id));
 
-      const res = await fetch("/api/posts/create-post", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error ?? "Unknown error");
-      }
-      setStatus("success");
-      setText("");
-      removeImage();
-    } catch {
-      setStatus("error");
+      await axios.post("/api/posts/create-post", formData);
+      router.push("/");
+    } finally {
+      setIsProcessing(false);
     }
   }
 
@@ -79,7 +70,10 @@ export default function AddPost() {
             </div>
           </div>
         ) : (
-          <div className="text-center">
+          <div className="relative">
+            <button onClick={removeImage} className="absolute right-[-12] top-[-12] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer">
+              <Close />
+            </button>
             {previewUrl && (
               <img
                 src={previewUrl}
@@ -99,8 +93,11 @@ export default function AddPost() {
 
         <div className="flex justify-end">
           <div className="flex gap-[24px] items-center">
-            <Button type="submit" className="px-[16px] py-[6px] bg-(--fly-primary) text-(--fly-white)"
-                    isProcessing={status === "loading"}>
+            <Button
+              type="submit"
+              isProcessing={isProcessing}
+              className="px-[16px] py-[6px] bg-(--fly-primary) text-(--fly-white)"
+            >
               Publish
             </Button>
           </div>

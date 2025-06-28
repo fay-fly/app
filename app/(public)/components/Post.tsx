@@ -7,12 +7,33 @@ import Fire from "@/icons/Fire";
 import Pin from "@/icons/Pin";
 import { UserPost } from "@/app/types/userPost";
 import {getFormattedDate} from "@/utils/dates";
+import {useState} from "react";
 
 type PostProps = {
   post: UserPost;
 };
 
+const highlightHashtags = (text: string) => {
+  const hashtagRegex = /(#\w+)/g;
+  const parts = text.split(hashtagRegex);
+
+  return parts.map((part, index) =>
+    hashtagRegex.test(part) ? (
+      <span key={index} className="text-[#19B4F6]">
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
+};
+
 export default function Post({ post }: PostProps) {
+  const [showFullText, setShowFullText] = useState(false);
+
+  const isLongText = post.text.length > 100;
+  const displayedText = showFullText ? post.text : post.text.slice(0, 100).trim();
+
   return (
     <div className="flex flex-col gap-[8px] mb-[12px]">
       <div className="py-[8px] flex justify-between px-[16px]">
@@ -61,7 +82,17 @@ export default function Post({ post }: PostProps) {
           </div>
         </div>
       </div>
-      <p className="px-[16px]"><span className="font-semibold">{post.author.username}</span> {post.text}</p>
+      <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
+        <span className="font-semibold">{post.author.username}</span> {highlightHashtags(displayedText)}{isLongText && !showFullText && '...'}{" "}
+        {isLongText && (
+          <span
+            onClick={() => setShowFullText(!showFullText)}
+            className="text-blue-500 hover:underline mt-2 cursor-pointer"
+          >
+            {showFullText ? '\nShow less' : 'Show more'}
+          </span>
+        )}
+      </p>
       <div className="px-[16px] text-[#A0A0A0]">{getFormattedDate(post.createdAt)}</div>
     </div>
   );
