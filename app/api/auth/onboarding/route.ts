@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import {NextRequest, NextResponse} from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   if (usernameExists) {
     return NextResponse.json(
       { message: `${username} is already taken` },
-      { status: 404,}
+      { status: 404 }
     );
   }
   await prisma.user.update({

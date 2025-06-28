@@ -7,7 +7,7 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import SuccessIcon from "@/icons/SuccessIcon";
-import {handleError} from "@/utils/errors";
+import { handleError } from "@/utils/errors";
 
 export default function ForgotPassword() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -21,7 +21,7 @@ export default function ForgotPassword() {
       await axios.post("/api/auth/forgot-password", { email });
       setShowSuccessMessage(true);
     } catch (error) {
-      handleError(error)
+      handleError(error);
     } finally {
       setIsProcessing(false);
     }

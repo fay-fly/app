@@ -7,7 +7,7 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { signIn } from "next-auth/react";
-import {handleError} from "@/utils/errors";
+import { handleError } from "@/utils/errors";
 
 function ResetPasswordForm({ token }: { token: string }) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -17,7 +17,9 @@ function ResetPasswordForm({ token }: { token: string }) {
     e.preventDefault();
     try {
       setIsProcessing(true);
-      const { data } = await axios.post<{ email: string }>("/api/auth/reset-password", {
+      const { data } = await axios.post<{ email: string }>(
+        "/api/auth/reset-password",
+        {
           token,
           newPassword: password,
         }
@@ -84,7 +86,7 @@ function VerifyPassword() {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    const currentToken = searchParams.get("token") ?? ""
+    const currentToken = searchParams.get("token") ?? "";
     setToken(currentToken);
     axios
       .get(`/api/auth/verify-reset?token=${encodeURIComponent(currentToken)}`)

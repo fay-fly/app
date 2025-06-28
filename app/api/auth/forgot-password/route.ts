@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 import { addHours } from "date-fns";
 import { Resend } from "resend";
-import {NextRequest, NextResponse} from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const resend = new Resend(process.env.RESEND_KEY);
 
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (!user) {
     return NextResponse.json(
       { message: "Email doesn't exist" },
-      { status: 404,}
+      { status: 404 }
     );
   }
   const token = uuidv4();

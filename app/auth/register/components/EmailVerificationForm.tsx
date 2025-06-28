@@ -5,7 +5,7 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import { signIn } from "next-auth/react";
 import { LoginDetails } from "@/app/auth/register/page";
-import {handleError} from "@/utils/errors";
+import { handleError } from "@/utils/errors";
 
 type EmailVerificationFormProps = {
   login: LoginDetails;

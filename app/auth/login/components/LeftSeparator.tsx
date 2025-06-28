@@ -22,10 +22,10 @@ export default function LeftSeparator() {
           y2="1"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#343434"/>
-          <stop offset="1" stopColor="#343434" stopOpacity="0"/>
+          <stop stopColor="#343434" />
+          <stop offset="1" stopColor="#343434" stopOpacity="0" />
         </linearGradient>
       </defs>
     </svg>
-  )
+  );
 }

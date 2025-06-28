@@ -1,5 +1,5 @@
 import axios from "axios";
-import {showToast} from "@/utils/toastify";
+import { showToast } from "@/utils/toastify";
 
 export function handleError(error: unknown) {
   let message = "Unexpected error happened";
@@ -16,5 +16,5 @@ export function handleError(error: unknown) {
   } else if (error instanceof Error) {
     message = error.message;
   }
-  showToast("error", message)
+  showToast("error", message);
 }

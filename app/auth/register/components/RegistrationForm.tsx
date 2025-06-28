@@ -9,7 +9,7 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import { LoginDetails } from "@/app/auth/register/page";
-import {handleError} from "@/utils/errors";
+import { handleError } from "@/utils/errors";
 
 type RegisterFormProps = {
   onRegistrationSuccessAction: (login: LoginDetails) => void;

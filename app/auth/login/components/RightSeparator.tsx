@@ -22,10 +22,10 @@ export default function RightSeparator() {
           y2="1"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#343434" stopOpacity="0"/>
-          <stop offset="1" stopColor="#323232"/>
+          <stop stopColor="#343434" stopOpacity="0" />
+          <stop offset="1" stopColor="#323232" />
         </linearGradient>
       </defs>
     </svg>
-  )
+  );
 }
