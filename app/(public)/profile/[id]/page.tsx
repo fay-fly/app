@@ -1,9 +1,10 @@
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function ProfilePage({ params }: PageProps) {
-  return <h1>Profile ID: {params.id}</h1>;
+export default async function Profile({ params }: PageProps) {
+  const { id } = await params;
+  return <h1>Profile ID: {id}</h1>;
 }
