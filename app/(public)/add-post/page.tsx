@@ -5,8 +5,8 @@ import Button from "@/components/Button";
 import UploadCloud from "@/icons/UploadCloud";
 import Close from "@/icons/Close";
 import axios from "axios";
-import {useRouter} from "next/navigation";
-import {useSession} from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function AddPost() {
   const router = useRouter();
@@ -71,7 +71,10 @@ export default function AddPost() {
           </div>
         ) : (
           <div className="relative">
-            <button onClick={removeImage} className="absolute right-[-12] top-[-12] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer">
+            <button
+              onClick={removeImage}
+              className="absolute right-[-12] top-[-12] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer"
+            >
               <Close />
             </button>
             {previewUrl && (

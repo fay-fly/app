@@ -15,9 +15,9 @@ export function getAgeFromDob(dob: string | Date): number {
 export function getFormattedDate(dateString: string) {
   const date = new Date(dateString);
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    timeZone: userTimeZone
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    timeZone: userTimeZone,
   });
 }

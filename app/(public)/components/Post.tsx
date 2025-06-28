@@ -6,8 +6,8 @@ import Comments from "@/icons/Comments";
 import Fire from "@/icons/Fire";
 import Pin from "@/icons/Pin";
 import { UserPost } from "@/app/types/userPost";
-import {getFormattedDate} from "@/utils/dates";
-import {useState} from "react";
+import { getFormattedDate } from "@/utils/dates";
+import { useState } from "react";
 
 type PostProps = {
   post: UserPost;
@@ -32,7 +32,9 @@ export default function Post({ post }: PostProps) {
   const [showFullText, setShowFullText] = useState(false);
 
   const isLongText = post.text.length > 100;
-  const displayedText = showFullText ? post.text : post.text.slice(0, 100).trim();
+  const displayedText = showFullText
+    ? post.text
+    : post.text.slice(0, 100).trim();
 
   return (
     <div className="flex flex-col gap-[8px] mb-[12px]">
@@ -51,7 +53,7 @@ export default function Post({ post }: PostProps) {
           <span className="text-(--fly-text-primary) font-semibold">
             {post.author.username}
           </span>
-          <Verified/>
+          <Verified />
         </div>
         <div className="flex gap-[16px] items-center">
           <Button
@@ -60,40 +62,44 @@ export default function Post({ post }: PostProps) {
           >
             Subscribe
           </Button>
-          <ThreeDots/>
+          <ThreeDots />
         </div>
       </div>
-      <img src={post.imageUrl} alt="foto" className="w-full"/>
+      <img src={post.imageUrl} alt="foto" className="w-full" />
       <div className="flex justify-between text-[#A0A0A0]">
         <div className="flex">
           <div className="flex gap-[4px] m-[8px] items-center">
-            <Fire/>
+            <Fire />
             {post.likesCount}
           </div>
           <div className="flex gap-[4px] m-[8px] items-center">
-            <Comments/>
+            <Comments />
             {post.commentsCount}
           </div>
         </div>
         <div>
           <div className="flex gap-[4px] m-[8px] items-center">
-            <Pin/>
+            <Pin />
             {post.pinsCount}
           </div>
         </div>
       </div>
       <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
-        <span className="font-semibold">{post.author.username}</span> {highlightHashtags(displayedText)}{isLongText && !showFullText && '...'}{" "}
+        <span className="font-semibold">{post.author.username}</span>{" "}
+        {highlightHashtags(displayedText)}
+        {isLongText && !showFullText && "..."}{" "}
         {isLongText && (
           <span
             onClick={() => setShowFullText(!showFullText)}
             className="text-blue-500 hover:underline mt-2 cursor-pointer"
           >
-            {showFullText ? '\nShow less' : 'Show more'}
+            {showFullText ? "\nShow less" : "Show more"}
           </span>
         )}
       </p>
-      <div className="px-[16px] text-[#A0A0A0]">{getFormattedDate(post.createdAt)}</div>
+      <div className="px-[16px] text-[#A0A0A0]">
+        {getFormattedDate(post.createdAt)}
+      </div>
     </div>
   );
 }
