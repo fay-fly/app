@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import Button from "@/components/Button";
+import UploadCloud from "@/icons/UploadCloud";
 
 export default function AddPost() {
   const [image, setImage] = useState<File | null>(null);
@@ -11,7 +12,6 @@ export default function AddPost() {
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
-  const [errorMsg, setErrorMsg] = useState("");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -33,13 +33,11 @@ export default function AddPost() {
   async function handlePublish(e: React.FormEvent) {
     e.preventDefault();
     if (!image || !text.trim()) {
-      setErrorMsg("Image and text are required.");
       setStatus("error");
       return;
     }
 
     setStatus("loading");
-    setErrorMsg("");
 
     try {
       const formData = new FormData();
@@ -56,79 +54,58 @@ export default function AddPost() {
         const { error } = await res.json();
         throw new Error(error ?? "Unknown error");
       }
-
-      // success 🎉
       setStatus("success");
       setText("");
       removeImage();
-    } catch (err: any) {
+    } catch {
       setStatus("error");
-      setErrorMsg(err.message ?? "Upload failed");
     }
   }
 
   return (
-    <form onSubmit={handlePublish} className="space-y-4">
-      {/* drag-and-drop / preview */}
-      {!image ? (
-        <div
-          {...getRootProps()}
-          className={`border-dashed border-2 border-gray-400 rounded p-6 text-center cursor-pointer ${
-            isDragActive ? "bg-gray-100" : ""
-          }`}
-        >
-          <input {...getInputProps()} />
-          <p>Drag & drop an image here, or click to select</p>
-        </div>
-      ) : (
-        <div className="text-center">
-          {previewUrl && (
-            <img
-              src={previewUrl}
-              alt="Preview"
-              className="mx-auto mb-4 w-48 rounded"
-            />
-          )}
-          <button
-            type="button"
-            onClick={removeImage}
-            className="bg-red-500 text-white px-4 py-2 rounded"
+    <div className="flex justify-center bg-(--fly-white) h-full p-[24px]">
+      <form onSubmit={handlePublish} className="space-y-4 w-full max-w-[630px]">
+        {!image ? (
+          <div
+            {...getRootProps()}
+            className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[450px] ${
+              isDragActive ? "bg-gray-100" : ""
+            }`}
           >
-            Remove
-          </button>
+            <input {...getInputProps()} />
+            <div className="flex flex-col gap-[12px] items-center">
+              <UploadCloud />
+              <p>Take a photo or upload media</p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center">
+            {previewUrl && (
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="mx-auto mb-4 w-full"
+              />
+            )}
+          </div>
+        )}
+        <textarea
+          rows={4}
+          className="w-full rounded p-2"
+          placeholder="Add text or tag"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+
+        <div className="flex justify-end">
+          <div className="flex gap-[24px] items-center">
+            <Button type="submit" className="px-[16px] py-[6px] bg-(--fly-primary) text-(--fly-white)"
+                    isProcessing={status === "loading"}>
+              Publish
+            </Button>
+          </div>
         </div>
-      )}
-
-      {/* post text */}
-      <textarea
-        rows={12}
-        className="w-full border rounded p-2"
-        placeholder="Add text or tag"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-
-      {/* buttons */}
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          onClick={() => {
-            setText("");
-            removeImage();
-          }}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={status === "loading"}>
-          {status === "loading" ? "Publishing…" : "Publish"}
-        </Button>
-      </div>
-
-      {/* feedback */}
-      {status === "success" && (
-        <p className="text-green-600">Post uploaded successfully!</p>
-      )}
-      {status === "error" && <p className="text-red-600">Error: {errorMsg}</p>}
-    </form>
+      </form>
+    </div>
   );
 }

@@ -30,7 +30,7 @@ export default function Post({ post }: PostProps) {
           <span className="text-(--fly-text-primary) font-semibold">
             {post.author.username}
           </span>
-          <Verified />
+          <Verified/>
         </div>
         <div className="flex gap-[16px] items-center">
           <Button
@@ -39,29 +39,29 @@ export default function Post({ post }: PostProps) {
           >
             Subscribe
           </Button>
-          <ThreeDots />
+          <ThreeDots/>
         </div>
       </div>
-      <img src={post.imageUrl} alt="foto" className="w-full" />
-      <p>{post.text}</p>
+      <img src={post.imageUrl} alt="foto" className="w-full"/>
       <div className="flex justify-between text-[#A0A0A0]">
         <div className="flex">
           <div className="flex gap-[4px] m-[8px] items-center">
-            <Fire />
+            <Fire/>
             {post.likesCount}
           </div>
           <div className="flex gap-[4px] m-[8px] items-center">
-            <Comments />
+            <Comments/>
             {post.commentsCount}
           </div>
         </div>
         <div>
           <div className="flex gap-[4px] m-[8px] items-center">
-            <Pin />
+            <Pin/>
             {post.pinsCount}
           </div>
         </div>
       </div>
+      <p className="px-[16px]"><span className="font-semibold">{post.author.username}</span> {post.text}</p>
       <div className="px-[16px] text-[#A0A0A0]">{getFormattedDate(post.createdAt)}</div>
     </div>
   );
