@@ -10,8 +10,8 @@ datasource db {
 model User {
   id                       Int       @id @default(autoincrement())
   email                    String    @unique
-  username                 String?   @unique
-  birthDate                DateTime?
+  username                 String    @unique
+  birthDate                DateTime
   gender                   String?
   password                 String?
   role                     String    @default("user")
@@ -20,15 +20,19 @@ model User {
   emailVerificationCode    String?
   emailVerificationExpiry  DateTime?
   emailVerified            Boolean   @default(false)
-  picturePath              String?
+  pictureUrl               String?
   posts                    Post[]
+  createdAt                DateTime @default(now())
 }
 
 model Post {
-  id        Int     @id @default(autoincrement())
-  text     String?
-  imageUrl  String?
-  published Boolean @default(false)
-  author    User?   @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  id            Int      @id @default(autoincrement())
+  imageUrl      String
+  text          String
+  author        User?    @relation(fields: [authorId], references: [id])
+  authorId      Int
+  likeCount     Int      @default(0)
+  commentsCount Int      @default(0)
+  pinsCount     Int      @default(0)
+  createdAt     DateTime @default(now())
 }
