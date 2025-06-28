@@ -50,9 +50,9 @@ export default function Post({ post }: PostProps) {
               C
             </div>
           </div>
-          <span className="text-(--fly-text-primary) font-semibold">
+          <a href={`/profile/${post.author.id}`} className="text-(--fly-text-primary) font-semibold">
             {post.author.username}
-          </span>
+          </a>
           <Verified />
         </div>
         <div className="flex gap-[16px] items-center">
