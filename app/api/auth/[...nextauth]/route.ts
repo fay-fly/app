@@ -45,7 +45,7 @@ const authOptions: AuthOptions = {
           token.email = dbUser.email;
           token.role = dbUser.role;
           token.username = dbUser.username;
-          token.image = dbUser.picturePath ? dbUser.picturePath : null;
+          token.image = dbUser.pictureUrl ? dbUser.pictureUrl : null;
         }
       } else if (user) {
         token.id = user.id;
@@ -76,7 +76,7 @@ const authOptions: AuthOptions = {
               email: user.email!,
               role: "lead",
               emailVerified: true,
-              picturePath: user.image,
+              pictureUrl: user.image,
             },
           });
         }

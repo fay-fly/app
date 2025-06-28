@@ -6,6 +6,7 @@ import Comments from "@/icons/Comments";
 import Fire from "@/icons/Fire";
 import Pin from "@/icons/Pin";
 import { UserPost } from "@/app/types/userPost";
+import {getFormattedDate} from "@/utils/dates";
 
 type PostProps = {
   post: UserPost;
@@ -47,21 +48,21 @@ export default function Post({ post }: PostProps) {
         <div className="flex">
           <div className="flex gap-[4px] m-[8px] items-center">
             <Fire />
-            82
+            {post.likesCount}
           </div>
           <div className="flex gap-[4px] m-[8px] items-center">
             <Comments />
-            12
+            {post.commentsCount}
           </div>
         </div>
         <div>
           <div className="flex gap-[4px] m-[8px] items-center">
             <Pin />
-            48
+            {post.pinsCount}
           </div>
         </div>
       </div>
-      <div className="px-[16px] text-[#A0A0A0]">December 14</div>
+      <div className="px-[16px] text-[#A0A0A0]">{getFormattedDate(post.createdAt)}</div>
     </div>
   );
 }
