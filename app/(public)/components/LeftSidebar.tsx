@@ -1,10 +1,6 @@
 import Logo from "@/icons/Logo";
-import Home from "@/icons/menu/Home";
-import Discover from "@/icons/menu/Discover";
-import Messages from "@/icons/menu/Messages";
-import Notifications from "@/icons/menu/Notifications";
-import AddPost from "@/icons/menu/AddPost";
 import MenuLink from "@/app/(public)/components/MenuLink";
+import menuConfig from "@/app/(public)/components/menuConfig";
 
 export default function LeftSidebar() {
   return (
@@ -14,22 +10,13 @@ export default function LeftSidebar() {
           <Logo />
         </div>
         <div className="flex flex-col mt-[16px]">
-          <MenuLink href="/">
-            <Home />
-            Home
-          </MenuLink>
-          <MenuLink href="/discover">
-            <Discover /> Discover
-          </MenuLink>
-          <MenuLink href="/messages">
-            <Messages /> Messages
-          </MenuLink>
-          <MenuLink href="/notifications">
-            <Notifications /> Notifications
-          </MenuLink>
-          <MenuLink href="/add-post">
-            <AddPost /> Add post
-          </MenuLink>
+          {menuConfig.map((item) => {
+            const MenuIcon = item.icon;
+            return <MenuLink key={item.route} href={item.route}>
+              <MenuIcon />
+              {item.text}
+            </MenuLink>
+          })}
         </div>
       </div>
     </div>
