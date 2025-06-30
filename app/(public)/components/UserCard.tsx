@@ -52,7 +52,8 @@ export default function UserCard() {
           }
           transition
           menuClassName={clsx(
-            "whitespace-nowrap bg-(--fly-white) shadow-md shadow-black/10 rounded font-[14px] text-[#5B5B5B]"
+            "bg-(--fly-white) font-[14px] text-[#5B5B5B]",
+            "whitespace-nowrap shadow-md shadow-black/10 rounded"
           )}
           position="anchor"
           gap={12}
