@@ -10,6 +10,7 @@ type MenuItem = {
   icon: ComponentType;
   text: string;
   mobileIndex: number;
+  requiresAuth?: boolean;
 };
 
 const menuConfig: MenuItem[] = [
@@ -30,18 +31,21 @@ const menuConfig: MenuItem[] = [
     icon: Messages,
     text: "Messages",
     mobileIndex: 5,
+    requiresAuth: true,
   },
   {
     route: "/notifications",
     icon: Notifications,
     text: "Notifications",
     mobileIndex: 4,
+    requiresAuth: true,
   },
   {
     route: "/add-post",
     icon: AddPost,
     text: "Add post",
     mobileIndex: 3,
+    requiresAuth: true,
   },
 ];
 
