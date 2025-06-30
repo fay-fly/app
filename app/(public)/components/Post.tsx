@@ -50,7 +50,10 @@ export default function Post({ post }: PostProps) {
               C
             </div>
           </div>
-          <a href={`/profile/${post.author.id}`} className="text-(--fly-text-primary) font-semibold">
+          <a
+            href={`/profile/${post.author.id}`}
+            className="text-(--fly-text-primary) font-semibold"
+          >
             {post.author.username}
           </a>
           <Verified />
