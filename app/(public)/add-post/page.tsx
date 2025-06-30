@@ -7,6 +7,7 @@ import Close from "@/icons/Close";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import {handleError} from "@/utils/errors";
 
 export default function AddPost() {
   const router = useRouter();
@@ -45,9 +46,10 @@ export default function AddPost() {
       formData.append("image", image);
       formData.append("text", text);
       formData.append("authorId", String(session?.user.id));
-
       await axios.post("/api/posts/create-post", formData);
       router.push("/");
+    } catch(error) {
+      handleError(error);
     } finally {
       setIsProcessing(false);
     }

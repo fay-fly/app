@@ -15,7 +15,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  const blob = await put(file.name, file, {
+  const extension = file.name.split('.').pop();
+  const uniqueName = `${crypto.randomUUID()}.${extension}`;
+  const blob = await put(uniqueName, file, {
     access: "public",
   });
 
