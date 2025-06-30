@@ -56,12 +56,12 @@ export default function AddPost() {
   }
 
   return (
-    <div className="flex justify-center bg-(--fly-white) h-full p-[24px]">
+    <div className="flex justify-center bg-(--fly-white) h-auto min-h-full p-[24px] mb-[48px] md:mb-0">
       <form onSubmit={handlePublish} className="space-y-4 w-full max-w-[630px]">
         {!image ? (
           <div
             {...getRootProps()}
-            className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[450px] ${
+            className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[300px] md:min-h-[450px] ${
               isDragActive ? "bg-gray-100" : ""
             }`}
           >
