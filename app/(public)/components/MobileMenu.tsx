@@ -1,3 +1,4 @@
+"use client";
 import menuConfig from "@/app/(public)/components/menuConfig";
 import MenuLink from "@/app/(public)/components/MenuLink";
 
