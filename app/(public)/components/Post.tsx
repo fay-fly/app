@@ -47,7 +47,7 @@ export default function Post({ post }: PostProps) {
                 "justify-center items-center text-(--fly-white) rounded-full"
               )}
             >
-              C
+              {post.author.username.charAt(0).toUpperCase()}
             </div>
           </div>
           <a
