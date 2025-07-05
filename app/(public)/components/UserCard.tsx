@@ -9,7 +9,7 @@ import Profile from "@/icons/user-menu/Profile";
 const menuItemClassName = clsx(
   "flex items-center gap-[8px] px-[16px] py-[10px] color-[#5B5B5B]",
   "max-h-[40px] max-h-[40px] cursor-pointer"
-)
+);
 
 export default function UserCard() {
   const { data: session, status } = useSession();
@@ -58,16 +58,10 @@ export default function UserCard() {
           position="anchor"
           gap={12}
         >
-          <MenuItem
-            href="/discover"
-            className={menuItemClassName}
-          >
+          <MenuItem href="/discover" className={menuItemClassName}>
             <Profile /> View profile
           </MenuItem>
-          <MenuItem
-            onClick={() => signOut()}
-            className={menuItemClassName}
-          >
+          <MenuItem onClick={() => signOut()} className={menuItemClassName}>
             <Logout /> Log out
           </MenuItem>
         </Menu>
