@@ -4,7 +4,7 @@ type User = {
   pictureUrl: string;
 };
 
-type Post = {
+export type Post = {
   id: number;
   text: string;
   imageUrl: string;
