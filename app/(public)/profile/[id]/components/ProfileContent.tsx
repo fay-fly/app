@@ -1,9 +1,7 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { UserWithPosts } from "@/app/types/postWithUser";
 import axios from "axios";
-import PostsPreview from "@/app/(public)/discover/components/PostsPreview";
 
 export default function ProfileContent({ id }: { id: number }) {
   const [user, setUser] = useState<UserWithPosts>();
@@ -25,7 +23,8 @@ export default function ProfileContent({ id }: { id: number }) {
           }}
         >
           <div className="absolute -bottom-[48px] left-4 flex items-end gap-[24px]">
-            <div className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white z-10">
+            <div
+              className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white z-10">
               {user.username.charAt(0).toUpperCase()}
             </div>
             <div className="flex mt-[12px] gap-[16px]">
@@ -60,7 +59,22 @@ export default function ProfileContent({ id }: { id: number }) {
             </p>
           </div>
         </div>
-        <PostsPreview posts={user.posts} className="grid grid-cols-3 gap-[2px]" />
+        <div className="grid grid-cols-3 gap-[2px] mt-[52px]">
+          {user.posts.map((post) => {
+            return (
+              <div
+                key={post.id}
+                className="w-full aspect-square overflow-hidden bg-gray-100"
+              >
+                <img
+                  src={post.imageUrl}
+                  alt="publication"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     )
   );
