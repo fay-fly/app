@@ -36,7 +36,10 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
         postIdToPreview &&
         postRefs.current[postIdToPreview]
       ) {
-        postRefs.current[postIdToPreview].scrollIntoView();
+        const element = postRefs.current[postIdToPreview];
+        const yOffset = -56;
+        const y = element!.getBoundingClientRect().top + window.scrollY + yOffset;
+        window.scrollTo({ top: y, })
       }
     }
   }, [postIdToPreview]);
