@@ -5,12 +5,12 @@ import ThreeDots from "@/icons/ThreeDots";
 import Comments from "@/icons/Comments";
 import Fire from "@/icons/Fire";
 import Pin from "@/icons/Pin";
-import { UserPost } from "@/app/types/userPost";
+import { PostWithUser } from "@/app/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
 import { useState } from "react";
 
 type PostProps = {
-  post: UserPost;
+  post: PostWithUser;
 };
 
 const highlightHashtags = (text: string) => {

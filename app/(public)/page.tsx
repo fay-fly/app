@@ -1,14 +1,14 @@
 "use client";
 import Post from "@/app/(public)/components/Post";
-import type { UserPost } from "@/app/types/userPost";
+import type { PostWithUser } from "@/app/types/postWithUser";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Home() {
-  const [posts, setPosts] = useState<UserPost[]>();
+  const [posts, setPosts] = useState<PostWithUser[]>();
 
   useEffect(() => {
-    axios.get<UserPost[]>("/api/posts/all").then((response) => {
+    axios.get<PostWithUser[]>("/api/posts/all").then((response) => {
       setPosts(response.data);
     });
   }, []);

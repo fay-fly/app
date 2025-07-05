@@ -58,7 +58,10 @@ export default function UserCard() {
           position="anchor"
           gap={12}
         >
-          <MenuItem href="/discover" className={menuItemClassName}>
+          <MenuItem
+            href={`/profile/${session.user.id}`}
+            className={menuItemClassName}
+          >
             <Profile /> View profile
           </MenuItem>
           <MenuItem onClick={() => signOut()} className={menuItemClassName}>

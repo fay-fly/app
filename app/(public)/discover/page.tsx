@@ -1,20 +1,20 @@
 "use client";
-import type { UserPost } from "@/app/types/userPost";
+import type { PostWithUser } from "@/app/types/postWithUser";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Discover() {
-  const [posts, setPosts] = useState<UserPost[]>();
+  const [posts, setPosts] = useState<PostWithUser[]>();
 
   useEffect(() => {
-    axios.get<UserPost[]>("/api/posts/all").then((response) => {
+    axios.get<PostWithUser[]>("/api/posts/all").then((response) => {
       setPosts(response.data);
     });
   }, []);
 
   return (
     <div className="w-full bg-white mb-[48px] h-auto min-h-full">
-      <div className="w-full mr-auto ml-auto max-w-[630px]">
+      <div className="w-full mr-auto ml-auto max-w-[1000px]">
         <h1 className="text-[#343434] text-[20px] font-semibold py-[16px]">
           Discover
         </h1>
