@@ -3,6 +3,13 @@ import type { PostWithUser } from "@/app/types/postWithUser";
 import PostPreview from "@/app/(public)/components/Post";
 import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/app/hooks/useScreenWidth";
+import ReactModal from "react-modal";
+import Verified from "@/icons/Verified";
+import Fire from "@/icons/Fire";
+import Comments from "@/icons/Comments";
+import Pin from "@/icons/Pin";
+import {getFormattedDate} from "@/utils/dates";
+import Close from "@/icons/Close";
 
 type PostPreviewProps = {
   className?: string;
@@ -15,13 +22,14 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
   const postRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [postIdToPreview, setPostIdToPreview] = useState<number>();
   const [previewMode, setPreviewMode] = useState("imagesList");
+  const [open, setOpen] = useState(false);
 
   const onPreviewOpen = (id: number) => {
     setPostIdToPreview(id);
     if (isMobile) {
       setPreviewMode("feed");
     } else {
-      alert("Preview");
+      setOpen(true);
     }
   };
 
@@ -43,6 +51,8 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
       }
     }
   }, [postIdToPreview]);
+
+  const postToPreview = posts.find(post => post.id === postIdToPreview);
 
   return (
     <>
@@ -84,6 +94,81 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
           );
         })
       ) : null}
+      {postToPreview && <ReactModal
+          isOpen={open}
+          ariaHideApp={false}
+          shouldFocusAfterRender={false}
+          onRequestClose={() => setOpen(false)}
+          className="bg-white overflow-hidden border-0"
+          style={{
+            overlay: {
+              backgroundColor: 'rgba(50, 50, 50, 0.70)'
+            },
+            content: {
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              right: 'auto',
+              bottom: 'auto',
+              transform: 'translate(-50%, -50%)',
+              borderRadius: '8px',
+            },
+          }}
+      >
+          <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
+              <div className="flex gap-[8px] items-center">
+                  <div className="w-[32px] h-[32px] relative">
+                      <div
+                          className={clsx(
+                            "w-full h-full bg-(--fly-primary) flex",
+                            "justify-center items-center text-(--fly-white) rounded-full"
+                          )}
+                      >
+                        {postToPreview.author.username.charAt(0).toUpperCase()}
+                      </div>
+                  </div>
+                  <a
+                      href={`/profile/${postToPreview.author.id}`}
+                      className="text-(--fly-text-primary) font-semibold"
+                  >
+                    {postToPreview.author.username}
+                  </a>
+                  <Verified/>
+              </div>
+              <button onClick={() => setOpen(false)} className="cursor-pointer">
+                  <Close />
+              </button>
+          </div>
+          <div className="flex">
+              <img src={postToPreview.imageUrl} alt="image" className="max-h-[612px] max-w-[612px]"/>
+              <div className="min-w-[318px]">
+                  <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap text-[16px] mt-[10px]">
+                    {postToPreview.text}
+                  </p>
+                  <div className="px-[16px] text-[#A0A0A0]">
+                    {getFormattedDate(postToPreview.createdAt)}
+                  </div>
+                  <div className="flex justify-between text-[#A0A0A0]">
+                      <div className="flex">
+                          <div className="flex gap-[4px] m-[8px] items-center">
+                              <Fire/>
+                            {postToPreview.likesCount}
+                          </div>
+                          <div className="flex gap-[4px] m-[8px] items-center">
+                              <Comments/>
+                            {postToPreview.commentsCount}
+                          </div>
+                      </div>
+                      <div>
+                          <div className="flex gap-[4px] m-[8px] items-center">
+                              <Pin/>
+                            {postToPreview.pinsCount}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </ReactModal>}
     </>
   );
 }
