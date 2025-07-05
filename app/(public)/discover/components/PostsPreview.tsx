@@ -140,7 +140,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
               </button>
           </div>
           <div className="flex">
-              <img src={postToPreview.imageUrl} alt="image" className="max-h-[612px] max-w-[612px]"/>
+              <img src={postToPreview.imageUrl} alt="image" className="max-h-[612px] max-w-[612px] w-full h-full"/>
               <div className="min-w-[318px]">
                   <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap text-[16px] mt-[10px]">
                     {postToPreview.text}
