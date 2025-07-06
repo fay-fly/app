@@ -8,31 +8,66 @@ datasource db {
 }
 
 model User {
-  id                       Int       @id @default(autoincrement())
-  email                    String    @unique
-  username                 String?   @unique
+  id                       Int            @id @default(autoincrement())
+  email                    String         @unique
+  username                 String?        @unique
   birthDate                DateTime?
   gender                   String?
   password                 String?
-  role                     String    @default("user")
+  role                     String         @default("user")
   resetToken               String?
   resetTokenExpiry         DateTime?
   emailVerificationCode    String?
   emailVerificationExpiry  DateTime?
-  emailVerified            Boolean   @default(false)
+  emailVerified            Boolean        @default(false)
   pictureUrl               String?
   posts                    Post[]
-  createdAt                DateTime @default(now())
+  likes                    Like[]
+  notifications            Notification[] @relation("Receiver")
+  sentNotifications        Notification[] @relation("Sender")
+  createdAt                DateTime       @default(now())
 }
 
 model Post {
-  id            Int      @id @default(autoincrement())
-  imageUrl      String
-  text          String
-  author        User?    @relation(fields: [authorId], references: [id])
-  authorId      Int
-  likesCount     Int     @default(0)
-  commentsCount Int      @default(0)
-  pinsCount     Int      @default(0)
-  createdAt     DateTime @default(now())
+  id             Int            @id @default(autoincrement())
+  imageUrl       String
+  text           String
+  author         User?          @relation(fields: [authorId], references: [id])
+  authorId       Int
+  likesCount     Int            @default(0)
+  commentsCount  Int            @default(0)
+  pinsCount      Int            @default(0)
+  likes          Like[]
+  notifications  Notification[]
+  createdAt      DateTime       @default(now())
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  createdAt DateTime @default(now())
+  @@unique([userId, postId])
+}
+
+model Notification {
+  id          Int               @id @default(autoincrement())
+  type        NotificationType
+  message     String
+  sender      User              @relation("Sender", fields: [senderId], references: [id])
+  senderId    Int
+  receiver    User              @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId  Int
+  post        Post?             @relation(fields: [postId], references: [id])
+  postId      Int
+  read        Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
 }
