@@ -32,7 +32,7 @@ declare module "next-auth/jwt" {
 
 const prisma = new PrismaClient();
 
-const authOptions: AuthOptions = {
+export const authOptions: AuthOptions = {
   providers: [CredentialsProvider, GoogleProvider],
   callbacks: {
     async jwt({ token, user, account }) {

@@ -46,7 +46,7 @@ export default function AddPost() {
       formData.append("image", image);
       formData.append("text", text);
       formData.append("authorId", String(session?.user.id));
-      await axios.post("/api/posts/create-post", formData);
+      await axios.post("/api/posts/create", formData);
       router.push("/");
     } catch (error) {
       handleError(error);

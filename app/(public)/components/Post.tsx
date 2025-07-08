@@ -8,6 +8,7 @@ import Pin from "@/icons/Pin";
 import { PostWithUser } from "@/app/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
 import { useState } from "react";
+import LikeButton from "@/app/(public)/discover/components/LikeButton";
 
 type PostProps = {
   post: PostWithUser;
@@ -71,10 +72,7 @@ export default function Post({ post }: PostProps) {
       <img src={post.imageUrl} alt="foto" className="w-full" />
       <div className="flex justify-between text-[#A0A0A0]">
         <div className="flex">
-          <div className="flex gap-[4px] m-[8px] items-center">
-            <Fire />
-            {post.likesCount}
-          </div>
+          <LikeButton postId={post.id} likesCount={post.likesCount} />
           <div className="flex gap-[4px] m-[8px] items-center">
             <Comments />
             {post.commentsCount}

@@ -10,6 +10,7 @@ import Comments from "@/icons/Comments";
 import Pin from "@/icons/Pin";
 import {getFormattedDate} from "@/utils/dates";
 import Close from "@/icons/Close";
+import LikeButton from "@/app/(public)/discover/components/LikeButton";
 
 type PostPreviewProps = {
   className?: string;
@@ -150,10 +151,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                   </div>
                   <div className="flex justify-between text-[#A0A0A0]">
                       <div className="flex">
-                          <div className="flex gap-[4px] m-[8px] items-center">
-                              <Fire/>
-                            {postToPreview.likesCount}
-                          </div>
+                          <LikeButton postId={postToPreview.id} likesCount={postToPreview.likesCount} />
                           <div className="flex gap-[4px] m-[8px] items-center">
                               <Comments/>
                             {postToPreview.commentsCount}
