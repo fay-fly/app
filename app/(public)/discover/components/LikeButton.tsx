@@ -1,7 +1,8 @@
-import Fire from "@/icons/Fire";
+import FireOutline from "@/icons/FireOutline";
 import axios from "axios";
 import clsx from "clsx";
 import {useState} from "react";
+import FireFilled from "@/icons/FireFilled";
 
 type LikeButtonProps = {
   likesCount: number,
@@ -26,7 +27,9 @@ export default function LikeButton({ likesCount, postId, likedByMe }: LikeButton
     "flex gap-[4px] m-[8px] items-center cursor-pointer",
     hasLikedByMe ? "text-[#F458A3]" : "text-[#A0A0A0]"
   )} onClick={onClick}>
-    <Fire />
+    {hasLikedByMe
+      ? <FireFilled/>
+      : <FireOutline/>}
     {count}
   </div>;
 }

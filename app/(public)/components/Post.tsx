@@ -3,7 +3,7 @@ import Verified from "@/icons/Verified";
 import Button from "@/components/Button";
 import ThreeDots from "@/icons/ThreeDots";
 import Comments from "@/icons/Comments";
-import Fire from "@/icons/Fire";
+import FireOutline from "@/icons/FireOutline";
 import Pin from "@/icons/Pin";
 import { PostWithUser } from "@/app/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";

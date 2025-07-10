@@ -1,4 +1,4 @@
-export default function Fire() {
+export default function FireOutline() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

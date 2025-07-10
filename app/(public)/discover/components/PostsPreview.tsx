@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/app/hooks/useScreenWidth";
 import ReactModal from "react-modal";
 import Verified from "@/icons/Verified";
-import Fire from "@/icons/Fire";
+import FireOutline from "@/icons/FireOutline";
 import Comments from "@/icons/Comments";
 import Pin from "@/icons/Pin";
 import {getFormattedDate} from "@/utils/dates";
@@ -151,7 +151,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                   </div>
                   <div className="flex justify-between text-[#A0A0A0]">
                       <div className="flex">
-                          <LikeButton postId={postToPreview.id} likesCount={postToPreview.likesCount} />
+                          <LikeButton postId={postToPreview.id} likesCount={postToPreview.likesCount} likedByMe={postToPreview.likedByMe} />
                           <div className="flex gap-[4px] m-[8px] items-center">
                               <Comments/>
                             {postToPreview.commentsCount}
