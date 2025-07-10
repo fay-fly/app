@@ -3,12 +3,12 @@ import Verified from "@/icons/Verified";
 import Button from "@/components/Button";
 import ThreeDots from "@/icons/ThreeDots";
 import Comments from "@/icons/Comments";
-import FireOutline from "@/icons/FireOutline";
 import Pin from "@/icons/Pin";
 import { PostWithUser } from "@/app/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
 import { useState } from "react";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
+import Image from "next/image";
 
 type PostProps = {
   post: PostWithUser;
@@ -69,7 +69,7 @@ export default function Post({ post }: PostProps) {
           <ThreeDots />
         </div>
       </div>
-      <img src={post.imageUrl} alt="foto" className="w-full" />
+      <Image src={post.imageUrl} alt="foto" className="w-full" />
       <div className="flex justify-between text-[#A0A0A0]">
         <div className="flex">
           <LikeButton postId={post.id} likesCount={post.likesCount} likedByMe={post.likedByMe} />

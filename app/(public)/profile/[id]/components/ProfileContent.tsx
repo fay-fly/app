@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { UserWithPosts } from "@/app/types/postWithUser";
 import axios from "axios";
+import Image from "next/image";
 
 export default function ProfileContent({ id }: { id: number }) {
   const [user, setUser] = useState<UserWithPosts>();
@@ -66,7 +67,7 @@ export default function ProfileContent({ id }: { id: number }) {
                 key={post.id}
                 className="w-full aspect-square overflow-hidden bg-gray-100"
               >
-                <img
+                <Image
                   src={post.imageUrl}
                   alt="publication"
                   className="w-full h-full object-cover"

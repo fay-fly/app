@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/app/hooks/useScreenWidth";
 import ReactModal from "react-modal";
 import Verified from "@/icons/Verified";
-import FireOutline from "@/icons/FireOutline";
 import Comments from "@/icons/Comments";
 import Pin from "@/icons/Pin";
 import {getFormattedDate} from "@/utils/dates";
 import Close from "@/icons/Close";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
+import Image from "next/image";
 
 type PostPreviewProps = {
   className?: string;
@@ -65,7 +65,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                 key={post.id}
                 className="w-full aspect-square overflow-hidden bg-gray-100 relative w-full h-full"
               >
-                <img
+                <Image
                   src={post.imageUrl}
                   alt="publication"
                   className="w-full h-full object-cover"
@@ -141,7 +141,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
               </button>
           </div>
           <div className="flex">
-              <img src={postToPreview.imageUrl} alt="image" className="max-h-[612px] max-w-[612px] w-full h-full"/>
+              <Image src={postToPreview.imageUrl} alt="image" className="max-h-[612px] max-w-[612px] w-full h-full"/>
               <div className="min-w-[318px]">
                   <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap text-[16px] mt-[10px]">
                     {postToPreview.text}

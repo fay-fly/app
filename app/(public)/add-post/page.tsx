@@ -7,6 +7,7 @@ import Close from "@/icons/Close";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { handleError } from "@/utils/errors";
 
 export default function AddPost() {
@@ -80,7 +81,7 @@ export default function AddPost() {
               <Close />
             </button>
             {previewUrl && (
-              <img
+              <Image
                 src={previewUrl}
                 alt="Preview"
                 className="mx-auto mb-4 w-full"
