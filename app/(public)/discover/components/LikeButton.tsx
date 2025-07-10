@@ -15,12 +15,12 @@ export default function LikeButton({ likesCount, postId, likedByMe }: LikeButton
   const [hasLikedByMe, setHasLikedByMe] = useState(likedByMe);
 
   const onClick = async () => {
-    await axios.post("/api/posts/like", {
-      postId
-    })
     const newLiked = !hasLikedByMe;
     setHasLikedByMe(newLiked);
     setCount((prevCount) => newLiked ? prevCount + 1 : prevCount - 1);
+    await axios.post("/api/posts/like", {
+      postId
+    })
   }
 
   return <div className={clsx(
