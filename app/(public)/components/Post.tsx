@@ -72,7 +72,7 @@ export default function Post({ post }: PostProps) {
       <img src={post.imageUrl} alt="foto" className="w-full" />
       <div className="flex justify-between text-[#A0A0A0]">
         <div className="flex">
-          <LikeButton postId={post.id} likesCount={post.likesCount} />
+          <LikeButton postId={post.id} likesCount={post.likesCount} likedByMe={post.likedByMe} />
           <div className="flex gap-[4px] m-[8px] items-center">
             <Comments />
             {post.commentsCount}

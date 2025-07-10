@@ -16,6 +16,7 @@ export type Post = {
 
 export type PostWithUser = Post & {
   author: User;
+  likedByMe: boolean
 };
 
 export type UserWithPosts = User & {
