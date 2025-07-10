@@ -69,7 +69,7 @@ export default function Post({ post }: PostProps) {
           <ThreeDots />
         </div>
       </div>
-      <Image src={post.imageUrl} alt="foto" className="w-full" />
+      <Image src={post.imageUrl} alt="foto" className="w-full" width={1} height={1} unoptimized />
       <div className="flex justify-between text-[#A0A0A0]">
         <div className="flex">
           <LikeButton postId={post.id} likesCount={post.likesCount} likedByMe={post.likedByMe} />

@@ -69,6 +69,9 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                   src={post.imageUrl}
                   alt="publication"
                   className="w-full h-full object-cover"
+                  width={1}
+                  height={1}
+                  unoptimized
                 />
                 <div
                   className={clsx(
@@ -141,7 +144,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
               </button>
           </div>
           <div className="flex">
-              <Image src={postToPreview.imageUrl} alt="image" className="max-h-[612px] max-w-[612px] w-full h-full"/>
+              <Image src={postToPreview.imageUrl} alt="image" className="max-h-[612px] max-w-[612px] w-full h-full" unoptimized width={1} height={1} />
               <div className="min-w-[318px]">
                   <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap text-[16px] mt-[10px]">
                     {postToPreview.text}

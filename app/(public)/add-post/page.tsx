@@ -85,6 +85,9 @@ export default function AddPost() {
                 src={previewUrl}
                 alt="Preview"
                 className="mx-auto mb-4 w-full"
+                width={1}
+                height={1}
+                unoptimized
               />
             )}
           </div>

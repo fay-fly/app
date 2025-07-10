@@ -70,6 +70,9 @@ export default function ProfileContent({ id }: { id: number }) {
                 <Image
                   src={post.imageUrl}
                   alt="publication"
+                  width={1}
+                  height={1}
+                  unoptimized
                   className="w-full h-full object-cover"
                 />
               </div>
