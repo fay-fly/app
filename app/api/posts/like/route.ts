@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
         prisma.notification.create({
           data: {
             type: 'LIKE',
-            message: 'liked your post',
+            message: 'Liked your post',
             senderId: parseInt(userId),
             receiverId: post.authorId,
             postId,
