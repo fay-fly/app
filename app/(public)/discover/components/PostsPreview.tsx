@@ -11,6 +11,7 @@ import {getFormattedDate} from "@/utils/dates";
 import Close from "@/icons/Close";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import Image from "next/image";
+import PostText from "@/app/(public)/components/PostText";
 
 type PostPreviewProps = {
   className?: string;
@@ -146,9 +147,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
           <div className="flex">
               <Image src={postToPreview.imageUrl} alt="image" className="max-h-[612px] max-w-[612px] w-full h-full" unoptimized width={1} height={1} />
               <div className="min-w-[318px]">
-                  <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap text-[16px] mt-[10px]">
-                    {postToPreview.text}
-                  </p>
+                  <PostText postText={postToPreview.text} username={postToPreview.author.username} />
                   <div className="px-[16px] text-[#A0A0A0]">
                     {getFormattedDate(postToPreview.createdAt)}
                   </div>
