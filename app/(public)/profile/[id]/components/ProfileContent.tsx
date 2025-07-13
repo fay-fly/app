@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { UserWithPosts } from "@/app/types/postWithUser";
 import axios from "axios";
 import Image from "next/image";
+import PageLoader from "@/components/PageLoader";
 
 export default function ProfileContent({ id }: { id: number }) {
   const [user, setUser] = useState<UserWithPosts>();
@@ -14,7 +15,7 @@ export default function ProfileContent({ id }: { id: number }) {
   }, [id]);
 
   return (
-    user && (
+    !user ? <PageLoader /> : (
       <div className="w-full max-w-[1000px] mx-auto pb-[48px] md:pb-0">
         <div
           className="h-[124px] relative"
