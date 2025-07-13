@@ -14,7 +14,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-full bg-white mb-[48px] h-auto min-h-full">
+    <div className="w-full bg-white pb-[48px] md:pb-0 h-auto min-h-full">
       <div className="w-full mr-auto ml-auto max-w-[630px]">
         <div className="flex flex-col gap-[12px] mb-[12px]">
           {!posts

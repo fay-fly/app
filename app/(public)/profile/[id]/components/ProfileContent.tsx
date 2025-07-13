@@ -15,7 +15,7 @@ export default function ProfileContent({ id }: { id: number }) {
 
   return (
     user && (
-      <div className="w-full max-w-[1000px] mx-auto">
+      <div className="w-full max-w-[1000px] mx-auto pb-[48px] md:pb-0">
         <div
           className="h-[124px] relative"
           style={{

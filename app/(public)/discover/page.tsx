@@ -14,7 +14,7 @@ export default function Discover() {
   }, []);
 
   return (
-    <div className="w-full bg-white h-auto min-h-full">
+    <div className="w-full bg-white h-auto min-h-full pb-[48px] md:pb-0 ">
       <div className="w-full h-full mr-auto ml-auto max-w-[1000px]">
         {!posts ? "Loading..." : <PostsPreview posts={posts} />}
       </div>

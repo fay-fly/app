@@ -17,7 +17,7 @@ export default function PublicLayout({ children }: LayoutProps) {
         <UserCard />
       </div>
       <LeftSidebar />
-      <div className="w-full bg-white h-full md:mb-0 md:mr-[308px] md:ml-[308px]">{children}</div>
+      <div className="w-full bg-white h-full md:mr-[308px] md:ml-[308px]">{children}</div>
       <RightSidebar />
       <MobileMenu />
     </div>
