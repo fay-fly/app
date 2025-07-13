@@ -1,7 +1,9 @@
+"use client";
 import Logo from "@/icons/Logo";
 import MenuLink from "@/app/(public)/components/MenuLink";
 import menuConfig from "@/app/(public)/components/menuConfig";
 import {useSafeSession} from "@/hooks/useSafeSession";
+import Link from "next/link";
 
 export default function LeftSidebar() {
   const { session } = useSafeSession();
@@ -9,7 +11,9 @@ export default function LeftSidebar() {
     <div className="h-full w-[308px] p-[16px] border-r-1 border-(--fly-border-color) hidden md:block fixed">
       <div className="ml-[36px]">
         <div className="p-[12px]">
-          <Logo />
+          <Link href="/">
+            <Logo />
+          </Link>
         </div>
         <div className="flex flex-col mt-[16px]">
           {menuConfig.map((item) => {

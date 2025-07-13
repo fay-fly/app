@@ -1,3 +1,4 @@
+"use client";
 import {useSafeSession} from "@/hooks/useSafeSession";
 import {LayoutProps} from "@/app/types/layout";
 import Logo from "@/icons/Logo";
