@@ -4,6 +4,8 @@ import { UserWithPosts } from "@/app/types/postWithUser";
 import axios from "axios";
 import Image from "next/image";
 import PageLoader from "@/components/PageLoader";
+import clsx from "clsx";
+import Link from "next/link";
 
 export default function ProfileContent({ id }: { id: number }) {
   const [user, setUser] = useState<UserWithPosts>();
@@ -64,19 +66,26 @@ export default function ProfileContent({ id }: { id: number }) {
         <div className="grid grid-cols-3 gap-[2px] mt-[52px]">
           {user.posts.map((post) => {
             return (
-              <div
+              <Link
                 key={post.id}
-                className="w-full aspect-square overflow-hidden bg-gray-100"
+                href={`/post/${post.id}`}
+                className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
               >
                 <Image
                   src={post.imageUrl}
                   alt="publication"
+                  className="w-full h-full object-cover"
                   width={1}
                   height={1}
                   unoptimized
-                  className="w-full h-full object-cover"
                 />
-              </div>
+                <div
+                  className={clsx(
+                    "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
+                    "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
+                  )}
+                ></div>
+              </Link>
             );
           })}
         </div>
