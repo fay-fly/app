@@ -6,13 +6,13 @@ import UploadCloud from "@/icons/UploadCloud";
 import Close from "@/icons/Close";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { handleError } from "@/utils/errors";
+import {useSafeSession} from "@/hooks/useSafeSession";
 
 export default function AddPost() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { session } = useSafeSession();
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [text, setText] = useState("");

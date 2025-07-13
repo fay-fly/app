@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function useScreenWidth() {
+export default function useScreenWidth() {
   const [width, setWidth] = useState<number | null>(null);
 
   useEffect(() => {
@@ -14,5 +14,3 @@ function useScreenWidth() {
 
   return width;
 }
-
-export default useScreenWidth;

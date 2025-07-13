@@ -5,6 +5,7 @@ import { Menu, MenuButton, MenuItem } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/transitions/zoom.css";
 import Logout from "@/icons/user-menu/Logout";
 import Profile from "@/icons/user-menu/Profile";
+import {useSafeSession} from "@/hooks/useSafeSession";
 
 const menuItemClassName = clsx(
   "flex items-center gap-[8px] px-[16px] py-[10px] color-[#5B5B5B]",
@@ -12,11 +13,7 @@ const menuItemClassName = clsx(
 );
 
 export default function UserCard() {
-  const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return <span>Loading...</span>;
-  }
+  const { session } = useSafeSession();
 
   if (!session) {
     return (

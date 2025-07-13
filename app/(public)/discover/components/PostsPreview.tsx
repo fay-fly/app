@@ -2,7 +2,7 @@ import clsx from "clsx";
 import type { PostWithUser } from "@/app/types/postWithUser";
 import PostPreview from "@/app/(public)/components/Post";
 import { useEffect, useRef, useState } from "react";
-import useScreenWidth from "@/app/hooks/useScreenWidth";
+import useScreenWidth from "@/hooks/useScreenWidth";
 import ReactModal from "react-modal";
 import Verified from "@/icons/Verified";
 import Comments from "@/icons/Comments";
