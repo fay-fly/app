@@ -26,9 +26,9 @@ export default function Notifications() {
     <div className="p-[10px] md:p-[16px] border-b border-gray-200">
       <h1>Notifications</h1>
     </div>
-    <div className="flex flex-col justify-center mr-auto ml-auto w-[612px] gap-[24px] mt-[24px]">
-      {!notifications ? <PageLoader /> : notifications.map(notification => {
-        return <div key={notification.postId} className="flex flex-col">
+    {!notifications ? <PageLoader /> : <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] gap-[24px] mt-[24px] px-[16px] md:px-[16px]">
+      {notifications.map(notification => {
+        return <div key={notification.id} className="flex flex-col">
           {notification.type === "LIKE" &&
               <div className="flex justify-between">
                   <div className="flex items-center gap-[8px]">
@@ -55,6 +55,6 @@ export default function Notifications() {
               </div>}
         </div>
       })}
-    </div>
+    </div>}
   </div>;
 }

@@ -37,6 +37,13 @@ export async function POST(req: NextRequest) {
           },
         },
       }),
+      prisma.notification.deleteMany({
+        where: {
+          senderId: parseInt(userId),
+          postId,
+          type: 'LIKE',
+        },
+      }),
     ]);
 
     return NextResponse.json({ status: 200 });
