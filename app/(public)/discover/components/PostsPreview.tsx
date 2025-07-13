@@ -51,7 +51,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
         window.scrollTo({ top: y, })
       }
     }
-  }, [postIdToPreview]);
+  }, [isMobile, postIdToPreview, previewMode]);
 
   const postToPreview = posts.find(post => post.id === postIdToPreview);
 
@@ -63,7 +63,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
             return (
               <div
                 key={post.id}
-                className="w-full aspect-square overflow-hidden bg-gray-100 relative w-full h-full"
+                className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
               >
                 <Image
                   src={post.imageUrl}

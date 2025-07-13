@@ -57,61 +57,63 @@ export default function AddPost() {
   }
 
   return (
-    <div className="flex justify-center bg-(--fly-white) h-auto min-h-full p-[24px] mb-[48px] md:mb-0">
-      <form onSubmit={handlePublish} className="space-y-4 w-full max-w-[630px]">
-        {!image ? (
-          <div
-            {...getRootProps()}
-            className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[300px] md:min-h-[450px] ${
-              isDragActive ? "bg-gray-100" : ""
-            }`}
-          >
-            <input {...getInputProps()} />
-            <div className="flex flex-col gap-[12px] items-center">
-              <UploadCloud />
-              <p>Take a photo or upload media</p>
+    <div className="pb-[48px]">
+      <div className="flex justify-center bg-(--fly-white) h-full pt-[24px] px-[24px] pb-[10px]">
+        <form onSubmit={handlePublish} className="space-y-4 w-full max-w-[630px]">
+          {!image ? (
+            <div
+              {...getRootProps()}
+              className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[300px] md:min-h-[450px] ${
+                isDragActive ? "bg-gray-100" : ""
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="flex flex-col gap-[12px] items-center">
+                <UploadCloud />
+                <p>Take a photo or upload media</p>
+              </div>
+            </div>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={removeImage}
+                className="absolute right-[-12] top-[-12] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer"
+              >
+                <Close />
+              </button>
+              {previewUrl && (
+                <Image
+                  src={previewUrl}
+                  alt="Preview"
+                  className="mx-auto mb-4 w-full"
+                  width={1}
+                  height={1}
+                  unoptimized
+                />
+              )}
+            </div>
+          )}
+          <textarea
+            rows={4}
+            className="w-full rounded p-2"
+            placeholder="Add text or tag"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+
+          <div className="flex justify-end">
+            <div className="flex gap-[24px] items-center">
+              <Button
+                type="submit"
+                isProcessing={isProcessing}
+                className="px-[16px] py-[6px] bg-(--fly-primary) text-(--fly-white)"
+              >
+                Publish
+              </Button>
             </div>
           </div>
-        ) : (
-          <div className="relative">
-            <button
-              onClick={removeImage}
-              className="absolute right-[-12] top-[-12] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer"
-            >
-              <Close />
-            </button>
-            {previewUrl && (
-              <Image
-                src={previewUrl}
-                alt="Preview"
-                className="mx-auto mb-4 w-full"
-                width={1}
-                height={1}
-                unoptimized
-              />
-            )}
-          </div>
-        )}
-        <textarea
-          rows={4}
-          className="w-full rounded p-2"
-          placeholder="Add text or tag"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-
-        <div className="flex justify-end">
-          <div className="flex gap-[24px] items-center">
-            <Button
-              type="submit"
-              isProcessing={isProcessing}
-              className="px-[16px] py-[6px] bg-(--fly-primary) text-(--fly-white)"
-            >
-              Publish
-            </Button>
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
