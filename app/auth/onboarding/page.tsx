@@ -4,10 +4,10 @@ import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
 import { FormEvent, Suspense, useState } from "react";
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import {useRouter, useSearchParams} from "next/navigation";
 import { getAgeFromDob } from "@/utils/dates";
 import { handleError } from "@/utils/errors";
+import {useSession} from "next-auth/react";
 
 type OnboardingData = {
   username: string | null;
@@ -18,6 +18,8 @@ function OnboardingForm() {
   const [stepIndex, setStepIndex] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { update } = useSession();
   const userId = searchParams.get("userId") ?? "";
 
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
@@ -34,7 +36,8 @@ function OnboardingForm() {
           userId,
           ...onboardingData,
         });
-        await signIn("google");
+        await update({ role: "user", username: onboardingData.username });
+        router.push("/");
       } catch (error) {
         handleError(error);
       } finally {

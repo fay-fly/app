@@ -35,7 +35,7 @@ const prisma = new PrismaClient();
 export const authOptions: AuthOptions = {
   providers: [CredentialsProvider, GoogleProvider],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (account?.provider === "google") {
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email! },
@@ -47,6 +47,10 @@ export const authOptions: AuthOptions = {
           token.username = dbUser.username;
           token.image = dbUser.pictureUrl ? dbUser.pictureUrl : null;
         }
+      } else if (trigger === "update") {
+        console.log("session.role", session.role)
+        token.role = session.role;
+        token.username = session.username;
       } else if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -79,11 +83,6 @@ export const authOptions: AuthOptions = {
               pictureUrl: user.image,
             },
           });
-        }
-        if (!existingUser.birthDate) {
-          return `/auth/onboarding?${new URLSearchParams({
-            userId: existingUser.id.toString(),
-          })}`;
         }
       }
       return true;
