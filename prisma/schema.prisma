@@ -25,6 +25,7 @@ model User {
   likes                    Like[]
   notifications            Notification[] @relation("Receiver")
   sentNotifications        Notification[] @relation("Sender")
+  comments                 Comment[]
   createdAt                DateTime       @default(now())
 }
 
@@ -39,6 +40,7 @@ model Post {
   pinsCount      Int            @default(0)
   likes          Like[]
   notifications  Notification[]
+  comments       Comment[]
   createdAt      DateTime       @default(now())
 }
 
@@ -64,6 +66,16 @@ model Notification {
   postId      Int
   read        Boolean           @default(false)
   createdAt   DateTime          @default(now())
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  createdAt DateTime @default(now())
 }
 
 enum NotificationType {
