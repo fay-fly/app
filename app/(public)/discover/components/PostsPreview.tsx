@@ -5,13 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/hooks/useScreenWidth";
 import ReactModal from "react-modal";
 import Verified from "@/icons/Verified";
-import Comments from "@/icons/Comments";
 import Pin from "@/icons/Pin";
 import {getFormattedDate} from "@/utils/dates";
 import Close from "@/icons/Close";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import Image from "next/image";
 import PostText from "@/app/(public)/components/PostText";
+import CommentButton from "@/app/(public)/discover/components/CommentButton";
 
 type PostPreviewProps = {
   className?: string;
@@ -154,10 +154,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                   <div className="flex justify-between text-[#A0A0A0]">
                       <div className="flex">
                           <LikeButton postId={postToPreview.id} likesCount={postToPreview.likesCount} likedByMe={postToPreview.likedByMe} />
-                          <div className="flex gap-[4px] m-[8px] items-center">
-                              <Comments/>
-                            {postToPreview.commentsCount}
-                          </div>
+                          <CommentButton commentsCount={postToPreview.commentsCount} />
                       </div>
                       <div>
                           <div className="flex gap-[4px] m-[8px] items-center">

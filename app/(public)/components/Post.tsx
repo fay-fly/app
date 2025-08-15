@@ -9,6 +9,7 @@ import { getFormattedDate } from "@/utils/dates";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import Image from "next/image";
 import PostText from "@/app/(public)/components/PostText";
+import CommentButton from "@/app/(public)/discover/components/CommentButton";
 
 type PostProps = {
   post: PostWithUser;
@@ -51,10 +52,7 @@ export default function Post({ post }: PostProps) {
       <div className="flex justify-between text-[#A0A0A0]">
         <div className="flex">
           <LikeButton postId={post.id} likesCount={post.likesCount} likedByMe={post.likedByMe} />
-          <div className="flex gap-[4px] m-[8px] items-center">
-            <Comments />
-            {post.commentsCount}
-          </div>
+          <CommentButton commentsCount={post.commentsCount} />
         </div>
         <div>
           <div className="flex gap-[4px] m-[8px] items-center">
