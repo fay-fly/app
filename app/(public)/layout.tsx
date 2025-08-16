@@ -9,7 +9,7 @@ import Link from "next/link";
 export default function PublicLayout({ children }: LayoutProps) {
   return (
     <div className="flex flex-col h-full">
-      <div className="justify-between w-full px-[32px] py-[12px] border-b border-gray-200 bg-(--fly-bg-primary) hidden md:flex z-[0.1] fixed">
+      <div className="hidden md:flex justify-between w-full px-[32px] py-[12px] border-b border-gray-200 bg-(--fly-bg-primary) fixed">
         <Link href="/">
           <Logo />
         </Link>

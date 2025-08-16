@@ -51,7 +51,6 @@ export const authOptions: AuthOptions = {
           token.image = dbUser.pictureUrl ? dbUser.pictureUrl : null;
         }
       } else if (trigger === "update") {
-        console.log("session.role", session.role)
         token.role = session.role;
         token.username = session.username;
       } else if (user) {

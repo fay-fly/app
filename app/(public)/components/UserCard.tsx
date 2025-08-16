@@ -1,6 +1,5 @@
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import Image from "next/image";
 import clsx from "clsx";
 import { Menu, MenuButton, MenuItem } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/transitions/zoom.css";
@@ -15,7 +14,6 @@ const menuItemClassName = clsx(
 
 export default function UserCard() {
   const { session } = useSafeSession();
-  console.log(session);
 
   if (!session) {
     return (

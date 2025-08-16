@@ -2,7 +2,6 @@ import clsx from "clsx";
 import Verified from "@/icons/Verified";
 import Button from "@/components/Button";
 import ThreeDots from "@/icons/ThreeDots";
-import Comments from "@/icons/Comments";
 import Pin from "@/icons/Pin";
 import { PostWithUser } from "@/app/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
@@ -20,7 +19,7 @@ export default function Post({ post }: PostProps) {
     <div className="flex flex-col gap-[8px] mb-[12px]">
       <div className="py-[8px] flex justify-between px-[16px]">
         <div className="flex gap-[8px] items-center">
-          <div className="w-[32px] h-[32px] relative">
+          <div className="w-[32px] h-[32px]">
             {post.author.pictureUrl
               ? <img src={post.author.pictureUrl} alt="profile image" className="rounded-full" />
               : <div

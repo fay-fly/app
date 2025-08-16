@@ -11,8 +11,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Post ID is required" }, { status: 400 });
   }
 
-  console.log(postId);
-
   const comments = await prisma.comment.findMany({
     where: { postId: Number(postId) },
     include: {

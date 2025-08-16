@@ -32,7 +32,7 @@ export default function Notifications() {
           {notification.type === "LIKE" &&
               <div className="flex justify-between">
                   <div className="flex items-center gap-[8px]">
-                      <Link href={`/profile/${notification.senderId}`} className="w-[32px] h-[32px] relative cursor-pointer">
+                      <Link href={`/profile/${notification.senderId}`} className="w-[32px] h-[32px] cursor-pointer">
                           <div
                               className={clsx(
                                 "w-full h-full bg-(--fly-primary) flex",
@@ -56,7 +56,7 @@ export default function Notifications() {
           {notification.type === "COMMENT" &&
               <div className="flex justify-between">
                   <div className="flex items-center gap-[8px]">
-                      <Link href={`/profile/${notification.senderId}`} className="w-[32px] h-[32px] relative cursor-pointer">
+                      <Link href={`/profile/${notification.senderId}`} className="w-[32px] h-[32px] cursor-pointer">
                         {notification.sender.pictureUrl
                           ? <img src={notification.sender.pictureUrl} alt="profile picture" className="rounded-full" />
                           : <div

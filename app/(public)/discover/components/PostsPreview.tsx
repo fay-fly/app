@@ -107,7 +107,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
           className="bg-white overflow-hidden border-0"
           style={{
             overlay: {
-              backgroundColor: 'rgba(50, 50, 50, 0.70)'
+              backgroundColor: 'rgba(50, 50, 50, 0.70)',
             },
             content: {
               position: 'absolute',
@@ -122,7 +122,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
       >
           <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
               <div className="flex gap-[8px] items-center">
-                  <div className="w-[32px] h-[32px] relative">
+                  <div className="w-[32px] h-[32px]">
                       <div
                           className={clsx(
                             "w-full h-full bg-(--fly-primary) flex",
@@ -154,7 +154,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                   <div className="flex justify-between text-[#A0A0A0]">
                       <div className="flex">
                           <LikeButton postId={postToPreview.id} likesCount={postToPreview.likesCount} likedByMe={postToPreview.likedByMe} />
-                          <CommentButton commentsCount={postToPreview.commentsCount} />
+                          <CommentButton commentsCount={postToPreview.commentsCount} postId={postToPreview.id} />
                       </div>
                       <div>
                           <div className="flex gap-[4px] m-[8px] items-center">

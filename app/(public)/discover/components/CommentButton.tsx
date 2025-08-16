@@ -88,7 +88,7 @@ export default function CommentButton({ commentsCount, postId }: CommentButtonPr
       <div ref={commentsRef} className="flex flex-col max-h-[300px] overflow-scroll">
         {comments.map((comment) => {
           return <div key={comment.id} className="flex gap-2 px-[16px] py-[8px]">
-            <div className="w-[32px] h-[32px] relative cursor-pointer">
+            <div className="w-[32px] h-[32px] cursor-pointer">
               {comment.author.pictureUrl
                 ? <img src={comment.author.pictureUrl} alt="profile image" className="rounded-full" />
                 : <div
@@ -108,7 +108,7 @@ export default function CommentButton({ commentsCount, postId }: CommentButtonPr
         })}
       </div>
       <form onSubmit={onSubmit} className="flex gap-[8px] border-t-[1px] border-(--fly-border-color) px-[16px] py-[8px]">
-        <div className="w-[32px] h-[32px] relative">
+        <div className="w-[32px] h-[32px]">
           {session?.user.image
             ? <img src={session?.user.image} alt="profile image" className="rounded-full" />
             : <div
