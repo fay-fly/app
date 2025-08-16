@@ -15,7 +15,7 @@ export default function PublicLayout({ children }: LayoutProps) {
         </Link>
         <UserCard />
       </div>
-      <div className="flex flex-col pt-[56px] md:pt-[59px] md:flex-row">
+      <div className="flex flex-col pt-[56px] md:pt-[59px] md:flex-row flex-1">
         <div className="fixed top-0 left-0 right-0 flex bg-white border-b border-gray-200 justify-between items-center px-[16px] h-[56px] z-50 md:hidden w-full">
           <Link href="/">
             <Logo />
@@ -23,7 +23,7 @@ export default function PublicLayout({ children }: LayoutProps) {
           <UserCard />
         </div>
         <LeftSidebar />
-        <div className="w-full bg-white md:ml-[220px]">
+        <div className="w-full bg-white flex-1 md:ml-[220px]">
           {children}
         </div>
         <MobileMenu />
