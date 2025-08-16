@@ -18,7 +18,7 @@ export default function MenuLink({ href, children }: MenuLinkProps) {
     <Link
       href={href}
       className={clsx(
-        "flex gap-[8px] p-[12px] items-center",
+        "flex gap-[8px] py-[12px] items-center",
         isActive ? "text-(--fly-primary)" : "text-[#A0A0A0]"
       )}
     >
