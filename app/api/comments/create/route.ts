@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import {Post, PrismaClient, PrismaPromise} from "@prisma/client";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/app/api/auth/[...nextauth]/authOptions";
 
@@ -30,22 +30,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Post doesn't exist" }, { status: 404 });
   }
 
-  const [createdComment] = await prisma.$transaction([
+  const operations: Array<PrismaPromise<unknown>> = [
     prisma.comment.create({
       data: {
         text: text,
         postId: parseInt(postId),
         authorId: parseInt(userId),
       }
-    }),
-    prisma.notification.create({
-      data: {
-        type: 'COMMENT',
-        message: 'Commented on',
-        senderId: parseInt(userId),
-        receiverId: post.authorId,
-        postId: parseInt(postId),
-      },
     }),
     prisma.post.update({
       where: { id: parseInt(postId) },
@@ -55,10 +46,26 @@ export async function POST(req: NextRequest) {
         },
       },
     }),
-  ]);
+  ]
+
+  if (post.authorId !== parseInt(userId)) {
+    operations.push(
+      prisma.notification.create({
+        data: {
+          type: 'COMMENT',
+          message: 'Commented on your post',
+          senderId: parseInt(userId),
+          receiverId: post.authorId,
+          postId: parseInt(postId),
+        },
+      }),
+    );
+  }
+
+  const [createdComment] = await prisma.$transaction(operations);
 
   const comment = await prisma.comment.findUnique({
-    where: { id: createdComment.id },
+    where: { id: (createdComment as Post).id },
     include: {
       author: {
         select: {

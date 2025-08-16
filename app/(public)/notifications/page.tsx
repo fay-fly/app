@@ -53,6 +53,30 @@ export default function Notifications() {
                     <img src={notification.post.imageUrl} alt="post image" className="w-10 h-10 object-cover" />
                 </a>}
               </div>}
+          {notification.type === "COMMENT" &&
+              <div className="flex justify-between">
+                  <div className="flex items-center gap-[8px]">
+                      <Link href={`/profile/${notification.senderId}`} className="w-[32px] h-[32px] relative cursor-pointer">
+                          <div
+                              className={clsx(
+                                "w-full h-full bg-(--fly-primary) flex",
+                                "justify-center items-center text-(--fly-white) rounded-full"
+                              )}
+                          >
+                            {notification.sender.username?.charAt(0).toUpperCase()}
+                          </div>
+                      </Link>
+                      <div className="flex flex-col">
+                          <Link href={`/profile/${notification.senderId}`} className="flex text-[#5B5B5B] font-bold">
+                            {notification.sender.username} <Verified />
+                          </Link>
+                          <div className="text-[#5B5B5B]">{notification.message}</div>
+                      </div>
+                  </div>
+                {notification.post && <a href={`/post/${notification.postId}`} className="flex items-center">
+                    <img src={notification.post.imageUrl} alt="post image" className="w-10 h-10 object-cover" />
+                </a>}
+              </div>}
         </div>
       })}
     </div>}
