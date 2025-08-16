@@ -1,5 +1,6 @@
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 import clsx from "clsx";
 import { Menu, MenuButton, MenuItem } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/transitions/zoom.css";
@@ -14,6 +15,7 @@ const menuItemClassName = clsx(
 
 export default function UserCard() {
   const { session } = useSafeSession();
+  console.log(session);
 
   if (!session) {
     return (
@@ -30,14 +32,16 @@ export default function UserCard() {
           menuButton={
             <MenuButton>
               <div className="w-[32px] h-[32px] relative cursor-pointer">
-                <div
-                  className={clsx(
-                    "w-full h-full bg-(--fly-primary) flex",
-                    "justify-center items-center text-(--fly-white) rounded-full"
-                  )}
-                >
-                  {session.user.username?.charAt(0).toUpperCase()}
-                </div>
+                {session.user.image
+                  ? <img src={session.user.image} alt="profile image" className="rounded-full" />
+                  : <div
+                      className={clsx(
+                      "w-full h-full bg-(--fly-primary) flex",
+                      "justify-center items-center text-(--fly-white) rounded-full"
+                      )}
+                  >
+                    {session.user.username?.charAt(0).toUpperCase()}
+                  </div>}
                 <span
                   className={clsx(
                     "absolute bottom-0 right-0 block w-[8px] h-[8px]",

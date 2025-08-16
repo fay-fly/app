@@ -89,14 +89,16 @@ export default function CommentButton({ commentsCount, postId }: CommentButtonPr
         {comments.map((comment) => {
           return <div key={comment.id} className="flex gap-2 px-[16px] py-[8px]">
             <div className="w-[32px] h-[32px] relative cursor-pointer">
-              <div
-                className={clsx(
-                  "w-full h-full bg-(--fly-primary) flex",
-                  "justify-center items-center text-(--fly-white) rounded-full"
-                )}
-              >
-                {comment.author.username?.charAt(0).toUpperCase()}
-              </div>
+              {comment.author.pictureUrl
+                ? <img src={comment.author.pictureUrl} alt="profile image" className="rounded-full" />
+                : <div
+                  className={clsx(
+                    "w-full h-full bg-(--fly-primary) flex",
+                    "justify-center items-center text-(--fly-white) rounded-full"
+                  )}
+                >
+                  {comment.author.username?.charAt(0).toUpperCase()}
+                </div>}
             </div>
             <div className="flex flex-col">
               <strong>{comment.author.username}</strong>
@@ -107,14 +109,16 @@ export default function CommentButton({ commentsCount, postId }: CommentButtonPr
       </div>
       <form onSubmit={onSubmit} className="flex gap-[8px] border-t-[1px] border-(--fly-border-color) px-[16px] py-[8px]">
         <div className="w-[32px] h-[32px] relative">
-          <div
-            className={clsx(
-              "w-full h-full bg-(--fly-primary) flex",
-              "justify-center items-center text-(--fly-white) rounded-full"
-            )}
-          >
-            {session?.user.username?.charAt(0).toUpperCase()}
-          </div>
+          {session?.user.image
+            ? <img src={session?.user.image} alt="profile image" className="rounded-full" />
+            : <div
+              className={clsx(
+                "w-full h-full bg-(--fly-primary) flex",
+                "justify-center items-center text-(--fly-white) rounded-full"
+              )}
+            >
+              {session?.user.username?.charAt(0).toUpperCase()}
+            </div>}
         </div>
         <textarea
           value={newComment}

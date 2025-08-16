@@ -10,6 +10,7 @@ declare module "next-auth" {
       email: string;
       username: string | null;
       role: string;
+      image: string | null;
     };
   }
 
@@ -18,6 +19,7 @@ declare module "next-auth" {
     email: string;
     username: string | null;
     role: string;
+    image: string | null;
   }
 }
 
@@ -27,6 +29,7 @@ declare module "next-auth/jwt" {
     email: string;
     username: string | null;
     role: string;
+    image: string | null;
   }
 }
 
@@ -56,7 +59,7 @@ export const authOptions: AuthOptions = {
         token.email = user.email;
         token.username = user.username;
         token.role = user.role;
-        token.image = user.image;
+        token.image = user.image ?? null;
       }
       return token;
     },

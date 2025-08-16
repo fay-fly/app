@@ -27,10 +27,12 @@ export default function ProfileContent({ id }: { id: number }) {
           }}
         >
           <div className="absolute -bottom-[48px] left-4 flex items-end gap-[24px]">
-            <div
-              className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white z-10">
-              {user.username.charAt(0).toUpperCase()}
-            </div>
+            {user.pictureUrl
+              ? <img src={user.pictureUrl} alt="profile picture" className="ring-[1.5px] ring-white z-10 w-[80px] h-[80px] rounded-full" />
+              : <div
+                className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white z-10">
+                {user.username.charAt(0).toUpperCase()}
+              </div>}
             <div className="flex mt-[12px] gap-[16px]">
               <label className="flex flex-col items-center">
                 <span className="text-[#343434] font-semibold">12</span>

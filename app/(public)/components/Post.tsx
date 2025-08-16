@@ -21,14 +21,16 @@ export default function Post({ post }: PostProps) {
       <div className="py-[8px] flex justify-between px-[16px]">
         <div className="flex gap-[8px] items-center">
           <div className="w-[32px] h-[32px] relative">
-            <div
-              className={clsx(
-                "w-full h-full bg-(--fly-primary) flex",
-                "justify-center items-center text-(--fly-white) rounded-full"
-              )}
-            >
-              {post.author.username.charAt(0).toUpperCase()}
-            </div>
+            {post.author.pictureUrl
+              ? <img src={post.author.pictureUrl} alt="profile image" className="rounded-full" />
+              : <div
+                className={clsx(
+                  "w-full h-full bg-(--fly-primary) flex",
+                  "justify-center items-center text-(--fly-white) rounded-full"
+                )}
+              >
+                {post.author.username.charAt(0).toUpperCase()}
+              </div>}
           </div>
           <a
             href={`/profile/${post.author.id}`}
