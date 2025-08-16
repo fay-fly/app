@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Post doesn't exist" }, { status: 404 });
   }
 
-  await prisma.$transaction([
+  const [createdComment] = await prisma.$transaction([
     prisma.comment.create({
       data: {
         text: text,
@@ -46,8 +46,29 @@ export async function POST(req: NextRequest) {
         receiverId: post.authorId,
         postId: parseInt(postId),
       },
-    })
+    }),
+    prisma.post.update({
+      where: { id: parseInt(postId) },
+      data: {
+        commentsCount: {
+          increment: 1,
+        },
+      },
+    }),
   ]);
 
-  return NextResponse.json({ success: true });
+  const comment = await prisma.comment.findUnique({
+    where: { id: createdComment.id },
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+          pictureUrl: true,
+        },
+      },
+    },
+  });
+
+  return NextResponse.json({ comment });
 }

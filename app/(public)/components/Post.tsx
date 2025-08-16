@@ -52,7 +52,7 @@ export default function Post({ post }: PostProps) {
       <div className="flex justify-between text-[#A0A0A0]">
         <div className="flex">
           <LikeButton postId={post.id} likesCount={post.likesCount} likedByMe={post.likedByMe} />
-          <CommentButton commentsCount={post.commentsCount} />
+          <CommentButton commentsCount={post.commentsCount} postId={post.id} />
         </div>
         <div>
           <div className="flex gap-[4px] m-[8px] items-center">
