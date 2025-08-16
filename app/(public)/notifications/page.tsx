@@ -33,14 +33,16 @@ export default function Notifications() {
               <div className="flex justify-between">
                   <div className="flex items-center gap-[8px]">
                       <Link href={`/profile/${notification.senderId}`} className="w-[32px] h-[32px] cursor-pointer">
-                          <div
-                              className={clsx(
-                                "w-full h-full bg-(--fly-primary) flex",
-                                "justify-center items-center text-(--fly-white) rounded-full"
-                              )}
+                        {notification.sender.pictureUrl
+                          ? <img src={notification.sender.pictureUrl} alt="profile picture" className="rounded-full" />
+                          : <div
+                            className={clsx(
+                              "w-full h-full bg-(--fly-primary) flex",
+                              "justify-center items-center text-(--fly-white) rounded-full"
+                            )}
                           >
                             {notification.sender.username?.charAt(0).toUpperCase()}
-                          </div>
+                          </div>}
                       </Link>
                       <div className="flex flex-col">
                           <Link href={`/profile/${notification.senderId}`} className="flex text-[#5B5B5B] font-bold">
