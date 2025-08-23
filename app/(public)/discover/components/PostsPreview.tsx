@@ -12,6 +12,7 @@ import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import Image from "next/image";
 import PostText from "@/app/(public)/components/PostText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
+import PinButton from "@/app/(public)/discover/components/PinButton";
 
 type PostPreviewProps = {
   className?: string;
@@ -158,8 +159,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                       </div>
                       <div>
                           <div className="flex gap-[4px] m-[8px] items-center">
-                              <Pin/>
-                            {postToPreview.pinsCount}
+                            <PinButton postId={postToPreview.id} pinsCount={postToPreview.pinsCount} pinnedByMe={postToPreview.pinnedByMe}/>
                           </div>
                       </div>
                   </div>

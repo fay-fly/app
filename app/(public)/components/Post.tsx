@@ -9,6 +9,7 @@ import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import Image from "next/image";
 import PostText from "@/app/(public)/components/PostText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
+import PinButton from "@/app/(public)/discover/components/PinButton";
 
 type PostProps = {
   post: PostWithUser;
@@ -57,8 +58,7 @@ export default function Post({ post }: PostProps) {
         </div>
         <div>
           <div className="flex gap-[4px] m-[8px] items-center">
-            <Pin />
-            {post.pinsCount}
+            <PinButton postId={post.id} pinsCount={post.pinsCount} pinnedByMe={post.pinnedByMe} />
           </div>
         </div>
       </div>

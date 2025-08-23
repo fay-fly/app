@@ -25,19 +25,29 @@ export async function GET() {
             where: { userId: parseInt(userId) },
             select: { id: true },
           },
+          pins: {
+            where: { userId: parseInt(userId) },
+            select: { id: true },
+          }
         }
         : {
           likes: {
+            select: { id: true, userId: true },
+          },
+          pins: {
             select: { id: true, userId: true },
           },
         }),
     },
   });
 
-  const postsWithLikeStatus = posts.map(({ likes, ...rest }) => ({
+  const postsWithLikeStatus = posts.map(({ likes, pins, ...rest }) => ({
     ...rest,
     likedByMe: userId
       ? likes.length > 0
+      : false,
+    pinnedByMe: userId
+      ? pins.length > 0
       : false,
   }));
 
