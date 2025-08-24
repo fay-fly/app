@@ -23,11 +23,13 @@ model User {
   pictureUrl               String?
   posts                    Post[]
   likes                    Like[]
+  createdAt                DateTime       @default(now())
   notifications            Notification[] @relation("Receiver")
   sentNotifications        Notification[] @relation("Sender")
   comments                 Comment[]
   pins                     Pin[]
-  createdAt                DateTime       @default(now())
+  subscriptions            Subscription[] @relation("UserFollows")
+  followers                Subscription[] @relation("UserFollowed")
 }
 
 model Post {
@@ -88,6 +90,16 @@ model Pin {
   postId    Int
   createdAt DateTime @default(now())
   @@unique([userId, postId])
+}
+
+model Subscription {
+  id          Int   @id @default(autoincrement())
+  follower    User  @relation("UserFollows", fields: [followerId], references: [id])
+  followerId  Int
+  following   User  @relation("UserFollowed", fields: [followingId], references: [id])
+  followingId Int
+  createdAt   DateTime @default(now())
+  @@unique([followerId, followingId])
 }
 
 enum NotificationType {
