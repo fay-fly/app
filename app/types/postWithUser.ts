@@ -22,4 +22,7 @@ export type PostWithUser = Post & {
 
 export type UserWithPosts = User & {
   posts: Post[];
+  pins: {
+    post: Post
+  }[]
 };

@@ -8,6 +8,7 @@ import clsx from "clsx";
 import Link from "next/link";
 
 export default function ProfileContent({ id }: { id: number }) {
+  const [tabs, setTabs] = useState<"publications" | "pins">("publications");
   const [user, setUser] = useState<UserWithPosts>();
 
   useEffect(() => {
@@ -65,32 +66,77 @@ export default function ProfileContent({ id }: { id: number }) {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-[2px] mt-[52px]">
-          {user.posts.map((post) => {
-            return (
-              <Link
-                key={post.id}
-                href={`/post/${post.id}`}
-                className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
-              >
-                <Image
-                  src={post.imageUrl}
-                  alt="publication"
-                  className="w-full h-full object-cover"
-                  width={1}
-                  height={1}
-                  unoptimized
-                />
-                <div
-                  className={clsx(
-                    "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
-                    "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
-                  )}
-                ></div>
-              </Link>
-            );
-          })}
+        <div className="flex">
+          <div className="flex-1 flex justify-center">
+            <div className={clsx(
+              "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit",
+              tabs === "publications" && "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]"
+            )} onClick={() => setTabs("publications")}>{user.posts.length} Publications</div>
+          </div>
+          <div className="flex-1 flex justify-center">
+            <div className={clsx(
+              "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit",
+              tabs === "pins" && "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]"
+            )} onClick={() => setTabs("pins")}>{user.pins.length} Pins</div>
+          </div>
         </div>
+        {tabs === "publications" && <>
+          {user.posts.length === 0 ? <div className="flex justify-center mt-[10px] text-[#A0A0A0]">You don&#39;t have any publications</div> : <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
+            {user.posts.map((post) => {
+              return (
+                <Link
+                  key={post.id}
+                  href={`/post/${post.id}`}
+                  className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
+                >
+                  <Image
+                    src={post.imageUrl}
+                    alt="publication"
+                    className="w-full h-full object-cover"
+                    width={1}
+                    height={1}
+                    unoptimized
+                  />
+                  <div
+                    className={clsx(
+                      "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
+                      "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
+                    )}
+                  ></div>
+                </Link>
+              );
+            })}
+          </div>}
+        </>}
+        {tabs === "pins" && <>
+          {user.pins.length === 0 ? <div className="flex justify-center mt-[10px] text-[#A0A0A0]">You don&#39;t have any pinned posts</div> : <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
+            {user.pins.map((pin) => {
+              const post = pin.post;
+              return (
+                <Link
+                  key={post.id}
+                  href={`/post/${post.id}`}
+                  className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
+                >
+                  <Image
+                    src={post.imageUrl}
+                    alt="publication"
+                    className="w-full h-full object-cover"
+                    width={1}
+                    height={1}
+                    unoptimized
+                  />
+                  <div
+                    className={clsx(
+                      "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
+                      "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
+                    )}
+                  ></div>
+                </Link>
+              );
+            })}
+          </div>}
+        </>}
       </div>
     )
   );

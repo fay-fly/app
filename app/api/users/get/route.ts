@@ -15,6 +15,15 @@ export async function GET(req: NextRequest) {
     where: { id: Number(id) },
     include: {
       posts: true,
+      pins: {
+        include: {
+          post: {
+            include: {
+              author: true,
+            },
+          },
+        },
+      },
     },
   });
 
