@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/hooks/useScreenWidth";
 import ReactModal from "react-modal";
 import Verified from "@/icons/Verified";
-import Pin from "@/icons/Pin";
 import {getFormattedDate} from "@/utils/dates";
 import Close from "@/icons/Close";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
