@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       data: {
         text: text,
         postId: parseInt(postId),
-        authorId: parseInt(userId),
+        authorId: userId,
       }
     }),
     prisma.post.update({
@@ -48,13 +48,13 @@ export async function POST(req: NextRequest) {
     }),
   ]
 
-  if (post.authorId !== parseInt(userId)) {
+  if (post.authorId !== userId) {
     operations.push(
       prisma.notification.create({
         data: {
           type: 'COMMENT',
           message: 'Commented on your post',
-          senderId: parseInt(userId),
+          senderId: userId,
           receiverId: post.authorId,
           postId: parseInt(postId),
         },

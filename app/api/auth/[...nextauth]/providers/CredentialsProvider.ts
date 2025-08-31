@@ -38,7 +38,7 @@ export default CredentialsProvider({
     }
 
     return {
-      id: user.id.toString(),
+      id: user.id,
       email: user.email,
       username: user.username,
       role: user.role,

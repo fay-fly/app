@@ -22,11 +22,11 @@ export async function GET() {
       ...(userId
         ? {
           likes: {
-            where: { userId: parseInt(userId) },
+            where: { userId: userId },
             select: { id: true },
           },
           pins: {
-            where: { userId: parseInt(userId) },
+            where: { userId: userId },
             select: { id: true },
           }
         }

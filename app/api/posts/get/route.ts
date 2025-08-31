@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       ...(userId
         ? {
           likes: {
-            where: { userId: parseInt(userId) },
+            where: { userId: userId },
             select: { id: true },
           },
         }

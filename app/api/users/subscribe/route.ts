@@ -14,14 +14,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (parseInt(userId) === followingId) {
+  if (userId === followingId) {
     return NextResponse.json({ error: "You cannot follow yourself" }, { status: 400 });
   }
 
   const existingSubscription = await prisma.subscription.findUnique({
     where: {
       followerId_followingId: {
-        followerId: parseInt(userId),
+        followerId: userId,
         followingId,
       },
     },
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       }),
       prisma.notification.deleteMany({
         where: {
-          senderId: parseInt(userId),
+          senderId: userId,
           receiverId: followingId,
           type: "FOLLOW",
         },
@@ -54,19 +54,19 @@ export async function POST(req: NextRequest) {
     const operations: PrismaPromise<unknown>[] = [
       prisma.subscription.create({
         data: {
-          followerId: parseInt(userId),
+          followerId: userId,
           followingId,
         },
       }),
     ];
 
-    if (targetUser.id !== parseInt(userId)) {
+    if (targetUser.id !== userId) {
       operations.push(
         prisma.notification.create({
           data: {
             type: "FOLLOW",
             message: "Started following you",
-            senderId: parseInt(userId),
+            senderId: userId,
             receiverId: targetUser.id,
           },
         })

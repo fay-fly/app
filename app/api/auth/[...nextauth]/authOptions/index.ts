@@ -6,7 +6,7 @@ import GoogleProvider from "@/app/api/auth/[...nextauth]/providers/GoogleProvide
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string;
+      id: number;
       email: string;
       username: string | null;
       role: string;
@@ -15,7 +15,7 @@ declare module "next-auth" {
   }
 
   interface User {
-    id: string;
+    id: number;
     email: string;
     username: string | null;
     role: string;
@@ -25,7 +25,7 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
   interface JWT {
-    id: string;
+    id: number;
     email: string;
     username: string | null;
     role: string;
@@ -44,7 +44,7 @@ export const authOptions: AuthOptions = {
           where: { email: user.email! },
         });
         if (dbUser) {
-          token.id = dbUser.id.toString();
+          token.id = dbUser.id;
           token.email = dbUser.email;
           token.role = dbUser.role;
           token.username = dbUser.username;
@@ -54,7 +54,7 @@ export const authOptions: AuthOptions = {
         token.role = session.role;
         token.username = session.username;
       } else if (user) {
-        token.id = user.id;
+        token.id = parseInt(user.id as string);
         token.email = user.email;
         token.username = user.username;
         token.role = user.role;
@@ -64,7 +64,7 @@ export const authOptions: AuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user.id = token.id;
         session.user.email = token.email as string;
         session.user.role = token.role as string;
         session.user.username = token.username;

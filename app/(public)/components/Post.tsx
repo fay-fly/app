@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import Verified from "@/icons/Verified";
-import Button from "@/components/Button";
 import ThreeDots from "@/icons/ThreeDots";
 import { PostWithUser } from "@/app/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
@@ -10,12 +9,15 @@ import PostText from "@/app/(public)/components/PostText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
 import PinButton from "@/app/(public)/discover/components/PinButton";
 import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
+import {useSafeSession} from "@/hooks/useSafeSession";
 
 type PostProps = {
   post: PostWithUser;
 };
 
 export default function Post({ post }: PostProps) {
+  const { session } = useSafeSession();
+
   return (
     <div className="flex flex-col gap-[8px] mb-[12px]">
       <div className="py-[8px] flex justify-between px-[16px]">
@@ -41,7 +43,7 @@ export default function Post({ post }: PostProps) {
           <Verified />
         </div>
         <div className="flex gap-[16px] items-center">
-          <SubscribeButton subscribingId={post.author.id} isSubscribed={false} />
+          {(session && post.author.id !== session.user.id) && <SubscribeButton subscribingId={post.author.id} isSubscribed={false} />}
           <ThreeDots />
         </div>
       </div>

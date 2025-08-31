@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   const existingLike = await prisma.like.findUnique({
     where: {
       userId_postId: {
-        userId: parseInt(userId),
+        userId: userId,
         postId,
       },
     },
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       }),
       prisma.notification.deleteMany({
         where: {
-          senderId: parseInt(userId),
+          senderId: userId,
           postId,
           type: 'LIKE',
         },
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     const operations: PrismaPromise<unknown>[] = [
       prisma.like.create({
         data: {
-          userId: parseInt(userId),
+          userId: userId,
           postId,
         },
       }),
@@ -74,13 +74,13 @@ export async function POST(req: NextRequest) {
       }),
     ];
 
-    if (post.authorId !== parseInt(userId)) {
+    if (post.authorId !== userId) {
       operations.push(
         prisma.notification.create({
           data: {
             type: 'LIKE',
             message: 'Liked your post',
-            senderId: parseInt(userId),
+            senderId: userId,
             receiverId: post.authorId,
             postId,
           },
