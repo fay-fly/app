@@ -24,6 +24,12 @@ export async function GET(req: NextRequest) {
           },
         },
       },
+      _count: {
+        select: {
+          followers: true,
+          subscriptions: true,
+        },
+      },
     },
   });
 

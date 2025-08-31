@@ -20,7 +20,14 @@ export type PostWithUser = Post & {
   pinnedByMe: boolean;
 };
 
-export type UserWithPosts = User & {
+type SubsCount = {
+  _count: {
+    followers: number,
+    subscriptions: number,
+  }
+}
+
+export type UserWithPosts = User & SubsCount & {
   posts: Post[];
   pins: {
     post: Post
