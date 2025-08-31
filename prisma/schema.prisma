@@ -67,7 +67,7 @@ model Notification {
   receiver    User              @relation("Receiver", fields: [receiverId], references: [id])
   receiverId  Int
   post        Post?             @relation(fields: [postId], references: [id])
-  postId      Int
+  postId      Int?
   read        Boolean           @default(false)
   createdAt   DateTime          @default(now())
 }

@@ -9,6 +9,7 @@ import Image from "next/image";
 import PostText from "@/app/(public)/components/PostText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
 import PinButton from "@/app/(public)/discover/components/PinButton";
+import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
 
 type PostProps = {
   post: PostWithUser;
@@ -40,12 +41,7 @@ export default function Post({ post }: PostProps) {
           <Verified />
         </div>
         <div className="flex gap-[16px] items-center">
-          <Button
-            type="button"
-            className="bg-(--fly-primary) text-(--fly-white) px-[16px] py-[5px] h-[32px]"
-          >
-            Subscribe
-          </Button>
+          <SubscribeButton subscribingId={post.author.id} isSubscribed={false} />
           <ThreeDots />
         </div>
       </div>
