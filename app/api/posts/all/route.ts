@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  const userId = session?.user?.id ? session.user.id : null;
 
   const posts = await prisma.post.findMany({
     orderBy: { id: "desc" },
@@ -17,18 +17,24 @@ export async function GET() {
           id: true,
           username: true,
           pictureUrl: true,
+          ...(userId && {
+            followers: {
+              where: { followerId: userId },
+              select: { id: true },
+            },
+          }),
         },
       },
       ...(userId
         ? {
           likes: {
-            where: { userId: userId },
+            where: { userId },
             select: { id: true },
           },
           pins: {
-            where: { userId: userId },
+            where: { userId },
             select: { id: true },
-          }
+          },
         }
         : {
           likes: {
@@ -41,15 +47,17 @@ export async function GET() {
     },
   });
 
-  const postsWithLikeStatus = posts.map(({ likes, pins, ...rest }) => ({
+  const postsWithFlags = posts.map(({ likes, pins, author, ...rest }) => ({
     ...rest,
-    likedByMe: userId
-      ? likes.length > 0
-      : false,
-    pinnedByMe: userId
-      ? pins.length > 0
-      : false,
+    author: {
+      id: author?.id,
+      username: author?.username,
+      pictureUrl: author?.pictureUrl,
+    },
+    likedByMe: userId ? likes.length > 0 : false,
+    pinnedByMe: userId ? pins.length > 0 : false,
+    isFollowed: userId && author?.followers ? author.followers.length > 0 : false,
   }));
 
-  return NextResponse.json(postsWithLikeStatus);
+  return NextResponse.json(postsWithFlags);
 }

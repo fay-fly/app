@@ -18,6 +18,7 @@ export type PostWithUser = Post & {
   author: User;
   likedByMe: boolean;
   pinnedByMe: boolean;
+  isFollowed: boolean;
 };
 
 type SubsCount = {

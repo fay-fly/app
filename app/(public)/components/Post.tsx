@@ -43,7 +43,7 @@ export default function Post({ post }: PostProps) {
           <Verified />
         </div>
         <div className="flex gap-[16px] items-center">
-          {(session && post.author.id !== session.user.id) && <SubscribeButton subscribingId={post.author.id} isSubscribed={false} />}
+          {(session && post.author.id !== session.user.id) && <SubscribeButton subscribingId={post.author.id} isSubscribed={post.isFollowed} />}
           <ThreeDots />
         </div>
       </div>
