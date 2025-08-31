@@ -29,9 +29,9 @@ export default function ProfileContent({ id }: { id: number }) {
         >
           <div className="absolute -bottom-[48px] left-4 flex items-end gap-[24px]">
             {user.pictureUrl
-              ? <img src={user.pictureUrl} alt="profile picture" className="ring-[1.5px] ring-white z-10 w-[80px] h-[80px] rounded-full" />
+              ? <img src={user.pictureUrl} alt="profile picture" className="ring-[1.5px] ring-white w-[80px] h-[80px] rounded-full" />
               : <div
-                className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white z-10">
+                className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white">
                 {user.username.charAt(0).toUpperCase()}
               </div>}
           </div>

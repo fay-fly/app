@@ -59,7 +59,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
   return (
     <>
       {previewMode === "imagesList" ? (
-        <div className={clsx("grid grid-cols-3 gap-[2px]", className)}>
+        <div className={clsx("grid grid-cols-3 gap-[2px] relative", className)}>
           {posts.map((post) => {
             return (
               <div
@@ -76,7 +76,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                 />
                 <div
                   className={clsx(
-                    "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
+                    "relative top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
                     "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
                   )}
                   onClick={() => onPreviewOpen(post.id)}

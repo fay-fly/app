@@ -22,10 +22,7 @@ export default function Notifications() {
     });
   }, []);
 
-  return <div>
-    <div className="p-[10px] md:p-[16px] border-b border-gray-200">
-      <h1>Notifications</h1>
-    </div>
+  return <>
     {!notifications ? <PageLoader /> : <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] gap-[24px] mt-[24px] px-[16px] md:px-[16px]">
       {notifications.map(notification => {
         return <div key={notification.id} className="flex flex-col">
@@ -110,5 +107,5 @@ export default function Notifications() {
         </div>
       })}
     </div>}
-  </div>;
+  </>;
 }
