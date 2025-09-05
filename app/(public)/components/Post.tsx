@@ -13,9 +13,10 @@ import { useSafeSession } from "@/hooks/useSafeSession";
 
 type PostProps = {
   post: PostWithUser;
+  onSubscribe?: () => void;
 };
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post, onSubscribe }: PostProps) {
   const { session } = useSafeSession();
 
   return (
@@ -53,6 +54,7 @@ export default function Post({ post }: PostProps) {
             <SubscribeButton
               subscribingId={post.author.id}
               isSubscribed={post.isFollowed}
+              onSuccess={() => onSubscribe && onSubscribe()}
             />
           )}
           <ThreeDots />

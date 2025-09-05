@@ -7,11 +7,13 @@ import axios from "axios";
 type SubscribeButtonProps = {
   subscribingId: number;
   isSubscribed: boolean;
+  onSuccess: () => void;
 };
 
 export default function SubscribeButton({
   subscribingId,
   isSubscribed,
+  onSuccess,
 }: SubscribeButtonProps) {
   const [hasSubscribeState, setHasSubscribeState] = useState(isSubscribed);
 
@@ -19,6 +21,7 @@ export default function SubscribeButton({
     const newSubscribeState = !hasSubscribeState;
     setHasSubscribeState(newSubscribeState);
     await axios.post("/api/users/subscribe", { followingId: subscribingId });
+    onSuccess();
   };
 
   return (
