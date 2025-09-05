@@ -2,7 +2,7 @@
 import LeftSidebar from "@/app/(public)/components/LeftSidebar";
 import { LayoutProps } from "@/app/types/layout";
 import Logo from "@/icons/Logo";
-import UserCard from "@/app/(public)/components/UserCard";
+import UserMenu from "@/app/(public)/components/UserMenu";
 import MobileMenu from "@/app/(public)/components/MobileMenu";
 import Link from "next/link";
 import { MainDesktopHeader } from "@/app/(public)/components/MainDesktopHeader";
@@ -17,7 +17,7 @@ export default function PublicLayout({ children }: LayoutProps) {
             <Link href="/">
               <Logo />
             </Link>
-            <UserCard />
+            <UserMenu />
           </div>
           <MainDesktopHeader />
           {children}
