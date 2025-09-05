@@ -25,15 +25,18 @@ export default function CommentButton({
   const commentsRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [processing, setProcessing] = useState(false);
   const [comments, setComments] = useState<CommentsWithUser[]>([]);
   const { session } = useSafeSession();
 
   useEffect(() => {
+    setProcessing(true);
     axios
       .get<CommentsWithUser[]>(`/api/comments/get?postId=${postId}`)
       .then((response) => {
         setComments(response.data);
-      });
+      })
+      .finally(() => setProcessing(false));
   }, []);
 
   useEffect(() => {
@@ -47,6 +50,9 @@ export default function CommentButton({
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (newComment === "") {
+      return;
+    }
     const formData = new FormData();
     formData.append("text", newComment);
     formData.append("postId", postId.toString());
@@ -155,9 +161,11 @@ export default function CommentButton({
             cols={30}
             rows={1}
             placeholder="Comment"
+            disabled={processing}
           ></textarea>
           <button
             type="submit"
+            disabled={processing}
             className="bg-[#F7F8FF] w-[32px] h-[32px] rounded-full flex justify-center items-center cursor-pointer"
           >
             <Send />
