@@ -11,6 +11,7 @@ type UserCardProps = {
   size?: number;
   onClick?: () => void;
   showStatus?: boolean;
+  alwaysShowUsername?: boolean;
 };
 
 export function UserCard({
@@ -18,6 +19,7 @@ export function UserCard({
   size = 32,
   onClick,
   showStatus = true,
+  alwaysShowUsername = true,
 }: UserCardProps){
   const initials = user.username?.charAt(0).toUpperCase() ?? "";
 
@@ -59,7 +61,10 @@ export function UserCard({
         />
       )}
     </div>
-    <span className="text-(--fly-text-primary) font-bold hidden md:block">
+    <span className={clsx(
+      "text-(--fly-text-primary) font-bold",
+      !alwaysShowUsername && "hidden md:block"
+    )}>
       {user.username}
     </span>
   </div>;

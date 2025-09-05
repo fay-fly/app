@@ -6,6 +6,7 @@ import {handleError} from "@/utils/errors";
 import ReactModal from "react-modal";
 import {SubscribeItem} from "@/app/types/subscribeItem";
 import Close from "@/icons/Close";
+import UserCard from "@/app/(public)/components/UserCard";
 
 type SubsKind = "subscribers" | "subscriptions";
 
@@ -73,16 +74,12 @@ export default function ViewSubs({ count, kind, fetchUrl, userId }: ViewSubsProp
           ) : items && items.length > 0 ? (
             <div className="max-h-96 overflow-auto">
               {items.map((subscriber) => {
-                return (
-                  <div
-                    key={subscriber.id}
-                    className="border-b border-gray-100 last:border-b-0"
-                  >
-                    <div className="font-medium text-gray-900 truncate">
-                      {subscriber.username}
-                    </div>
-                  </div>
-                );
+                return <a key={subscriber.id} href={`/profile/${subscriber.id}`}>
+                  <UserCard showStatus={false} user={{
+                    image: subscriber.pictureUrl,
+                    username: subscriber.username
+                  }} />
+                </a>;
               })}
             </div>
           ) : (

@@ -29,7 +29,12 @@ export default function UserMenu() {
       <Menu
         menuButton={
           <MenuButton>
-            <UserCard user={session.user} showStatus={true} size={32} />
+            <UserCard
+              user={session.user}
+              showStatus={true}
+              alwaysShowUsername={false}
+              size={32}
+            />
           </MenuButton>
         }
         transition
