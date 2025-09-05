@@ -8,11 +8,11 @@ import Link from "next/link";
 export default function LeftSidebar() {
   const { session } = useSafeSession();
   return (
-    <div className="h-full w-[220px] px-[32px] hidden md:block fixed border-r-1 border-(--fly-border-color) pt-[12px]">
-      <Link href="/">
+    <div className="h-full w-[220px] px-[32px] hidden md:block fixed border-r-1 border-(--fly-border-color) pt-[25px]">
+      <Link href="/" className="mt-[15px] mb-[15px]">
         <Logo />
       </Link>
-      <div className="flex flex-col mt-[16px]">
+      <div className="flex flex-col mt-[20px]">
         {menuConfig.map((item) => {
           const MenuIcon = item.icon;
           return (

@@ -5,6 +5,7 @@ import Logo from "@/icons/Logo";
 import UserCard from "@/app/(public)/components/UserCard";
 import MobileMenu from "@/app/(public)/components/MobileMenu";
 import Link from "next/link";
+import {MainDesktopHeader} from "@/app/(public)/components/MainDesktopHeader";
 
 export default function PublicLayout({ children }: LayoutProps) {
   return (
@@ -18,6 +19,7 @@ export default function PublicLayout({ children }: LayoutProps) {
             </Link>
             <UserCard />
           </div>
+          <MainDesktopHeader />
           {children}
         </div>
         <MobileMenu />

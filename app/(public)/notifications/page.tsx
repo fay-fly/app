@@ -23,7 +23,7 @@ export default function Notifications() {
   }, []);
 
   return <>
-    {!notifications ? <PageLoader /> : <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] gap-[24px] mt-[24px] px-[16px] md:px-[16px]">
+    {!notifications ? <PageLoader /> : <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] gap-[24px] px-[16px] md:px-[16px]">
       {notifications.map(notification => {
         return <div key={notification.id} className="flex flex-col">
           {notification.type === "LIKE" &&
