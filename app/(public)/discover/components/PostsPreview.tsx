@@ -135,7 +135,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                 </div>
               </div>
               <a
-                href={`/profile/${postToPreview.author.id}`}
+                href={`/profile/${postToPreview.author.username}`}
                 className="text-(--fly-text-primary) font-semibold"
               >
                 {postToPreview.author.username}

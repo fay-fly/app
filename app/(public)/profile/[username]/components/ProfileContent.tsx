@@ -6,17 +6,17 @@ import Image from "next/image";
 import PageLoader from "@/components/PageLoader";
 import clsx from "clsx";
 import Link from "next/link";
-import ViewSubs from "@/app/(public)/profile/[id]/components/ViewSubs";
+import ViewSubs from "@/app/(public)/profile/[username]/components/ViewSubs";
 
-export default function ProfileContent({ id }: { id: number }) {
+export default function ProfileContent({ username }: { username: string }) {
   const [tabs, setTabs] = useState<"publications" | "pins">("publications");
   const [user, setUser] = useState<UserWithPosts>();
 
   useEffect(() => {
-    axios.get<UserWithPosts>(`/api/users/get?id=${id}`).then((response) => {
+    axios.get<UserWithPosts>(`/api/users/get?username=${username}`).then((response) => {
       setUser(response.data);
     });
-  }, [id]);
+  }, [username]);
 
   return !user ? (
     <PageLoader />

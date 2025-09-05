@@ -59,7 +59,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       {senderAvatar}
       <div className="flex flex-col">
         <Link
-          href={`/profile/${notification.senderId}`}
+          href={`/profile/${notification.sender.username}`}
           className="flex text-[#5B5B5B] font-bold"
         >
           {notification.sender.username} <Verified />

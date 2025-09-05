@@ -46,7 +46,7 @@ export default function UserMenu() {
         gap={12}
       >
         <MenuItem
-          href={`/profile/${session.user.id}`}
+          href={`/profile/${session.user.username}`}
           className={menuItemClassName}
         >
           <Profile /> View profile

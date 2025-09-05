@@ -41,7 +41,7 @@ export default function Post({ post }: PostProps) {
             )}
           </div>
           <a
-            href={`/profile/${post.author.id}`}
+            href={`/profile/${post.author.username}`}
             className="text-(--fly-text-primary) font-semibold"
           >
             {post.author.username}

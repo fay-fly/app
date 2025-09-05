@@ -5,14 +5,14 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
+  const username = searchParams.get("username");
 
-  if (!id) {
-    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+  if (!username) {
+    return NextResponse.json({ error: "Username is required" }, { status: 400 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: Number(id) },
+    where: { username },
     include: {
       posts: true,
       pins: {
