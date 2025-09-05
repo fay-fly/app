@@ -23,8 +23,39 @@ export default function Notifications() {
       .then((response) => {
         setNotifications(response.data);
       });
-    axios.post("/api/notifications/mark-read");
   }, []);
+
+  useEffect(() => {
+    let marked = false;
+
+    const markAllRead = async () => {
+      await axios.post("/api/notifications/mark-read");
+      marked = true;
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        markAllRead();
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      markAllRead();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+
+      if (!marked) {
+        markAllRead();
+      }
+    };
+  }, []);
+
 
   return (
     <>
