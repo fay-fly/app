@@ -4,10 +4,10 @@ import FormInput from "@/components/FormInput";
 import Button from "@/components/Button";
 import { FormEvent, Suspense, useState } from "react";
 import axios from "axios";
-import {useRouter, useSearchParams} from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getAgeFromDob } from "@/utils/dates";
 import { handleError } from "@/utils/errors";
-import {useSession} from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 type OnboardingData = {
   username: string | null;

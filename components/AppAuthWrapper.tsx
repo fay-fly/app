@@ -1,6 +1,6 @@
 "use client";
-import {useSafeSession} from "@/hooks/useSafeSession";
-import {LayoutProps} from "@/app/types/layout";
+import { useSafeSession } from "@/hooks/useSafeSession";
+import { LayoutProps } from "@/app/types/layout";
 import Logo from "@/icons/Logo";
 
 export default function AppAuthWrapper({ children }: LayoutProps) {
@@ -10,7 +10,9 @@ export default function AppAuthWrapper({ children }: LayoutProps) {
     <div className="relative h-full w-full">
       <div
         className={`absolute inset-0 flex flex-col justify-center items-center gap-[20px] transition-opacity duration-500 ${
-          isLoading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          isLoading
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
       >
         <Logo />
@@ -34,7 +36,9 @@ export default function AppAuthWrapper({ children }: LayoutProps) {
 
       <div
         className={`transition-opacity duration-500 ${
-          isLoading ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+          isLoading
+            ? "opacity-0 pointer-events-none"
+            : "opacity-100 pointer-events-auto"
         } h-full w-full`}
       >
         {children}

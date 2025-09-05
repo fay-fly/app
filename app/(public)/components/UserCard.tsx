@@ -5,7 +5,7 @@ import { Menu, MenuButton, MenuItem } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/transitions/zoom.css";
 import Logout from "@/icons/user-menu/Logout";
 import Profile from "@/icons/user-menu/Profile";
-import {useSafeSession} from "@/hooks/useSafeSession";
+import { useSafeSession } from "@/hooks/useSafeSession";
 
 const menuItemClassName = clsx(
   "flex items-center gap-[8px] px-[16px] py-[10px] color-[#5B5B5B]",
@@ -30,16 +30,22 @@ export default function UserCard() {
           menuButton={
             <MenuButton>
               <div className="w-[32px] h-[32px] relative cursor-pointer">
-                {session.user.image
-                  ? <img src={session.user.image} alt="profile image" className="rounded-full" />
-                  : <div
-                      className={clsx(
+                {session.user.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="profile image"
+                    className="rounded-full"
+                  />
+                ) : (
+                  <div
+                    className={clsx(
                       "w-full h-full bg-(--fly-primary) flex",
                       "justify-center items-center text-(--fly-white) rounded-full"
-                      )}
+                    )}
                   >
                     {session.user.username?.charAt(0).toUpperCase()}
-                  </div>}
+                  </div>
+                )}
                 <span
                   className={clsx(
                     "absolute bottom-0 right-0 block w-[8px] h-[8px]",

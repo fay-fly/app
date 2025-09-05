@@ -1,7 +1,7 @@
 "use client";
 import MenuLink from "@/app/(public)/components/MenuLink";
 import menuConfig from "@/app/(public)/components/menuConfig";
-import {useSafeSession} from "@/hooks/useSafeSession";
+import { useSafeSession } from "@/hooks/useSafeSession";
 import Logo from "@/icons/Logo";
 import Link from "next/link";
 

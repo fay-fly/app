@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import {Post, PrismaClient, PrismaPromise} from "@prisma/client";
-import {getServerSession} from "next-auth";
-import {authOptions} from "@/app/api/auth/[...nextauth]/authOptions";
+import { Post, PrismaClient, PrismaPromise } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const prisma = new PrismaClient();
 
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const postId = formData.get("postId") as string;
 
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   if (!text || !postId) {
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const post = await prisma.post.findUnique({
     where: { id: parseInt(postId) },
-    select: { authorId: true }
+    select: { authorId: true },
   });
 
   if (!post) {
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         text: text,
         postId: parseInt(postId),
         authorId: userId,
-      }
+      },
     }),
     prisma.post.update({
       where: { id: parseInt(postId) },
@@ -46,19 +46,19 @@ export async function POST(req: NextRequest) {
         },
       },
     }),
-  ]
+  ];
 
   if (post.authorId !== userId) {
     operations.push(
       prisma.notification.create({
         data: {
-          type: 'COMMENT',
-          message: 'Commented on your post',
+          type: "COMMENT",
+          message: "Commented on your post",
           senderId: userId,
           receiverId: post.authorId,
           postId: parseInt(postId),
         },
-      }),
+      })
     );
   }
 

@@ -15,7 +15,10 @@ export async function POST(req: NextRequest) {
   }
 
   if (userId === followingId) {
-    return NextResponse.json({ error: "You cannot follow yourself" }, { status: 400 });
+    return NextResponse.json(
+      { error: "You cannot follow yourself" },
+      { status: 400 }
+    );
   }
 
   const existingSubscription = await prisma.subscription.findUnique({
@@ -41,7 +44,10 @@ export async function POST(req: NextRequest) {
       }),
     ]);
 
-    return NextResponse.json({ status: 200, message: "Unfollowed successfully" });
+    return NextResponse.json({
+      status: 200,
+      message: "Unfollowed successfully",
+    });
   } else {
     const targetUser = await prisma.user.findUnique({
       where: { id: followingId },

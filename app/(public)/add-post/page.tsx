@@ -8,7 +8,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { handleError } from "@/utils/errors";
-import {useSafeSession} from "@/hooks/useSafeSession";
+import { useSafeSession } from "@/hooks/useSafeSession";
 
 export default function AddPost() {
   const router = useRouter();
@@ -59,7 +59,10 @@ export default function AddPost() {
   return (
     <div className="pb-[48px] md:pb-0 ">
       <div className="flex justify-center bg-(--fly-white) h-full pt-[24px] px-[24px] pb-[10px]">
-        <form onSubmit={handlePublish} className="space-y-4 w-full max-w-[630px]">
+        <form
+          onSubmit={handlePublish}
+          className="space-y-4 w-full max-w-[630px]"
+        >
           {!image ? (
             <div
               {...getRootProps()}

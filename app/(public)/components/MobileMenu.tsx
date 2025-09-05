@@ -1,7 +1,7 @@
 "use client";
 import menuConfig from "@/app/(public)/components/menuConfig";
 import MenuLink from "@/app/(public)/components/MenuLink";
-import {useSafeSession} from "@/hooks/useSafeSession";
+import { useSafeSession } from "@/hooks/useSafeSession";
 
 export default function MobileMenu() {
   const { session } = useSafeSession();

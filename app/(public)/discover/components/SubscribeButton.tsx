@@ -9,11 +9,14 @@ type SubscribeButtonProps = {
   isSubscribed: boolean;
 };
 
-export default function SubscribeButton({ subscribingId, isSubscribed }: SubscribeButtonProps) {
+export default function SubscribeButton({
+  subscribingId,
+  isSubscribed,
+}: SubscribeButtonProps) {
   const [hasSubscribeState, setHasSubscribeState] = useState(isSubscribed);
 
   const handleFollow = async () => {
-    const newSubscribeState = !hasSubscribeState
+    const newSubscribeState = !hasSubscribeState;
     setHasSubscribeState(newSubscribeState);
     await axios.post("/api/users/subscribe", { followingId: subscribingId });
   };

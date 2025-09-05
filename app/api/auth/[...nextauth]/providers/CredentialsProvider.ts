@@ -42,7 +42,7 @@ export default CredentialsProvider({
       email: user.email,
       username: user.username,
       role: user.role,
-      image: user.pictureUrl
+      image: user.pictureUrl,
     };
   },
 });

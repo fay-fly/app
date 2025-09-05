@@ -1,7 +1,7 @@
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../auth/[...nextauth]/authOptions';
-import {PrismaClient} from "@prisma/client";
-import {NextResponse} from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../auth/[...nextauth]/authOptions";
+import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
@@ -13,13 +13,13 @@ export async function GET() {
   }
 
   const notifications = await prisma.notification.findMany({
-    where: { receiver: { email: session.user?.email ?? '' } },
+    where: { receiver: { email: session.user?.email ?? "" } },
     include: {
       sender: true,
       post: true,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 

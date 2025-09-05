@@ -1,8 +1,8 @@
-import {NextRequest, NextResponse} from 'next/server';
-import { getServerSession } from 'next-auth';
-import {PrismaClient} from "@prisma/client";
-import { PrismaPromise } from '@prisma/client';
-import {authOptions} from "@/app/api/auth/[...nextauth]/authOptions";
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPromise } from "@prisma/client";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const { postId } = (await req.json()) as { postId: number };
 
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const existingLike = await prisma.like.findUnique({
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         where: {
           senderId: userId,
           postId,
-          type: 'LIKE',
+          type: "LIKE",
         },
       }),
     ]);
@@ -54,7 +54,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (!post) {
-      return NextResponse.json({ error: "Post doesn't exist" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Post doesn't exist" },
+        { status: 404 }
+      );
     }
 
     const operations: PrismaPromise<unknown>[] = [
@@ -78,8 +81,8 @@ export async function POST(req: NextRequest) {
       operations.push(
         prisma.notification.create({
           data: {
-            type: 'LIKE',
-            message: 'Liked your post',
+            type: "LIKE",
+            message: "Liked your post",
             senderId: userId,
             receiverId: post.authorId,
             postId,

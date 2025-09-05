@@ -1,4 +1,4 @@
-import {useSession} from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 export function useSafeSession() {
   const { data: session, status } = useSession();

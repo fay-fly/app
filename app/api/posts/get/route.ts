@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import {getServerSession} from "next-auth";
-import {authOptions} from "@/app/api/auth/[...nextauth]/authOptions";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const prisma = new PrismaClient();
 
@@ -27,16 +27,16 @@ export async function GET(req: NextRequest) {
       },
       ...(userId
         ? {
-          likes: {
-            where: { userId: userId },
-            select: { id: true },
-          },
-        }
+            likes: {
+              where: { userId: userId },
+              select: { id: true },
+            },
+          }
         : {
-          likes: {
-            select: { id: true, userId: true },
-          },
-        }),
+            likes: {
+              select: { id: true, userId: true },
+            },
+          }),
     },
   });
 

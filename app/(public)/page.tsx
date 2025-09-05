@@ -18,11 +18,13 @@ export default function Home() {
     <div className="w-full bg-white h-auto min-h-full">
       <div className="w-full mr-auto ml-auto max-w-[630px] h-full">
         <div className="flex flex-col">
-          {!posts
-            ? <PageLoader />
-            : posts.map((post) => {
-                return <Post post={post} key={post.id} />;
-              })}
+          {!posts ? (
+            <PageLoader />
+          ) : (
+            posts.map((post) => {
+              return <Post post={post} key={post.id} />;
+            })
+          )}
         </div>
       </div>
     </div>

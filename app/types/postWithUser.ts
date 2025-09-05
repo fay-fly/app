@@ -23,14 +23,15 @@ export type PostWithUser = Post & {
 
 type SubsCount = {
   _count: {
-    followers: number,
-    subscriptions: number,
-  }
-}
-
-export type UserWithPosts = User & SubsCount & {
-  posts: Post[];
-  pins: {
-    post: Post
-  }[]
+    followers: number;
+    subscriptions: number;
+  };
 };
+
+export type UserWithPosts = User &
+  SubsCount & {
+    posts: Post[];
+    pins: {
+      post: Post;
+    }[];
+  };

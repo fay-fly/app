@@ -27,23 +27,23 @@ export async function GET() {
       },
       ...(userId
         ? {
-          likes: {
-            where: { userId },
-            select: { id: true },
-          },
-          pins: {
-            where: { userId },
-            select: { id: true },
-          },
-        }
+            likes: {
+              where: { userId },
+              select: { id: true },
+            },
+            pins: {
+              where: { userId },
+              select: { id: true },
+            },
+          }
         : {
-          likes: {
-            select: { id: true, userId: true },
-          },
-          pins: {
-            select: { id: true, userId: true },
-          },
-        }),
+            likes: {
+              select: { id: true, userId: true },
+            },
+            pins: {
+              select: { id: true, userId: true },
+            },
+          }),
     },
   });
 
@@ -56,7 +56,8 @@ export async function GET() {
     },
     likedByMe: userId ? likes.length > 0 : false,
     pinnedByMe: userId ? pins.length > 0 : false,
-    isFollowed: userId && author?.followers ? author.followers.length > 0 : false,
+    isFollowed:
+      userId && author?.followers ? author.followers.length > 0 : false,
   }));
 
   return NextResponse.json(postsWithFlags);

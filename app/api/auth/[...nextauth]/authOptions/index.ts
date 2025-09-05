@@ -1,5 +1,5 @@
-import {PrismaClient} from "@prisma/client";
-import {AuthOptions} from "next-auth";
+import { PrismaClient } from "@prisma/client";
+import { AuthOptions } from "next-auth";
 import CredentialsProvider from "@/app/api/auth/[...nextauth]/providers/CredentialsProvider";
 import GoogleProvider from "@/app/api/auth/[...nextauth]/providers/GoogleProvider";
 

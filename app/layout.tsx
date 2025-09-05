@@ -2,7 +2,7 @@
 import "./globals.css";
 import { LayoutProps } from "@/app/types/layout";
 import ToastProvider from "@/providers/ToastProvider";
-import {SessionProvider} from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 import AppAuthWrapper from "@/components/AppAuthWrapper";
 
 export default function RootLayout({ children }: LayoutProps) {
@@ -11,9 +11,7 @@ export default function RootLayout({ children }: LayoutProps) {
       <body className="h-full">
         <ToastProvider>
           <SessionProvider>
-            <AppAuthWrapper>
-              {children}
-            </AppAuthWrapper>
+            <AppAuthWrapper>{children}</AppAuthWrapper>
           </SessionProvider>
         </ToastProvider>
       </body>
