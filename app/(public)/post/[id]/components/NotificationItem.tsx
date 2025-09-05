@@ -1,5 +1,7 @@
 import React from "react";
 import Link from "next/link";
+import clsx from "clsx";
+import Verified from "@/icons/Verified";
 
 type User = {
   id: number;
@@ -23,39 +25,60 @@ type NotificationItemProps = {
   };
 };
 
-const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => {
+const NotificationItem: React.FC<NotificationItemProps> = ({
+  notification,
+}) => {
   const senderAvatar = (
-    <div className="w-[32px] h-[32px] rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-      {notification.sender.pictureUrl ? (
-        <img src={notification.sender.pictureUrl} alt="sender" className="w-full h-full object-cover" />
-      ) : (
-        <span className="text-xs font-semibold text-white">
-          {notification.sender.username?.charAt(0).toUpperCase() ?? "U"}
-        </span>
-      )}
-    </div>
+    <>
+      <Link
+        href={`/profile/${notification.senderId}`}
+        className="w-[32px] h-[32px] cursor-pointer"
+      >
+        {notification.sender.pictureUrl ? (
+          <img
+            src={notification.sender.pictureUrl}
+            alt="profile picture"
+            className="rounded-full"
+          />
+        ) : (
+          <div
+            className={clsx(
+              "w-full h-full bg-(--fly-primary) flex",
+              "justify-center items-center text-(--fly-white) rounded-full"
+            )}
+          >
+            {notification.sender.username?.charAt(0).toUpperCase()}
+          </div>
+        )}
+      </Link>
+    </>
   );
 
   const content = (
-    <div className="flex-1">
-      <div className="flex items-center gap-2">
-        {senderAvatar}
-        <div className="flex flex-col">
-          <Link href={`/profile/${notification.senderId}`} className="text-sm font-bold text-gray-800">
-            {notification.sender.username}
-          </Link>
-          <span className="text-xs text-gray-600">{notification.message}</span>
-        </div>
+    <div className="flex items-center gap-[8px]">
+      {senderAvatar}
+      <div className="flex flex-col">
+        <Link
+          href={`/profile/${notification.senderId}`}
+          className="flex text-[#5B5B5B] font-bold"
+        >
+          {notification.sender.username} <Verified />
+        </Link>
+        <div className="text-[#5B5B5B]">{notification.message}</div>
       </div>
     </div>
   );
 
   return (
-    <div className="flex items-center justify-between p-3 border rounded-md bg-white">
+    <div className="flex justify-between flex-1">
       {content}
       {notification.post && (
-        <a href={`/post/${notification.post.id}`} className="ml-4">
-          <img src={notification.post.imageUrl} alt="post" className="w-10 h-10 object-cover" />
+        <a href={`/post/${notification.post.id}`} className="flex items-center ml-4">
+          <img
+            src={notification.post.imageUrl}
+            alt="post"
+            className="w-10 h-10 object-cover"
+          />
         </a>
       )}
     </div>

@@ -15,26 +15,24 @@ const highlightHashtags = (text: string) => {
   );
 };
 
-export default function UserText({
-  postText,
-}: {
-  postText: string;
-}) {
+export default function UserText({ postText }: { postText: string }) {
   const [showFullText, setShowFullText] = useState(false);
 
   const isLongText = postText.length > 100;
   const displayedText = showFullText ? postText : postText.slice(0, 100).trim();
 
-  return <>
-    {highlightHashtags(displayedText)}
-    {isLongText && !showFullText && "..."}{" "}
-    {isLongText && (
-      <span
-        onClick={() => setShowFullText(!showFullText)}
-        className="text-blue-500 hover:underline mt-2 cursor-pointer"
-      >
+  return (
+    <>
+      {highlightHashtags(displayedText)}
+      {isLongText && !showFullText && "..."}{" "}
+      {isLongText && (
+        <span
+          onClick={() => setShowFullText(!showFullText)}
+          className="text-blue-500 hover:underline mt-2 cursor-pointer"
+        >
           {!showFullText && "Show more"}
         </span>
-    )}
-  </>;
+      )}
+    </>
+  );
 }

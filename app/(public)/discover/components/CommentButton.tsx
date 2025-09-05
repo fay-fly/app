@@ -99,7 +99,7 @@ export default function CommentButton({
             transform: "translate(-50%, -50%)",
             borderRadius: "8px",
             maxWidth: "500px",
-            width: "100%"
+            width: "100%",
           },
         }}
       >

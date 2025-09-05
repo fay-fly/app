@@ -20,7 +20,7 @@ export function UserCard({
   onClick,
   showStatus = true,
   alwaysShowUsername = true,
-}: UserCardProps){
+}: UserCardProps) {
   const initials = user.username?.charAt(0).toUpperCase() ?? "";
 
   const AvatarImg = (
@@ -44,30 +44,34 @@ export function UserCard({
     </div>
   );
 
-  return <div className="flex gap-[8px] items-center cursor-pointer">
-    <div
-      className="relative"
-      style={{ width: size, height: size, display: "inline-block" }}
-      onClick={onClick}
-    >
-      {user.image ? AvatarImg : AvatarFallback}
-      {showStatus && (
-        <span
-          className={clsx(
-            "absolute bottom-0 right-0 block",
-            "w-[8px] h-[8px]",
-            "bg-(--fly-success) border-1 border-white rounded-full"
-          )}
-        />
-      )}
+  return (
+    <div className="flex gap-[8px] items-center cursor-pointer">
+      <div
+        className="relative"
+        style={{ width: size, height: size, display: "inline-block" }}
+        onClick={onClick}
+      >
+        {user.image ? AvatarImg : AvatarFallback}
+        {showStatus && (
+          <span
+            className={clsx(
+              "absolute bottom-0 right-0 block",
+              "w-[8px] h-[8px]",
+              "bg-(--fly-success) border-1 border-white rounded-full"
+            )}
+          />
+        )}
+      </div>
+      <span
+        className={clsx(
+          "text-(--fly-text-primary) font-bold",
+          !alwaysShowUsername && "hidden md:block"
+        )}
+      >
+        {user.username}
+      </span>
     </div>
-    <span className={clsx(
-      "text-(--fly-text-primary) font-bold",
-      !alwaysShowUsername && "hidden md:block"
-    )}>
-      {user.username}
-    </span>
-  </div>;
-};
+  );
+}
 
 export default UserCard;

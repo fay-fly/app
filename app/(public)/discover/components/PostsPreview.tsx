@@ -157,7 +157,9 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
             />
             <div className="min-w-[318px]">
               <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
-                <span className="font-semibold">{postToPreview.author.username}</span>{" "}
+                <span className="font-semibold">
+                  {postToPreview.author.username}
+                </span>{" "}
                 <UserText postText={postToPreview.text} />
               </p>
               <div className="px-[16px] text-[#A0A0A0]">

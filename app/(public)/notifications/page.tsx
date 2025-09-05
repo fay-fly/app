@@ -1,14 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Notification, User, Post } from "@prisma/client";
 import PageLoader from "@/components/PageLoader";
 import NotificationItem from "@/app/(public)/post/[id]/components/NotificationItem";
+import clsx from "clsx";
 
 export type NotificationWithRelations = Notification & {
   sender: User;
   receiver: User;
   post: Post | null;
+  read: boolean;
 };
 
 export default function Notifications() {
@@ -21,6 +23,7 @@ export default function Notifications() {
       .then((response) => {
         setNotifications(response.data);
       });
+    axios.post("/api/notifications/mark-read");
   }, []);
 
   return (
@@ -28,9 +31,21 @@ export default function Notifications() {
       {!notifications ? (
         <PageLoader />
       ) : (
-        <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] gap-[24px] px-[16px] md:px-[16px]">
+        <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] gap-1 px-[16px] md:px-[16px] mt-5">
           {notifications.map((notification) => (
-            <NotificationItem key={notification.id} notification={notification} />
+            <div
+              key={notification.id}
+              className={clsx(!notification.read && "bg-[#7c89ff21]", "flex items-center gap-2 py-2 px-3")}
+            >
+              <span
+                className={clsx(
+                  "w-[8px] h-[8px] rounded-full",
+                  "bg-[#19b4f7]",
+                  notification.read && "opacity-0"
+                )}
+              />
+              <NotificationItem notification={notification} />
+            </div>
           ))}
         </div>
       )}

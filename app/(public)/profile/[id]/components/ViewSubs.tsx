@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import axios from "axios";
-import {handleError} from "@/utils/errors";
+import { handleError } from "@/utils/errors";
 import ReactModal from "react-modal";
-import {SubscribeItem} from "@/app/types/subscribeItem";
+import { SubscribeItem } from "@/app/types/subscribeItem";
 import Close from "@/icons/Close";
 import UserCard from "@/app/(public)/components/UserCard";
 
@@ -17,7 +17,12 @@ type ViewSubsProps = {
   userId: number;
 };
 
-export default function ViewSubs({ count, kind, fetchUrl, userId }: ViewSubsProps) {
+export default function ViewSubs({
+  count,
+  kind,
+  fetchUrl,
+  userId,
+}: ViewSubsProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<SubscribeItem[]>();
@@ -26,10 +31,12 @@ export default function ViewSubs({ count, kind, fetchUrl, userId }: ViewSubsProp
     setOpen(true);
     setLoading(true);
     try {
-      const res = await axios.get<SubscribeItem[]>(`${fetchUrl}?userId=${userId}`);
+      const res = await axios.get<SubscribeItem[]>(
+        `${fetchUrl}?userId=${userId}`
+      );
       setItems(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
-      handleError(e)
+      handleError(e);
       setItems([]);
     } finally {
       setLoading(false);
@@ -43,9 +50,7 @@ export default function ViewSubs({ count, kind, fetchUrl, userId }: ViewSubsProp
   return (
     <>
       <li className="cursor-pointer" onClick={openAndFetch}>
-        <span className="font-bold text-[#343434]">
-          {count}
-        </span>{" "}
+        <span className="font-bold text-[#343434]">{count}</span>{" "}
         {kind.charAt(0).toUpperCase() + kind.slice(1)}
       </li>
 
@@ -57,7 +62,9 @@ export default function ViewSubs({ count, kind, fetchUrl, userId }: ViewSubsProp
         ariaHideApp={false}
       >
         <div className="flex items-center justify-between border-b-1 border-gray-200 p-2">
-          <h2 className="text-lg font-semibold">{kind.charAt(0).toUpperCase() + kind.slice(1)}</h2>
+          <h2 className="text-lg font-semibold">
+            {kind.charAt(0).toUpperCase() + kind.slice(1)}
+          </h2>
           <button
             type="button"
             onClick={close}
@@ -74,12 +81,17 @@ export default function ViewSubs({ count, kind, fetchUrl, userId }: ViewSubsProp
           ) : items && items.length > 0 ? (
             <div className="max-h-96 overflow-auto gap-2">
               {items.map((subscriber) => {
-                return <a key={subscriber.id} href={`/profile/${subscriber.id}`}>
-                  <UserCard showStatus={false} user={{
-                    image: subscriber.pictureUrl,
-                    username: subscriber.username
-                  }} />
-                </a>;
+                return (
+                  <a key={subscriber.id} href={`/profile/${subscriber.id}`}>
+                    <UserCard
+                      showStatus={false}
+                      user={{
+                        image: subscriber.pictureUrl,
+                        username: subscriber.username,
+                      }}
+                    />
+                  </a>
+                );
               })}
             </div>
           ) : (
