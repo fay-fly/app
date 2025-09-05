@@ -72,7 +72,7 @@ export default function ViewSubs({ count, kind, fetchUrl, userId }: ViewSubsProp
           {loading ? (
             <div className="text-center text-gray-600">Loading…</div>
           ) : items && items.length > 0 ? (
-            <div className="max-h-96 overflow-auto">
+            <div className="max-h-96 overflow-auto gap-2">
               {items.map((subscriber) => {
                 return <a key={subscriber.id} href={`/profile/${subscriber.id}`}>
                   <UserCard showStatus={false} user={{
