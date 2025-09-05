@@ -9,7 +9,7 @@ import { getFormattedDate } from "@/utils/dates";
 import Close from "@/icons/Close";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import Image from "next/image";
-import PostText from "@/app/(public)/components/PostText";
+import UserText from "@/app/(public)/components/UserText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
 import PinButton from "@/app/(public)/discover/components/PinButton";
 
@@ -156,10 +156,10 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
               height={1}
             />
             <div className="min-w-[318px]">
-              <PostText
-                postText={postToPreview.text}
-                username={postToPreview.author.username}
-              />
+              <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
+                <span className="font-semibold">{postToPreview.author.username}</span>{" "}
+                <UserText postText={postToPreview.text} />
+              </p>
               <div className="px-[16px] text-[#A0A0A0]">
                 {getFormattedDate(postToPreview.createdAt)}
               </div>

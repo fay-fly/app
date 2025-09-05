@@ -8,6 +8,7 @@ import { handleError } from "@/utils/errors";
 import clsx from "clsx";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import Send from "@/icons/Send";
+import UserText from "@/app/(public)/components/UserText";
 
 type CommentButtonProps = {
   commentsCount: number;
@@ -97,6 +98,8 @@ export default function CommentButton({
             bottom: "auto",
             transform: "translate(-50%, -50%)",
             borderRadius: "8px",
+            maxWidth: "500px",
+            width: "100%"
           },
         }}
       >
@@ -125,9 +128,9 @@ export default function CommentButton({
                     </div>
                   )}
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col flex-1">
                   <strong>{comment.author.username}</strong>
-                  <span>{comment.text}</span>
+                  <UserText postText={comment.text} />
                 </div>
               </div>
             );
@@ -162,6 +165,7 @@ export default function CommentButton({
             rows={1}
             placeholder="Comment"
             disabled={processing}
+            className="flex-1"
           ></textarea>
           <button
             type="submit"

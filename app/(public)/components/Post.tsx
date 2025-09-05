@@ -5,7 +5,7 @@ import { PostWithUser } from "@/app/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import Image from "next/image";
-import PostText from "@/app/(public)/components/PostText";
+import UserText from "@/app/(public)/components/UserText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
 import PinButton from "@/app/(public)/discover/components/PinButton";
 import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
@@ -85,7 +85,10 @@ export default function Post({ post }: PostProps) {
           </div>
         </div>
       </div>
-      <PostText postText={post.text} username={post.author.username} />
+      <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
+        <span className="font-semibold">{post.author.username}</span>{" "}
+        <UserText postText={post.text} />
+      </p>
       <div className="px-[16px] text-[#A0A0A0]">
         {getFormattedDate(post.createdAt)}
       </div>
