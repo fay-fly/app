@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import {getServerSession} from "next-auth";
-import {authOptions} from "@/app/api/auth/[...nextauth]/authOptions";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const prisma = new PrismaClient();
 
@@ -16,11 +16,11 @@ export async function POST() {
   await prisma.notification.updateMany({
     where: {
       receiverId: userId,
-      read: false
+      read: false,
     },
     data: {
-      read: true
-    }
+      read: true,
+    },
   });
   return NextResponse.json({ status: 200 });
 }

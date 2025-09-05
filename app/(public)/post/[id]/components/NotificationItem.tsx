@@ -73,7 +73,10 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     <div className="flex justify-between flex-1">
       {content}
       {notification.post && (
-        <a href={`/post/${notification.post.id}`} className="flex items-center ml-4">
+        <a
+          href={`/post/${notification.post.id}`}
+          className="flex items-center ml-4"
+        >
           <img
             src={notification.post.imageUrl}
             alt="post"

@@ -82,7 +82,10 @@ export default function ViewSubs({
             <div className="max-h-96 overflow-auto gap-2">
               {items.map((subscriber) => {
                 return (
-                  <a key={subscriber.id} href={`/profile/${subscriber.username}`}>
+                  <a
+                    key={subscriber.id}
+                    href={`/profile/${subscriber.username}`}
+                  >
                     <UserCard
                       showStatus={false}
                       user={{

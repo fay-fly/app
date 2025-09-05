@@ -13,9 +13,11 @@ export default function ProfileContent({ username }: { username: string }) {
   const [user, setUser] = useState<UserWithPosts>();
 
   useEffect(() => {
-    axios.get<UserWithPosts>(`/api/users/get?username=${username}`).then((response) => {
-      setUser(response.data);
-    });
+    axios
+      .get<UserWithPosts>(`/api/users/get?username=${username}`)
+      .then((response) => {
+        setUser(response.data);
+      });
   }, [username]);
 
   return !user ? (

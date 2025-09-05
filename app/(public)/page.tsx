@@ -15,15 +15,17 @@ export default function Home() {
   }, []);
 
   const onSubscribe = (authorId: number) => {
-    setPosts((prev) => prev?.map(p => {
-      if (p.author.id == authorId) {
-        console.log(authorId);
-        return {...p, isFollowed: !p.isFollowed };
-      } else {
-        return p;
-      }
-    }))
-  }
+    setPosts((prev) =>
+      prev?.map((p) => {
+        if (p.author.id == authorId) {
+          console.log(authorId);
+          return { ...p, isFollowed: !p.isFollowed };
+        } else {
+          return p;
+        }
+      })
+    );
+  };
 
   return (
     <div className="w-full bg-white h-auto min-h-full">
@@ -33,7 +35,13 @@ export default function Home() {
             <PageLoader />
           ) : (
             posts.map((post) => {
-              return <Post key={`${post.isFollowed}-${post.id}`} post={post} onSubscribe={() => onSubscribe(post.author.id)} />;
+              return (
+                <Post
+                  key={`${post.isFollowed}-${post.id}`}
+                  post={post}
+                  onSubscribe={() => onSubscribe(post.author.id)}
+                />
+              );
             })
           )}
         </div>

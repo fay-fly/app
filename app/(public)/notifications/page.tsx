@@ -1,5 +1,5 @@
 "use client";
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Notification, User, Post } from "@prisma/client";
 import PageLoader from "@/components/PageLoader";
@@ -28,8 +28,6 @@ export default function Notifications() {
       });
   }, []);
 
-
-
   useEffect(() => {
     const markAllRead = async () => {
       try {
@@ -52,7 +50,10 @@ export default function Notifications() {
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("beforeunload", handleBeforeUnload);
 
-    if (prevPath.current === "/notifications" && pathname !== "/notifications") {
+    if (
+      prevPath.current === "/notifications" &&
+      pathname !== "/notifications"
+    ) {
       markAllRead();
     }
 
@@ -64,7 +65,6 @@ export default function Notifications() {
     };
   }, [pathname]);
 
-
   return (
     <>
       {!notifications ? (
@@ -74,7 +74,10 @@ export default function Notifications() {
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={clsx(!notification.read && "bg-[#7c89ff21]", "flex items-center gap-[5px] py-2 pl-[5px] pr-[18px]")}
+              className={clsx(
+                !notification.read && "bg-[#7c89ff21]",
+                "flex items-center gap-[5px] py-2 pl-[5px] pr-[18px]"
+              )}
             >
               <span
                 className={clsx(

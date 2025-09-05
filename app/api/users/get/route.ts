@@ -8,7 +8,10 @@ export async function GET(req: NextRequest) {
   const username = searchParams.get("username");
 
   if (!username) {
-    return NextResponse.json({ error: "Username is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Username is required" },
+      { status: 400 }
+    );
   }
 
   const user = await prisma.user.findUnique({
