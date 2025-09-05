@@ -6,6 +6,7 @@ import Image from "next/image";
 import PageLoader from "@/components/PageLoader";
 import clsx from "clsx";
 import Link from "next/link";
+import ViewSubs from "@/app/(public)/profile/[id]/components/ViewSubs";
 
 export default function ProfileContent({ id }: { id: number }) {
   const [tabs, setTabs] = useState<"publications" | "pins">("publications");
@@ -52,18 +53,18 @@ export default function ProfileContent({ id }: { id: number }) {
             <span>@{user.username}</span>
           </h1>
           <ul className="flex gap-[24px] mt-[10px] text-[#A0A0A0]">
-            <li className="cursor-pointer">
-              <span className="font-bold text-[#343434]">
-                {user._count.followers}
-              </span>{" "}
-              Subscribers
-            </li>
-            <li className="cursor-pointer">
-              <span className="font-bold text-[#343434]">
-                {user._count.subscriptions}
-              </span>{" "}
-              Subscriptions
-            </li>
+            <ViewSubs
+              count={user._count.followers}
+              kind="subscribers"
+              fetchUrl="/api/users/subscribers"
+              userId={user.id}
+            />
+            <ViewSubs
+              count={user._count.subscriptions}
+              kind="subscriptions"
+              fetchUrl="/api/users/subscriptions"
+              userId={user.id}
+            />
           </ul>
           <p className="text-[#5B5B5B] my-[12px]">Profile desc goes here...</p>
         </div>
