@@ -31,9 +31,16 @@ export async function GET(req: NextRequest) {
               where: { userId: userId },
               select: { id: true },
             },
+            pins: {
+              where: { userId: userId },
+              select: { id: true },
+            },
           }
         : {
             likes: {
+              select: { id: true, userId: true },
+            },
+            pins: {
               select: { id: true, userId: true },
             },
           }),
@@ -44,5 +51,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
-  return NextResponse.json(post);
+  const likedByMe = Boolean(post.likes && post.likes.length > 0);
+  const pinnedByMe = Boolean(post.pins && post.pins.length > 0);
+
+  const response = {
+    ...post,
+    likedByMe,
+    pinnedByMe,
+  };
+
+  return NextResponse.json(response);
 }
