@@ -1,10 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import { Notification, User, Post } from "@prisma/client";
 import PageLoader from "@/components/PageLoader";
 import NotificationItem from "@/app/(public)/post/[id]/components/NotificationItem";
 import clsx from "clsx";
+import { usePathname } from "next/navigation";
 
 export type NotificationWithRelations = Notification & {
   sender: User;
@@ -14,6 +15,8 @@ export type NotificationWithRelations = Notification & {
 };
 
 export default function Notifications() {
+  const pathname = usePathname();
+  const prevPath = useRef<string | null>(null);
   const [notifications, setNotifications] =
     useState<NotificationWithRelations[]>();
 
@@ -25,12 +28,15 @@ export default function Notifications() {
       });
   }, []);
 
-  useEffect(() => {
-    let marked = false;
 
+
+  useEffect(() => {
     const markAllRead = async () => {
-      await axios.post("/api/notifications/mark-read");
-      marked = true;
+      try {
+        await axios.post("/api/notifications/mark-read");
+      } catch (err) {
+        console.error("Failed to mark notifications:", err);
+      }
     };
 
     const handleVisibilityChange = () => {
@@ -40,21 +46,23 @@ export default function Notifications() {
     };
 
     const handleBeforeUnload = () => {
-      markAllRead();
+      navigator.sendBeacon("/api/notifications/mark-read");
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("beforeunload", handleBeforeUnload);
 
+    if (prevPath.current === "/notifications" && pathname !== "/notifications") {
+      markAllRead();
+    }
+
+    prevPath.current = pathname;
+
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("beforeunload", handleBeforeUnload);
-
-      if (!marked) {
-        markAllRead();
-      }
     };
-  }, []);
+  }, [pathname]);
 
 
   return (
@@ -66,7 +74,7 @@ export default function Notifications() {
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={clsx(!notification.read && "bg-[#7c89ff21]", "flex items-center gap-2 py-2 px-3")}
+              className={clsx(!notification.read && "bg-[#7c89ff21]", "flex items-center gap-[5px] py-2 pl-[5px] pr-[18px]")}
             >
               <span
                 className={clsx(
