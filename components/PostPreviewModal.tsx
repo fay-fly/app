@@ -104,7 +104,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
             <Close />
           </button>
         </div>
-        <div ref={commentsRef} className="flex-1 overflow-auto max-h-[554px]">
+        <div ref={commentsRef} className="flex-1 overflow-auto min-h-[554px] max-h-[554px]">
           <p className="px-[8px] text-[#5B5B5B] whitespace-pre-wrap overflow-auto">
                 <span className="font-semibold">
                   {props.post.author.username}
