@@ -1,6 +1,4 @@
 import Image from "next/image";
-import clsx from "clsx";
-import Verified from "@/icons/Verified";
 import Close from "@/icons/Close";
 import UserText from "@/app/(public)/components/UserText";
 import {getFormattedDate} from "@/utils/dates";
