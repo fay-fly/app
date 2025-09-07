@@ -75,7 +75,7 @@ export default function Post({ post, onSubscribe }: PostProps) {
             likesCount={post.likesCount}
             likedByMe={post.likedByMe}
           />
-          <CommentButton commentsCount={post.commentsCount} postId={post.id} />
+          <CommentButton commentsCount={post.commentsCount} post={post} />
         </div>
         <div>
           <div className="flex gap-[4px] m-[8px] items-center">
