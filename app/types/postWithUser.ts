@@ -1,3 +1,5 @@
+import {Comment} from "@prisma/client";
+
 export type User = {
   id: number;
   username: string;
@@ -26,6 +28,10 @@ type SubsCount = {
     followers: number;
     subscriptions: number;
   };
+};
+
+export type CommentWithUser = Comment & {
+  author: User;
 };
 
 export type UserWithPosts = User &

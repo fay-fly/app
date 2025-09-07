@@ -118,34 +118,9 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
               right: "auto",
               bottom: "auto",
               transform: "translate(-50%, -50%)",
-              borderRadius: "8px",
             },
           }}
         >
-          <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
-            <div className="flex gap-[8px] items-center">
-              <div className="w-[32px] h-[32px]">
-                <div
-                  className={clsx(
-                    "w-full h-full bg-(--fly-primary) flex",
-                    "justify-center items-center text-(--fly-white) rounded-full"
-                  )}
-                >
-                  {postToPreview.author.username.charAt(0).toUpperCase()}
-                </div>
-              </div>
-              <a
-                href={`/profile/${postToPreview.author.username}`}
-                className="text-(--fly-text-primary) font-semibold"
-              >
-                {postToPreview.author.username}
-              </a>
-              <Verified />
-            </div>
-            <button onClick={() => setOpen(false)} className="cursor-pointer">
-              <Close />
-            </button>
-          </div>
           <div className="flex">
             <Image
               src={postToPreview.imageUrl}
@@ -156,6 +131,30 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
               height={1}
             />
             <div className="min-w-[318px]">
+              <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
+                <div className="flex gap-[8px] items-center">
+                  <div className="w-[32px] h-[32px]">
+                    <div
+                      className={clsx(
+                        "w-full h-full bg-(--fly-primary) flex",
+                        "justify-center items-center text-(--fly-white) rounded-full"
+                      )}
+                    >
+                      {postToPreview.author.username.charAt(0).toUpperCase()}
+                    </div>
+                  </div>
+                  <a
+                    href={`/profile/${postToPreview.author.username}`}
+                    className="text-(--fly-text-primary) font-semibold"
+                  >
+                    {postToPreview.author.username}
+                  </a>
+                  <Verified />
+                </div>
+                <button onClick={() => setOpen(false)} className="cursor-pointer">
+                  <Close />
+                </button>
+              </div>
               <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
                 <span className="font-semibold">
                   {postToPreview.author.username}
