@@ -13,6 +13,7 @@ import ReactModal from "react-modal";
 import {CommentWithUser, PostWithUser} from "@/app/types/postWithUser";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
+import UserCard from "@/app/(public)/components/UserCard";
 
 type PostPreviewModalProps = {
   open: boolean;
@@ -62,6 +63,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
     ariaHideApp={false}
     shouldFocusAfterRender={false}
     onRequestClose={props.onRequestClose}
+    className="w-full md:w-auto bg-white"
     style={{
       overlay: {
         display: "flex",
@@ -92,27 +94,12 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
           height={1}
         />
       </div>
-      <div className="flex flex-col min-w-[320px] w-full md:w-[400px]">
+      <div className="flex flex-col w-full md:w-[400px]">
         <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
-          <div className="flex gap-[8px] items-center">
-            <div className="w-[32px] h-[32px]">
-              <div
-                className={clsx(
-                  "w-full h-full bg-(--fly-primary) flex",
-                  "justify-center items-center text-(--fly-white) rounded-full"
-                )}
-              >
-                {props.post.author.username.charAt(0).toUpperCase()}
-              </div>
-            </div>
-            <a
-              href={`/profile/${props.post.author.username}`}
-              className="text-(--fly-text-primary) font-semibold"
-            >
-              {props.post.author.username}
-            </a>
-            <Verified />
-          </div>
+          <UserCard user={{
+            username: props.post.author.username,
+            image: props.post.author.pictureUrl,
+          }} showStatus={false} />
           <button onClick={() => props.onRequestClose()} className="cursor-pointer">
             <Close />
           </button>
