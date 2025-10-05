@@ -7,10 +7,13 @@ import PageLoader from "@/components/PageLoader";
 import clsx from "clsx";
 import Link from "next/link";
 import ViewSubs from "@/app/(public)/profile/[username]/components/ViewSubs";
+import Edit from "@/icons/Edit";
+import ProfileEditModal from "@/app/(public)/profile/[username]/components/ProfileEditModal";
 
 export default function ProfileContent({ username }: { username: string }) {
   const [tabs, setTabs] = useState<"publications" | "pins">("publications");
   const [user, setUser] = useState<UserWithPosts>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     axios
@@ -45,9 +48,14 @@ export default function ProfileContent({ username }: { username: string }) {
           )}
         </div>
       </div>
+      <div className="flex justify-end mt-[16px] mr-[16px] p-[8px]">
+        <div className="bg-[#F7F8FF] rounded-full cursor-pointer" onClick={() => setIsModalOpen(true)}>
+          <Edit />
+        </div>
+        <ProfileEditModal isOpen={isModalOpen} onCloseAction={() => setIsModalOpen(false)} onSaveAction={() => {}} username={user.username} pictureUrl={user.pictureUrl} bio={""} />
+      </div>
       <div className="mx-[16px]">
-        <div className="p-4 flex items-center space-x-4 relative"></div>
-        <div className="mt-[24px]">
+        <div>
           <span className="text-[#F883B8] font-semibold text-[14px]">
             Member
           </span>
