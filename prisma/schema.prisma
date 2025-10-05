@@ -21,6 +21,7 @@ model User {
   emailVerificationExpiry  DateTime?
   emailVerified            Boolean        @default(false)
   pictureUrl               String?
+  profileBgUrl             String?
   posts                    Post[]
   likes                    Like[]
   createdAt                DateTime       @default(now())

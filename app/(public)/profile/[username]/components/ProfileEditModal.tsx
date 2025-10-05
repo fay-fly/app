@@ -95,7 +95,7 @@ export default function ProfileEditModal({
     <Modal
       isOpen={isOpen}
       onRequestClose={onCloseAction}
-      className="w-full max-w-md mx-auto bg-white rounded-lg outline-none"
+      className="w-full max-w-[540px] mx-auto bg-white rounded-lg outline-none"
       overlayClassName="fixed inset-0 bg-black/40 flex items-center justify-center px-4"
       ariaHideApp={false}
     >
