@@ -7,7 +7,6 @@ import ReactModal from "react-modal";
 import { SubscribeItem } from "@/app/types/subscribeItem";
 import Close from "@/icons/Close";
 import UserCard from "@/app/(public)/components/UserCard";
-import clsx from "clsx";
 
 type SubsKind = "subscribers" | "subscriptions";
 
