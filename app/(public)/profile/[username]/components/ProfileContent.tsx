@@ -11,6 +11,7 @@ import Edit from "@/icons/Edit";
 import ProfileEditModal from "@/app/(public)/profile/[username]/components/ProfileEditModal";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import {handleError} from "@/utils/errors";
 
 export type EditProfilePayload = {
   fullName: string;
@@ -57,7 +58,7 @@ export default function ProfileContent({ username }: { username: string }) {
         router.push(`/profile/${data.username}`);
       }
     } catch (error) {
-      console.error("Failed to update profile:", error);
+      handleError(error)
     }
   };
 
