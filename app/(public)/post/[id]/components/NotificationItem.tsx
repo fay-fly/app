@@ -38,7 +38,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           <img
             src={notification.sender.pictureUrl}
             alt="profile picture"
-            className="rounded-full"
+            className="rounded-full w-[32px] h-[32px]"
           />
         ) : (
           <div

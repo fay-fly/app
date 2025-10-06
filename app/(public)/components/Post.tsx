@@ -28,7 +28,7 @@ export default function Post({ post, onSubscribe }: PostProps) {
               <img
                 src={post.author.pictureUrl}
                 alt="profile image"
-                className="rounded-full"
+                className="rounded-full w-[32px] h-[32px]"
               />
             ) : (
               <div

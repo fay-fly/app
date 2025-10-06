@@ -50,7 +50,7 @@ export function CommentForm({ postId, onCommentAdded, disabled }: CommentFormPro
             <img
               src={session?.user.image}
               alt="profile image"
-              className="rounded-full"
+              className="rounded-full w-[32px] h-[32px]"
             />
           ) : (
             <div
