@@ -3,7 +3,11 @@ import {Comment} from "@prisma/client";
 export type User = {
   id: number;
   username: string;
+  bio: string;
+  fullName: string;
+  gender: "male" | "female";
   pictureUrl: string;
+  profileBgUrl: string;
 };
 
 export type Post = {

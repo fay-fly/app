@@ -9,11 +9,27 @@ import Link from "next/link";
 import ViewSubs from "@/app/(public)/profile/[username]/components/ViewSubs";
 import Edit from "@/icons/Edit";
 import ProfileEditModal from "@/app/(public)/profile/[username]/components/ProfileEditModal";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+
+export type EditProfilePayload = {
+  fullName: string;
+  username: string;
+  gender: "male" | "female";
+  bio: string;
+  pictureUrl: string;
+  profileBgUrl: string;
+}
 
 export default function ProfileContent({ username }: { username: string }) {
   const [tabs, setTabs] = useState<"publications" | "pins">("publications");
   const [user, setUser] = useState<UserWithPosts>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  // Check if the current user is viewing their own profile
+  const isOwnProfile = session?.user?.username === username;
 
   useEffect(() => {
     axios
@@ -23,6 +39,23 @@ export default function ProfileContent({ username }: { username: string }) {
       });
   }, [username]);
 
+  const handleSaveProfile = async (data: EditProfilePayload) => {
+    try {
+      await axios.post("/api/users/update", {
+        ...data
+      });
+      const response = await axios.get<UserWithPosts>(`/api/users/get?username=${data.username}`);
+      setUser(response.data);
+      setIsModalOpen(false);
+
+      if (data.username !== username) {
+        router.push(`/profile/${data.username}`);
+      }
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+    }
+  };
+
   return !user ? (
     <PageLoader />
   ) : (
@@ -30,8 +63,9 @@ export default function ProfileContent({ username }: { username: string }) {
       <div
         className="h-[124px] relative"
         style={{
-          background:
-            "linear-gradient(135deg, #d8ddff 0%, #a2aaff 50%, #7c89ff 100%)",
+          background: user.profileBgUrl
+            ? `url(${user.profileBgUrl}) center/cover`
+            : "linear-gradient(135deg, #d8ddff 0%, #a2aaff 50%, #7c89ff 100%)",
         }}
       >
         <div className="absolute -bottom-[48px] left-4 flex items-end gap-[24px]">
@@ -48,13 +82,15 @@ export default function ProfileContent({ username }: { username: string }) {
           )}
         </div>
       </div>
-      <div className="flex justify-end mt-[16px] mr-[16px] p-[8px]">
-        <div className="bg-[#F7F8FF] rounded-full cursor-pointer" onClick={() => setIsModalOpen(true)}>
-          <Edit />
+      {isOwnProfile && (
+        <div className="flex justify-end mt-[16px] mr-[16px] p-[8px]">
+          <div className="bg-[#F7F8FF] rounded-full cursor-pointer" onClick={() => setIsModalOpen(true)}>
+            <Edit />
+          </div>
+          <ProfileEditModal isOpen={isModalOpen} onCloseAction={() => setIsModalOpen(false)} onSaveAction={handleSaveProfile} username={user.username} pictureUrl={user.pictureUrl} bio={user.bio} fullName={user.fullName} profileBgUrl={user.profileBgUrl} />
         </div>
-        <ProfileEditModal isOpen={isModalOpen} onCloseAction={() => setIsModalOpen(false)} onSaveAction={() => {}} username={user.username} pictureUrl={user.pictureUrl} bio={""} />
-      </div>
-      <div className="mx-[16px]">
+      )}
+      <div className={isOwnProfile ? 'mx-[16px]' : 'mb-[16px] mt-[60px]'}>
         <div>
           <span className="text-[#F883B8] font-semibold text-[14px]">
             Member
@@ -62,6 +98,7 @@ export default function ProfileContent({ username }: { username: string }) {
           <h1 className="text-[#A0A0A0] font-bold text-[16px] flex items-center">
             <span>@{user.username}</span>
           </h1>
+          {user.fullName && <h1 className="text-[24px] text-[#343434] font-bold">{user.fullName}</h1>}
           <ul className="flex gap-[24px] mt-[10px] text-[#A0A0A0]">
             <ViewSubs
               count={user._count.followers}
@@ -76,7 +113,7 @@ export default function ProfileContent({ username }: { username: string }) {
               userId={user.id}
             />
           </ul>
-          <p className="text-[#5B5B5B] my-[12px]">Profile desc goes here...</p>
+          {user.bio && <p className="text-[#5B5B5B] text-[14px] my-[12px]">{user.bio}</p>}
         </div>
       </div>
       <div className="flex">

@@ -6,22 +6,15 @@ import FormSelect from "@/components/FormSelect";
 import Photo from "@/icons/Photo";
 import Button from "@/components/Button";
 import Close from "@/icons/Close";
-
-type EditProfilePayload = {
-  fullName: string;
-  username: string;
-  gender: "male" | "female";
-  bio: string;
-  pictureUrl: string;
-  backgroundUrl: string;
-}
+import {EditProfilePayload} from "@/app/(public)/profile/[username]/components/ProfileContent";
 
 type ProfileEditModalProps = {
   isOpen: boolean;
   onCloseAction: () => void;
+  fullName: string;
   username: string;
   pictureUrl?: string;
-  backgroundUrl?: string
+  profileBgUrl?: string
   bio?: string;
   onSaveAction: (data: EditProfilePayload) => void;
 }
@@ -29,19 +22,20 @@ type ProfileEditModalProps = {
 export default function ProfileEditModal({
   isOpen,
   onCloseAction,
+  fullName: initialFullName,
   username: initialUsername,
   pictureUrl: initialPictureUrl,
-  backgroundUrl: initialBackgroundUrl,
+  profileBgUrl: initialBackgroundUrl,
   bio: initialBio,
   onSaveAction,
 }: ProfileEditModalProps) {
   const [profileEditPayload, setProfileEditPayload] = useState<EditProfilePayload>({
-    fullName: "",
+    fullName: initialFullName,
     username: initialUsername,
     gender: "male",
     bio: initialBio ?? "",
     pictureUrl: initialPictureUrl ?? "",
-    backgroundUrl: initialBackgroundUrl ?? "",
+    profileBgUrl: initialBackgroundUrl ?? "",
   });
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +74,7 @@ export default function ProfileEditModal({
   const onBackgroundSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      handleFileToDataUrl(file, "backgroundUrl");
+      handleFileToDataUrl(file, "profileBgUrl");
     }
   };
 
@@ -122,8 +116,8 @@ export default function ProfileEditModal({
         <div
           className="h-[124px] relative"
           style={{
-            background: profileEditPayload.backgroundUrl
-              ? `url(${profileEditPayload.backgroundUrl}) center/cover`
+            background: profileEditPayload.profileBgUrl
+              ? `url(${profileEditPayload.profileBgUrl}) center/cover`
               : "linear-gradient(135deg, #d8ddff 0%, #a2aaff 50%, #7c89ff 100%)",
           }}
         >
@@ -164,8 +158,8 @@ export default function ProfileEditModal({
           </div>
         </div>
         <div className="mt-[72px] mx-[16px] flex flex-col gap-[16px] mb-[16px]">
-          <FormInput label={"Full name"} value={profileEditPayload.fullName} onChange={(e) => handleChange("fullName", e.target.value)} />
-          <FormInput label={"Username"} value={profileEditPayload.username} onChange={(e) => handleChange("username", e.target.value)} />
+          <FormInput label={"Full name"} value={profileEditPayload.fullName ?? ""} onChange={(e) => handleChange("fullName", e.target.value)} />
+          <FormInput label={"Username"} value={profileEditPayload.username ?? ""} onChange={(e) => handleChange("username", e.target.value)} />
           <FormSelect
             label="Gender"
             value={profileEditPayload.gender}
@@ -181,7 +175,11 @@ export default function ProfileEditModal({
           <span className="font-semibold text-[14px] text-(--fly-text-primary)">
             Bio
           </span>
-            <textarea className="bg-(--fly-white) placeholder-[--fly-input-placeholder-color] border-[1.5px] border-solid border-(--fly-border-color) px-[16px] rounded-[12px]" rows={5}></textarea>
+            <textarea
+              className="bg-(--fly-white) placeholder-[--fly-input-placeholder-color] border-[1.5px] border-solid border-(--fly-border-color) px-[16px] rounded-[12px]"
+              value={profileEditPayload.bio ?? ""}
+              onChange={(e) => handleChange("bio", e.target.value)}
+              rows={5}></textarea>
           </label>
         </div>
       </form>

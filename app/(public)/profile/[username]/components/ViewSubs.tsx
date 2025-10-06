@@ -79,7 +79,7 @@ export default function ViewSubs({
           {loading ? (
             <div className="text-center text-gray-600">Loading…</div>
           ) : items && items.length > 0 ? (
-            <div className="max-h-96 overflow-auto gap-2">
+            <div className="max-h-96 overflow-auto flex flex-col gap-2">
               {items.map((subscriber) => {
                 return (
                   <a
