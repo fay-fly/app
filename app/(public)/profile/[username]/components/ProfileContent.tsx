@@ -26,7 +26,7 @@ export default function ProfileContent({ username }: { username: string }) {
   const [user, setUser] = useState<UserWithPosts>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
 
   // Check if the current user is viewing their own profile
   const isOwnProfile = session?.user?.username === username;
@@ -47,6 +47,11 @@ export default function ProfileContent({ username }: { username: string }) {
       const response = await axios.get<UserWithPosts>(`/api/users/get?username=${data.username}`);
       setUser(response.data);
       setIsModalOpen(false);
+      
+      await update({
+        username: response.data.username,
+        image: response.data.pictureUrl,
+      });
 
       if (data.username !== username) {
         router.push(`/profile/${data.username}`);

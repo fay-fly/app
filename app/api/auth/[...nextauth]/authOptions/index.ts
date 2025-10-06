@@ -53,6 +53,7 @@ export const authOptions: AuthOptions = {
       } else if (trigger === "update") {
         token.role = session.role;
         token.username = session.username;
+        token.image = session.image;
       } else if (user) {
         token.id = parseInt(user.id as string);
         token.email = user.email;
@@ -68,6 +69,7 @@ export const authOptions: AuthOptions = {
         session.user.email = token.email as string;
         session.user.role = token.role as string;
         session.user.username = token.username;
+        session.user.image = token.image;
       }
       return session;
     },
@@ -84,6 +86,11 @@ export const authOptions: AuthOptions = {
               emailVerified: true,
               pictureUrl: user.image,
             },
+          });
+        } else if (!existingUser.pictureUrl && user.image) {
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: { pictureUrl: user.image },
           });
         }
       }
