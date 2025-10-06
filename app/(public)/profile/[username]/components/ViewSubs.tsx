@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { handleError } from "@/utils/errors";
 import ReactModal from "react-modal";
 import { SubscribeItem } from "@/app/types/subscribeItem";
 import Close from "@/icons/Close";
 import UserCard from "@/app/(public)/components/UserCard";
+import clsx from "clsx";
 
 type SubsKind = "subscribers" | "subscriptions";
 
@@ -75,9 +76,16 @@ export default function ViewSubs({
           </button>
         </div>
 
-        <div className="p-2">
+        <div className="p-2 min-h-[100px]">
           {loading ? (
-            <div className="text-center text-gray-600">Loading…</div>
+            <div className="overflow-auto flex flex-col gap-2">
+              {[...Array(3)].map((_, index) => (
+                <div key={index} className="flex gap-[8px] items-center">
+                  <div className="w-[32px] h-[32px] rounded-full bg-gray-200"></div>
+                  <span className="h-4 bg-gray-200 rounded w-24"></span>
+                </div>
+              ))}
+            </div>
           ) : items && items.length > 0 ? (
             <div className="max-h-96 overflow-auto flex flex-col gap-2">
               {items.map((subscriber) => {
