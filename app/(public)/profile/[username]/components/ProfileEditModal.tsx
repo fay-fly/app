@@ -52,16 +52,43 @@ export default function ProfileEditModal({
     });
   };
 
-  const handleFileToDataUrl = (file: File, field: keyof EditProfilePayload) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      setProfileEditPayload((prev) => ({
-        ...prev,
-        [field]: result,
-      }));
-    };
-    reader.readAsDataURL(file);
+  const compressImage = (file: File, maxWidth: number = 1200, quality: number = 0.8): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          // Convert to base64 with compression
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedDataUrl);
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileToDataUrl = async (file: File, field: keyof EditProfilePayload) => {
+    const compressedDataUrl = await compressImage(file);
+    setProfileEditPayload((prev) => ({
+      ...prev,
+      [field]: compressedDataUrl,
+    }));
   };
 
   const onAvatarSelected = (e: React.ChangeEvent<HTMLInputElement>) => {

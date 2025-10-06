@@ -16,7 +16,6 @@ type UpdateUserPayload = {
 };
 
 export async function POST(req: NextRequest) {
-  // Get authenticated user's ID from session (server-side, cannot be spoofed)
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 
