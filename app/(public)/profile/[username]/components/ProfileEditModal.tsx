@@ -122,8 +122,8 @@ export default function ProfileEditModal({
     <Modal
       isOpen={isOpen}
       onClose={onCloseAction}
-      className="w-full max-w-[540px] mx-auto bg-white rounded-lg outline-none"
-      overlayClassName="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-[100]"
+      className="w-full h-full md:max-w-[540px] md:h-auto mx-auto bg-white md:rounded-lg outline-none"
+      overlayClassName="fixed inset-0 bg-black/40 flex items-center justify-center md:px-4 z-[100]"
     >
       <form onSubmit={handleSubmit}>
         <div className="flex justify-between items-center mx-[16px] my-[8px]">
