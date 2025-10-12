@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Pull Vercel Environment Variables (Preview)
-        run: npx vercel@latest env pull .env.local --environment=preview --yes
+        run: npx vercel@latest env pull .env.local --environment=preview --yes --token $VERCEL_TOKEN
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
@@ -70,7 +70,7 @@ jobs:
         run: npm ci
 
       - name: Pull Vercel Environment Variables (Production)
-        run: npx vercel@latest env pull .env.local --environment=production --yes
+        run: npx vercel@latest env pull .env.local --environment=production --yes --token $VERCEL_TOKEN
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
