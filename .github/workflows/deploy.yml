@@ -34,9 +34,17 @@ jobs:
         run: npm ci
 
       - name: Pull Vercel Environment Variables (Preview)
-        run: npx vercel@latest env pull .env.local --environment=preview --yes --token $VERCEL_TOKEN
+        run: >
+          npx vercel@latest env pull .env.local
+          --environment=preview
+          --yes
+          --token $VERCEL_TOKEN
+          --project $VERCEL_PROJECT_ID
+          --scope $VERCEL_ORG_ID
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
       - name: Build
         run: npm run build
@@ -70,9 +78,17 @@ jobs:
         run: npm ci
 
       - name: Pull Vercel Environment Variables (Production)
-        run: npx vercel@latest env pull .env.local --environment=production --yes --token $VERCEL_TOKEN
+        run: >
+          npx vercel@latest env pull .env.local
+          --environment=production
+          --yes
+          --token $VERCEL_TOKEN
+          --project $VERCEL_PROJECT_ID
+          --scope $VERCEL_ORG_ID
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
       - name: Build
         run: npm run build
