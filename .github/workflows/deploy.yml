@@ -43,11 +43,11 @@ jobs:
           }
           EOF
 
-      - name: Pull Vercel Environment Variables (Preview)
+      - name: Pull Vercel Project Settings
         run: >
-          npx vercel@latest env pull .env.local
-          --environment=preview
+          npx vercel@latest pull
           --yes
+          --environment=preview
           --token "${VERCEL_TOKEN}"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -97,11 +97,11 @@ jobs:
           }
           EOF
 
-      - name: Pull Vercel Environment Variables (Production)
+      - name: Pull Vercel Project Settings
         run: >
-          npx vercel@latest env pull .env.local
-          --environment=production
+          npx vercel@latest pull
           --yes
+          --environment=production
           --token "${VERCEL_TOKEN}"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
