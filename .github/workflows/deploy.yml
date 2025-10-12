@@ -48,7 +48,7 @@ jobs:
           npx vercel@latest env pull .env.local
           --environment=preview
           --yes
-          --token $VERCEL_TOKEN
+          --token "${VERCEL_TOKEN}"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
@@ -59,9 +59,8 @@ jobs:
         run: >
           npx vercel@latest deploy
           --prebuilt
-          --token $VERCEL_TOKEN
-          --scope $VERCEL_ORG_ID
-          --project $VERCEL_PROJECT_ID
+          --token "${VERCEL_TOKEN}"
+          --scope "${VERCEL_ORG_ID}"
           --yes
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -101,7 +100,7 @@ jobs:
           npx vercel@latest env pull .env.local
           --environment=production
           --yes
-          --token $VERCEL_TOKEN
+          --token "${VERCEL_TOKEN}"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
@@ -113,9 +112,8 @@ jobs:
           npx vercel@latest deploy
           --prebuilt
           --prod
-          --token $VERCEL_TOKEN
-          --scope $VERCEL_ORG_ID
-          --project $VERCEL_PROJECT_ID
+          --token "${VERCEL_TOKEN}"
+          --scope "${VERCEL_ORG_ID}"
           --yes
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
