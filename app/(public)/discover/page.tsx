@@ -18,7 +18,7 @@ export default function Discover() {
       <div className="w-full h-full mr-auto ml-auto max-w-[1000px]">
         {!posts ? (
           <div className="grid grid-cols-3 gap-[2px]">
-            {[...Array(12)].map((_, index) => (
+            {[...Array(18)].map((_, index) => (
               <div
                 key={index}
                 className="w-full aspect-square bg-gray-200 animate-pulse"

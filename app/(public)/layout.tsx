@@ -1,10 +1,7 @@
 "use client";
 import LeftSidebar from "@/app/(public)/components/LeftSidebar";
 import { LayoutProps } from "@/app/types/layout";
-import Logo from "@/icons/Logo";
-import UserMenu from "@/app/(public)/components/UserMenu";
 import MobileMenu from "@/app/(public)/components/MobileMenu";
-import Link from "next/link";
 import { MainDesktopHeader } from "@/app/(public)/components/MainDesktopHeader";
 import MobileHeader from "@/app/(public)/components/MobileHeader";
 

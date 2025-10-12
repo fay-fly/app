@@ -1,7 +1,7 @@
 import Comments from "@/icons/Comments";
-import {useState} from "react";
+import { useState } from "react";
 import PostPreviewModal from "@/components/PostPreviewModal";
-import {PostWithUser} from "@/app/types/postWithUser";
+import { PostWithUser } from "@/app/types/postWithUser";
 
 type CommentButtonProps = {
   commentsCount: number;
@@ -23,7 +23,11 @@ export default function CommentButton({
         <Comments />
         {commentsCount}
       </div>
-      <PostPreviewModal open={open} onRequestClose={() => setOpen(false)} post={post} />
+      <PostPreviewModal
+        open={open}
+        onRequestClose={() => setOpen(false)}
+        post={post}
+      />
     </>
   );
 }

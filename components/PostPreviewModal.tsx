@@ -1,23 +1,28 @@
 import Image from "next/image";
 import Close from "@/icons/Close";
 import UserText from "@/app/(public)/components/UserText";
-import {getFormattedDate} from "@/utils/dates";
-import {CommentList} from "@/components/comments/CommentList";
+import { getFormattedDate } from "@/utils/dates";
+import { CommentList } from "@/components/comments/CommentList";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import Comments from "@/icons/Comments";
 import PinButton from "@/app/(public)/discover/components/PinButton";
-import {CommentForm} from "@/components/comments/CommentForm";
+import { CommentForm } from "@/components/comments/CommentForm";
 import ReactModal from "react-modal";
-import {CommentWithUser, PostWithUser} from "@/app/types/postWithUser";
-import {useEffect, useRef, useState} from "react";
+import { CommentWithUser, PostWithUser } from "@/app/types/postWithUser";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import UserCard from "@/app/(public)/components/UserCard";
+import ChevronLeft from "@/icons/ChevronLeft";
+import ChevronRight from "@/icons/ChevronRight";
 
 type PostPreviewModalProps = {
   open: boolean;
   post: PostWithUser;
   onRequestClose: () => void;
-}
+  onNext?: () => void;
+  onPrevious?: () => void;
+  showNavigation?: boolean;
+};
 
 export default function PostPreviewModal(props: PostPreviewModalProps) {
   const commentsRef = useRef<HTMLDivElement>(null);
@@ -61,104 +66,183 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
     });
   };
 
-  return <ReactModal
-    isOpen={props.open}
-    ariaHideApp={false}
-    shouldFocusAfterRender={false}
-    onRequestClose={props.onRequestClose}
-    className="w-full md:w-auto bg-white"
-    style={{
-      overlay: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "rgba(50, 50, 50, 0.70)"
-      },
-      content: {
-        top: "auto",
-        left: "auto",
-        right: "auto",
-        bottom: "auto",
-        padding: 0,
-        borderRadius: 0,
-        border: "none",
-      }
-    }}
+  useEffect(() => {
+    if (!props.open) return;
 
-  >
-    <div className="flex">
-      <div className="justify-center items-center bg-black hidden md:flex">
-        <Image
-          src={props.post.imageUrl}
-          alt="image"
-          className="max-h-[708px] max-w-[612px] object-contain w-auto h-auto"
-          unoptimized
-          width={1}
-          height={1}
-        />
-      </div>
-      <div className="flex flex-col w-full md:w-[400px]">
-        <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
-          <UserCard user={{
-            username: props.post.author.username,
-            image: props.post.author.pictureUrl,
-          }} showStatus={false} />
-          <button onClick={() => props.onRequestClose()} className="cursor-pointer">
-            <Close />
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        props.onRequestClose();
+      } else if (props.showNavigation) {
+        if (e.key === "ArrowLeft" && props.onPrevious) {
+          props.onPrevious();
+        } else if (e.key === "ArrowRight" && props.onNext) {
+          props.onNext();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    props.open,
+    props.showNavigation,
+    props.onNext,
+    props.onPrevious,
+    props.onRequestClose,
+  ]);
+
+  useEffect(() => {
+    if (props.open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [props.open]);
+
+  return (
+    <ReactModal
+      isOpen={props.open}
+      ariaHideApp={false}
+      shouldFocusAfterRender={false}
+      onRequestClose={props.onRequestClose}
+      className="w-full h-full md:w-auto md:h-auto bg-white"
+      style={{
+        overlay: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(50, 50, 50, 0.70)",
+          zIndex: 100,
+        },
+        content: {
+          top: "auto",
+          left: "auto",
+          right: "auto",
+          bottom: "auto",
+          padding: 0,
+          borderRadius: 0,
+          border: "none",
+          zIndex: 100,
+        },
+      }}
+    >
+      <div className="relative flex items-center w-full h-full lg:w-auto lg:h-auto">
+        {props.showNavigation && props.onPrevious && (
+          <button
+            onClick={props.onPrevious}
+            className="hidden lg:block absolute left-[-60px] w-10 h-10 rounded-full bg-white text-gray-800 hover:bg-gray-100 flex items-center justify-center transition-colors z-10"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ChevronLeft />
           </button>
-        </div>
-        <div ref={commentsRef} className="flex-1 overflow-auto min-h-[554px] max-h-[554px]">
-          <p className="px-[8px] text-[#5B5B5B] whitespace-pre-wrap overflow-auto">
+        )}
+        <div className="flex w-full h-full lg:w-auto lg:h-auto">
+          <div className="justify-center items-center bg-black hidden lg:flex w-[900px] h-[900px]">
+            <Image
+              src={props.post.imageUrl}
+              alt="image"
+              className="w-full h-full object-contain"
+              unoptimized
+              width={1}
+              height={1}
+            />
+          </div>
+          <div className="flex flex-col w-full lg:w-[500px] h-full lg:h-[900px]">
+            <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
+              <UserCard
+                user={{
+                  username: props.post.author.username,
+                  image: props.post.author.pictureUrl,
+                }}
+                showStatus={false}
+              />
+              <button
+                onClick={() => props.onRequestClose()}
+                className="cursor-pointer"
+              >
+                <Close />
+              </button>
+            </div>
+            <div ref={commentsRef} className="flex-1 overflow-auto">
+              <p className="px-[8px] text-[#5B5B5B] whitespace-pre-wrap overflow-auto">
                 <span className="font-semibold">
                   {props.post.author.username}
                 </span>{" "}
-            <UserText postText={props.post.text} />
-          </p>
-          <div className="px-[8px] text-[#A0A0A0]">
-            {getFormattedDate(props.post.createdAt)}
-          </div>
-          {processing ? (
-            <>
-              {[...Array(8)].map((_, index) => (
-                <div key={index} className="flex gap-2 px-[16px] py-[8px] animate-pulse">
-                  <div className="w-[32px] h-[32px] bg-gray-200 rounded-full flex-shrink-0" />
-                  <div className="flex flex-col flex-1 gap-1">
-                    <div className="h-4 bg-gray-200 rounded w-24" />
-                    <div className="h-4 bg-gray-200 rounded w-full" />
-                  </div>
+                <UserText postText={props.post.text} />
+              </p>
+              <div className="px-[8px] text-[#A0A0A0]">
+                {getFormattedDate(props.post.createdAt)}
+              </div>
+              {processing ? (
+                <>
+                  {[...Array(8)].map((_, index) => (
+                    <div
+                      key={index}
+                      className="flex gap-2 px-[16px] py-[8px] animate-pulse"
+                    >
+                      <div className="w-[32px] h-[32px] bg-gray-200 rounded-full flex-shrink-0" />
+                      <div className="flex flex-col flex-1 gap-1">
+                        <div className="h-4 bg-gray-200 rounded w-24" />
+                        <div className="h-4 bg-gray-200 rounded w-full" />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <CommentList comments={comments} />
+              )}
+            </div>
+            <div className="flex justify-between text-[#A0A0A0]">
+              <div className="flex">
+                <LikeButton
+                  postId={props.post.id}
+                  likesCount={props.post.likesCount}
+                  likedByMe={props.post.likedByMe}
+                />
+                <div className="flex gap-[4px] m-[8px] items-center cursor-pointer">
+                  <Comments />
+                  {props.post.commentsCount}
                 </div>
-              ))}
-            </>
-          ) : (
-            <CommentList comments={comments} />
-          )}
-        </div>
-        <div className="flex justify-between text-[#A0A0A0]">
-          <div className="flex">
-            <LikeButton
+              </div>
+              <div>
+                <div className="flex gap-[4px] m-[8px] items-center">
+                  <PinButton
+                    postId={props.post.id}
+                    pinsCount={props.post.pinsCount}
+                    pinnedByMe={props.post.pinnedByMe}
+                  />
+                </div>
+              </div>
+            </div>
+            <CommentForm
               postId={props.post.id}
-              likesCount={props.post.likesCount}
-              likedByMe={props.post.likedByMe}
+              disabled={processing}
+              onCommentAdded={onCommentAdded}
             />
-            <div
-              className="flex gap-[4px] m-[8px] items-center cursor-pointer"
-            >
-              <Comments />
-              {props.post.commentsCount}
-            </div>
-          </div>
-          <div>
-            <div className="flex gap-[4px] m-[8px] items-center">
-              <PinButton
-                postId={props.post.id}
-                pinsCount={props.post.pinsCount}
-                pinnedByMe={props.post.pinnedByMe}
-              />
-            </div>
           </div>
         </div>
-        <CommentForm postId={props.post.id} disabled={processing} onCommentAdded={onCommentAdded} />
+        {props.showNavigation && props.onNext && (
+          <button
+            onClick={props.onNext}
+            className="hidden lg:block absolute right-[-60px] w-10 h-10 rounded-full bg-white text-gray-800 hover:bg-gray-100 flex items-center justify-center transition-colors z-10"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ChevronRight />
+          </button>
+        )}
       </div>
-    </div>
-  </ReactModal>
+    </ReactModal>
+  );
 }

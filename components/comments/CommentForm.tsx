@@ -1,9 +1,9 @@
 import React, { FormEvent, useState } from "react";
 import axios from "axios";
-import {CommentWithUser} from "@/app/types/postWithUser";
-import {handleError} from "@/utils/errors";
+import { CommentWithUser } from "@/app/types/postWithUser";
+import { handleError } from "@/utils/errors";
 import clsx from "clsx";
-import {useSafeSession} from "@/hooks/useSafeSession";
+import { useSafeSession } from "@/hooks/useSafeSession";
 import Send from "@/icons/Send";
 
 type CommentFormProps = {
@@ -12,7 +12,11 @@ type CommentFormProps = {
   disabled?: boolean;
 };
 
-export function CommentForm({ postId, onCommentAdded, disabled }: CommentFormProps) {
+export function CommentForm({
+  postId,
+  onCommentAdded,
+  disabled,
+}: CommentFormProps) {
   const [newComment, setNewComment] = useState("");
   const [processing, setProcessing] = useState(false);
   const { session } = useSafeSession();
@@ -31,7 +35,7 @@ export function CommentForm({ postId, onCommentAdded, disabled }: CommentFormPro
       if (response.data?.comment && onCommentAdded) {
         onCommentAdded(response.data.comment);
       }
-    } catch(error) {
+    } catch (error) {
       handleError(error);
     } finally {
       setNewComment("");

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { handleError } from "@/utils/errors";
-import ReactModal from "react-modal";
+import Modal from "@/components/Modal";
 import { SubscribeItem } from "@/app/types/subscribeItem";
 import Close from "@/icons/Close";
 import UserCard from "@/app/(public)/components/UserCard";
@@ -54,12 +54,11 @@ export default function ViewSubs({
         {kind.charAt(0).toUpperCase() + kind.slice(1)}
       </li>
 
-      <ReactModal
+      <Modal
         isOpen={open}
-        onRequestClose={close}
+        onClose={close}
         className="w-full max-w-md mx-auto bg-white rounded-lg outline-none min-h-[173px]"
-        overlayClassName="fixed inset-0 bg-black/40 flex items-center justify-center px-4"
-        ariaHideApp={false}
+        overlayClassName="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-[100]"
       >
         <div className="flex items-center justify-between border-b-1 border-gray-200 p-2">
           <h2 className="text-lg font-semibold">
@@ -105,12 +104,10 @@ export default function ViewSubs({
               })}
             </div>
           ) : (
-            <div className="text-center text-[#A0A0A0]">
-              No {kind} yet
-            </div>
+            <div className="text-center text-[#A0A0A0]">No {kind} yet</div>
           )}
         </div>
-      </ReactModal>
+      </Modal>
     </>
   );
 }

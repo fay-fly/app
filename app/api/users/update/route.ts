@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  
+
   const trimmedUsername = username.trim();
   if (!trimmedUsername) {
     return NextResponse.json(
@@ -98,5 +98,8 @@ export async function POST(req: NextRequest) {
     data: updateData,
   });
 
-  return NextResponse.json({ status: 200, message: "Profile updated successfully" });
+  return NextResponse.json({
+    status: 200,
+    message: "Profile updated successfully",
+  });
 }

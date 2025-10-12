@@ -1,12 +1,12 @@
 "use client";
-import {useRef, useState} from "react";
-import Modal from "react-modal";
+import { useRef, useState } from "react";
+import Modal from "@/components/Modal";
 import FormInput from "@/components/FormInput";
 import FormSelect from "@/components/FormSelect";
 import Photo from "@/icons/Photo";
 import Button from "@/components/Button";
 import Close from "@/icons/Close";
-import {EditProfilePayload} from "@/app/(public)/profile/[username]/components/ProfileContent";
+import { EditProfilePayload } from "@/app/(public)/profile/[username]/components/ProfileContent";
 
 type ProfileEditModalProps = {
   isOpen: boolean;
@@ -14,10 +14,10 @@ type ProfileEditModalProps = {
   fullName: string;
   username: string;
   pictureUrl?: string;
-  profileBgUrl?: string
+  profileBgUrl?: string;
   bio?: string;
   onSaveAction: (data: EditProfilePayload) => void;
-}
+};
 
 export default function ProfileEditModal({
   isOpen,
@@ -29,17 +29,17 @@ export default function ProfileEditModal({
   bio: initialBio,
   onSaveAction,
 }: ProfileEditModalProps) {
-  const [profileEditPayload, setProfileEditPayload] = useState<EditProfilePayload>({
-    fullName: initialFullName,
-    username: initialUsername,
-    gender: "male",
-    bio: initialBio ?? "",
-    pictureUrl: initialPictureUrl ?? "",
-    profileBgUrl: initialBackgroundUrl ?? "",
-  });
+  const [profileEditPayload, setProfileEditPayload] =
+    useState<EditProfilePayload>({
+      fullName: initialFullName,
+      username: initialUsername,
+      gender: "male",
+      bio: initialBio ?? "",
+      pictureUrl: initialPictureUrl ?? "",
+      profileBgUrl: initialBackgroundUrl ?? "",
+    });
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
-
 
   const handleChange = <T extends keyof EditProfilePayload>(
     label: T,
@@ -52,13 +52,17 @@ export default function ProfileEditModal({
     });
   };
 
-  const compressImage = (file: File, maxWidth: number = 1200, quality: number = 0.8): Promise<string> => {
+  const compressImage = (
+    file: File,
+    maxWidth: number = 1200,
+    quality: number = 0.8
+  ): Promise<string> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas');
+          const canvas = document.createElement("canvas");
           let width = img.width;
           let height = img.height;
 
@@ -70,11 +74,11 @@ export default function ProfileEditModal({
           canvas.width = width;
           canvas.height = height;
 
-          const ctx = canvas.getContext('2d');
+          const ctx = canvas.getContext("2d");
           ctx?.drawImage(img, 0, 0, width, height);
 
           // Convert to base64 with compression
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
           resolve(compressedDataUrl);
         };
         img.src = e.target?.result as string;
@@ -83,7 +87,10 @@ export default function ProfileEditModal({
     });
   };
 
-  const handleFileToDataUrl = async (file: File, field: keyof EditProfilePayload) => {
+  const handleFileToDataUrl = async (
+    file: File,
+    field: keyof EditProfilePayload
+  ) => {
     const compressedDataUrl = await compressImage(file);
     setProfileEditPayload((prev) => ({
       ...prev,
@@ -105,7 +112,6 @@ export default function ProfileEditModal({
     }
   };
 
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSaveAction(profileEditPayload);
@@ -115,21 +121,23 @@ export default function ProfileEditModal({
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onCloseAction}
+      onClose={onCloseAction}
       className="w-full max-w-[540px] mx-auto bg-white rounded-lg outline-none"
-      overlayClassName="fixed inset-0 bg-black/40 flex items-center justify-center px-4"
-      ariaHideApp={false}
+      overlayClassName="fixed inset-0 bg-black/40 flex items-center justify-center px-4 z-[100]"
     >
       <form onSubmit={handleSubmit}>
         <div className="flex justify-between items-center mx-[16px] my-[8px]">
           <div className="flex">
-          <button
-            onClick={onCloseAction}
-            className="text-[#A0A0A0] hover:text-[#5B5B5B] text-2xl leading-none p-[8px] cursor-pointer"
-          >
-            <Close />
-          </button>
-          <h2 className="text-xl font-bold text-[#343434] flex items-center">Edit Profile</h2></div>
+            <button
+              onClick={onCloseAction}
+              className="text-[#A0A0A0] hover:text-[#5B5B5B] text-2xl leading-none p-[8px] cursor-pointer"
+            >
+              <Close />
+            </button>
+            <h2 className="text-xl font-bold text-[#343434] flex items-center">
+              Edit Profile
+            </h2>
+          </div>
           <div>
             <Button
               type="submit"
@@ -155,7 +163,10 @@ export default function ProfileEditModal({
             className="hidden"
             onChange={onBackgroundSelected}
           />
-          <div className="absolute top-4 right-4 cursor-pointer" onClick={() => bgInputRef.current?.click()}>
+          <div
+            className="absolute top-4 right-4 cursor-pointer"
+            onClick={() => bgInputRef.current?.click()}
+          >
             <Photo />
           </div>
           <div className="absolute -bottom-[48px] left-4 flex items-end gap-[24px]">
@@ -171,7 +182,10 @@ export default function ProfileEditModal({
                   {profileEditPayload.username.charAt(0).toUpperCase()}
                 </div>
               )}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                onClick={() => avatarInputRef.current?.click()}
+              >
                 <Photo />
               </div>
               <input
@@ -185,8 +199,16 @@ export default function ProfileEditModal({
           </div>
         </div>
         <div className="mt-[72px] mx-[16px] flex flex-col gap-[16px] mb-[16px]">
-          <FormInput label={"Full name"} value={profileEditPayload.fullName ?? ""} onChange={(e) => handleChange("fullName", e.target.value)} />
-          <FormInput label={"Username"} value={profileEditPayload.username ?? ""} onChange={(e) => handleChange("username", e.target.value)} />
+          <FormInput
+            label={"Full name"}
+            value={profileEditPayload.fullName ?? ""}
+            onChange={(e) => handleChange("fullName", e.target.value)}
+          />
+          <FormInput
+            label={"Username"}
+            value={profileEditPayload.username ?? ""}
+            onChange={(e) => handleChange("username", e.target.value)}
+          />
           <FormSelect
             label="Gender"
             value={profileEditPayload.gender}
@@ -196,17 +218,20 @@ export default function ProfileEditModal({
               { label: "Female", value: "female" },
             ]}
             className="flex-1"
-            onChange={(e) => handleChange("gender", e.target.value as "male" | "female")}
+            onChange={(e) =>
+              handleChange("gender", e.target.value as "male" | "female")
+            }
           />
           <label className="flex flex-col">
-          <span className="font-semibold text-[14px] text-(--fly-text-primary)">
-            Bio
-          </span>
+            <span className="font-semibold text-[14px] text-(--fly-text-primary)">
+              Bio
+            </span>
             <textarea
               className="bg-(--fly-white) placeholder-[--fly-input-placeholder-color] border-[1.5px] border-solid border-(--fly-border-color) px-[16px] rounded-[12px]"
               value={profileEditPayload.bio ?? ""}
               onChange={(e) => handleChange("bio", e.target.value)}
-              rows={5}></textarea>
+              rows={5}
+            ></textarea>
           </label>
         </div>
       </form>

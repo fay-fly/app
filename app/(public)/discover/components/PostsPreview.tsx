@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import {PostWithUser} from "@/app/types/postWithUser";
+import { PostWithUser } from "@/app/types/postWithUser";
 import PostPreview from "@/app/(public)/components/Post";
 import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/hooks/useScreenWidth";
@@ -48,7 +48,22 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
     }
   }, [isMobile, postIdToPreview, previewMode]);
 
-  const postToPreview = posts.find((post) => post.id === postIdToPreview);
+  const currentPostIndex = posts.findIndex(
+    (post) => post.id === postIdToPreview
+  );
+  const postToPreview = posts[currentPostIndex];
+
+  const handleNext = () => {
+    if (currentPostIndex < posts.length - 1) {
+      setPostIdToPreview(posts[currentPostIndex + 1].id);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPostIndex > 0) {
+      setPostIdToPreview(posts[currentPostIndex - 1].id);
+    }
+  };
 
   return (
     <>
@@ -93,11 +108,16 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
           );
         })
       ) : null}
-      {postToPreview && <PostPreviewModal
+      {postToPreview && (
+        <PostPreviewModal
           open={open}
           post={postToPreview}
           onRequestClose={() => setOpen(false)}
-      />}
+          showNavigation={true}
+          onNext={currentPostIndex < posts.length - 1 ? handleNext : undefined}
+          onPrevious={currentPostIndex > 0 ? handlePrevious : undefined}
+        />
+      )}
     </>
   );
 }

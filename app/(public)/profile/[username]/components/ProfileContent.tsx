@@ -11,7 +11,7 @@ import Edit from "@/icons/Edit";
 import ProfileEditModal from "@/app/(public)/profile/[username]/components/ProfileEditModal";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import {handleError} from "@/utils/errors";
+import { handleError } from "@/utils/errors";
 
 export type EditProfilePayload = {
   fullName: string;
@@ -20,7 +20,7 @@ export type EditProfilePayload = {
   bio: string;
   pictureUrl: string;
   profileBgUrl: string;
-}
+};
 
 export default function ProfileContent({ username }: { username: string }) {
   const [tabs, setTabs] = useState<"publications" | "pins">("publications");
@@ -43,12 +43,14 @@ export default function ProfileContent({ username }: { username: string }) {
   const handleSaveProfile = async (data: EditProfilePayload) => {
     try {
       await axios.post("/api/users/update", {
-        ...data
+        ...data,
       });
-      const response = await axios.get<UserWithPosts>(`/api/users/get?username=${data.username}`);
+      const response = await axios.get<UserWithPosts>(
+        `/api/users/get?username=${data.username}`
+      );
       setUser(response.data);
       setIsModalOpen(false);
-      
+
       await update({
         username: response.data.username,
         image: response.data.pictureUrl,
@@ -58,7 +60,7 @@ export default function ProfileContent({ username }: { username: string }) {
         router.push(`/profile/${data.username}`);
       }
     } catch (error) {
-      handleError(error)
+      handleError(error);
     }
   };
 
@@ -90,13 +92,27 @@ export default function ProfileContent({ username }: { username: string }) {
       </div>
       {isOwnProfile && (
         <div className="flex justify-end mt-[16px] mr-[16px] p-[8px]">
-          <div className="bg-[#F7F8FF] rounded-full cursor-pointer" onClick={() => setIsModalOpen(true)}>
+          <div
+            className="bg-[#F7F8FF] rounded-full cursor-pointer"
+            onClick={() => setIsModalOpen(true)}
+          >
             <Edit />
           </div>
-          <ProfileEditModal isOpen={isModalOpen} onCloseAction={() => setIsModalOpen(false)} onSaveAction={handleSaveProfile} username={user.username} pictureUrl={user.pictureUrl} bio={user.bio} fullName={user.fullName} profileBgUrl={user.profileBgUrl} />
+          <ProfileEditModal
+            isOpen={isModalOpen}
+            onCloseAction={() => setIsModalOpen(false)}
+            onSaveAction={handleSaveProfile}
+            username={user.username}
+            pictureUrl={user.pictureUrl}
+            bio={user.bio}
+            fullName={user.fullName}
+            profileBgUrl={user.profileBgUrl}
+          />
         </div>
       )}
-      <div className={isOwnProfile ? 'mx-[16px]' : 'mx-[16px] mb-[16px] mt-[60px]'}>
+      <div
+        className={isOwnProfile ? "mx-[16px]" : "mx-[16px] mb-[16px] mt-[60px]"}
+      >
         <div>
           <span className="text-[#F883B8] font-semibold text-[14px]">
             Member
@@ -104,7 +120,11 @@ export default function ProfileContent({ username }: { username: string }) {
           <h1 className="text-[#A0A0A0] font-bold text-[16px] flex items-center">
             <span>@{user.username}</span>
           </h1>
-          {user.fullName && <h1 className="text-[24px] text-[#343434] font-bold">{user.fullName}</h1>}
+          {user.fullName && (
+            <h1 className="text-[24px] text-[#343434] font-bold">
+              {user.fullName}
+            </h1>
+          )}
           <ul className="flex gap-[24px] mt-[10px] text-[#A0A0A0]">
             <ViewSubs
               count={user._count.followers}
@@ -119,7 +139,9 @@ export default function ProfileContent({ username }: { username: string }) {
               userId={user.id}
             />
           </ul>
-          {user.bio && <p className="text-[#5B5B5B] text-[14px] my-[12px]">{user.bio}</p>}
+          {user.bio && (
+            <p className="text-[#5B5B5B] text-[14px] my-[12px]">{user.bio}</p>
+          )}
         </div>
       </div>
       <div className="flex">
