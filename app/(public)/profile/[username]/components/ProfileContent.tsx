@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { UserWithPosts } from "@/app/types/postWithUser";
 import axios from "axios";
 import Image from "next/image";
-import PageLoader from "@/components/PageLoader";
 import clsx from "clsx";
 import Link from "next/link";
 import ViewSubs from "@/app/(public)/profile/[username]/components/ViewSubs";
@@ -12,6 +11,37 @@ import ProfileEditModal from "@/app/(public)/profile/[username]/components/Profi
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { handleError } from "@/utils/errors";
+
+type SkeletonWrapperProps = {
+  show: boolean;
+  children: ReactNode;
+  className?: string;
+  containerClassName?: string;
+  overlayClassName?: string;
+};
+
+function SkeletonWrapper({
+  show,
+  children,
+  className,
+  containerClassName,
+  overlayClassName,
+}: SkeletonWrapperProps) {
+  return (
+    <div className={clsx("relative", containerClassName)}>
+      <div className={clsx(className, show && "opacity-0")}>{children}</div>
+      {show && (
+        <div
+          aria-hidden
+          className={clsx(
+            "absolute inset-0 animate-pulse bg-gray-200 pointer-events-none",
+            overlayClassName ?? "rounded"
+          )}
+        />
+      )}
+    </div>
+  );
+}
 
 export type EditProfilePayload = {
   fullName: string;
@@ -25,19 +55,42 @@ export type EditProfilePayload = {
 export default function ProfileContent({ username }: { username: string }) {
   const [tabs, setTabs] = useState<"publications" | "pins">("publications");
   const [user, setUser] = useState<UserWithPosts>();
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { data: session, update } = useSession();
 
-  // Check if the current user is viewing their own profile
   const isOwnProfile = session?.user?.username === username;
 
   useEffect(() => {
-    axios
-      .get<UserWithPosts>(`/api/users/get?username=${username}`)
-      .then((response) => {
-        setUser(response.data);
-      });
+    let isActive = true;
+
+    const fetchUser = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get<UserWithPosts>(
+          `/api/users/get?username=${username}`
+        );
+        if (isActive) {
+          setUser(response.data);
+        }
+      } catch (error) {
+        handleError(error);
+        if (isActive) {
+          setUser(undefined);
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchUser();
+
+    return () => {
+      isActive = false;
+    };
   }, [username]);
 
   const handleSaveProfile = async (data: EditProfilePayload) => {
@@ -64,33 +117,74 @@ export default function ProfileContent({ username }: { username: string }) {
     }
   };
 
-  return !user ? (
-    <PageLoader />
-  ) : (
-    <div className="w-full max-w-[1000px] mx-auto pb-[48px] md:pb-0">
+  const publicationsCount = user?.posts.length ?? 0;
+  const pinsCount = user?.pins.length ?? 0;
+  const showSkeleton = isLoading || !user;
+  const profileBgUrl = user?.profileBgUrl;
+  const profileBackgroundValue = profileBgUrl
+    ? `url(${profileBgUrl}) center/cover`
+    : "linear-gradient(135deg, #d8ddff 0%, #a2aaff 50%, #7c89ff 100%)";
+  const skeletonPlaceholders = useMemo(
+    () => Array.from({ length: 6 }, (_, index) => index),
+    []
+  );
+
+  const renderPostTile = (post: UserWithPosts["posts"][number]) => (
+    <Link
+      key={post.id}
+      href={`/post/${post.id}`}
+      className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
+    >
+      <Image
+        src={post.imageUrl}
+        alt="publication"
+        className="w-full h-full object-cover"
+        width={1}
+        height={1}
+        unoptimized
+      />
       <div
-        className="h-[124px] relative"
-        style={{
-          background: user.profileBgUrl
-            ? `url(${user.profileBgUrl}) center/cover`
-            : "linear-gradient(135deg, #d8ddff 0%, #a2aaff 50%, #7c89ff 100%)",
-        }}
-      >
+        className={clsx(
+          "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
+          "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
+        )}
+      ></div>
+    </Link>
+  );
+
+  return (
+    <div className="w-full max-w-[1000px] mx-auto pb-[48px] md:pb-0">
+      <div className="h-[124px] relative">
+        <div
+          className={clsx(
+            "absolute inset-0",
+            showSkeleton && "animate-pulse bg-gray-200"
+          )}
+          style={!showSkeleton ? { background: profileBackgroundValue } : undefined}
+        />
         <div className="absolute -bottom-[48px] left-4 flex items-end gap-[24px]">
-          {user.pictureUrl ? (
+          {user?.pictureUrl ? (
             <img
               src={user.pictureUrl}
               alt="profile picture"
               className="ring-[1.5px] ring-white w-[80px] h-[80px] rounded-full"
             />
           ) : (
-            <div className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white">
-              {user.username.charAt(0).toUpperCase()}
-            </div>
+            <SkeletonWrapper
+              show={showSkeleton}
+              containerClassName="inline-flex w-[80px] h-[80px]"
+              overlayClassName="rounded-full"
+            >
+              <div className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white">
+                {showSkeleton
+                  ? "\u00A0"
+                  : user?.username?.charAt(0).toUpperCase() ?? ""}
+              </div>
+            </SkeletonWrapper>
           )}
         </div>
       </div>
-      {isOwnProfile && (
+      {isOwnProfile && !showSkeleton && user && (
         <div className="flex justify-end mt-[16px] mr-[16px] p-[8px]">
           <div
             className="bg-[#F7F8FF] rounded-full cursor-pointer"
@@ -113,132 +207,159 @@ export default function ProfileContent({ username }: { username: string }) {
       <div
         className={isOwnProfile ? "mx-[16px]" : "mx-[16px] mb-[16px] mt-[60px]"}
       >
-        <div>
-          <span className="text-[#F883B8] font-semibold text-[14px]">
-            Member
-          </span>
-          <h1 className="text-[#A0A0A0] font-bold text-[16px] flex items-center">
-            <span>@{user.username}</span>
-          </h1>
-          {user.fullName && (
-            <h1 className="text-[24px] text-[#343434] font-bold">
-              {user.fullName}
+        <div className="space-y-1">
+            <SkeletonWrapper
+              show={showSkeleton}
+              className="inline-block"
+              containerClassName="inline-block"
+              overlayClassName="rounded-full"
+            >
+              <span className="text-[#F883B8] font-semibold text-[14px]">
+                Member
+              </span>
+            </SkeletonWrapper>
+          <SkeletonWrapper
+            show={showSkeleton}
+            className="w-fit"
+            containerClassName="w-fit"
+            overlayClassName="rounded-full"
+          >
+            <h1 className="text-[#A0A0A0] font-bold text-[16px] flex items-center w-fit">
+              <span>@{user?.username ?? username}</span>
             </h1>
+          </SkeletonWrapper>
+          {(showSkeleton || user?.fullName) && (
+            <SkeletonWrapper
+              show={showSkeleton}
+              className="block min-h-[32px] w-fit"
+              containerClassName="w-fit min-h-[32px]"
+              overlayClassName="rounded-full"
+            >
+              <h1 className="text-[24px] text-[#343434] font-bold">
+                {user?.fullName ?? "\u00A0"}
+              </h1>
+            </SkeletonWrapper>
           )}
-          <ul className="flex gap-[24px] mt-[10px] text-[#A0A0A0]">
-            <ViewSubs
-              count={user._count.followers}
-              kind="subscribers"
-              fetchUrl="/api/users/subscribers"
-              userId={user.id}
-            />
-            <ViewSubs
-              count={user._count.subscriptions}
-              kind="subscriptions"
-              fetchUrl="/api/users/subscriptions"
-              userId={user.id}
-            />
+          <ul
+            className={clsx(
+              "flex gap-[24px] mt-[10px] text-[#A0A0A0]",
+              showSkeleton && "pointer-events-none"
+            )}
+          >
+            {showSkeleton ? (
+              <>
+                <li className="h-4 w-[120px] bg-gray-200 rounded animate-pulse"></li>
+                <li className="h-4 w-[140px] bg-gray-200 rounded animate-pulse"></li>
+              </>
+            ) : (
+              <>
+                <ViewSubs
+                  count={user?._count.followers ?? 0}
+                  kind="subscribers"
+                  fetchUrl="/api/users/subscribers"
+                  userId={user?.id ?? 0}
+                />
+                <ViewSubs
+                  count={user?._count.subscriptions ?? 0}
+                  kind="subscriptions"
+                  fetchUrl="/api/users/subscriptions"
+                  userId={user?.id ?? 0}
+                />
+              </>
+            )}
           </ul>
-          {user.bio && (
-            <p className="text-[#5B5B5B] text-[14px] my-[12px]">{user.bio}</p>
+          {(showSkeleton || user?.bio) && (
+            <SkeletonWrapper
+              show={showSkeleton}
+              className="block min-h-[20px] w-full max-w-[360px]"
+              containerClassName="w-full max-w-[360px] min-h-[20px]"
+              overlayClassName="rounded"
+            >
+              <p className="text-[#5B5B5B] text-[14px] my-[12px]">
+                {user?.bio ?? "\u00A0"}
+              </p>
+            </SkeletonWrapper>
           )}
         </div>
       </div>
       <div className="flex">
         <div className="flex-1 flex justify-center">
-          <div
-            className={clsx(
-              "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit",
-              tabs === "publications" &&
-                "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]"
-            )}
-            onClick={() => setTabs("publications")}
+          <SkeletonWrapper
+            show={showSkeleton}
+            className="max-w-fit"
+            containerClassName="max-w-fit"
+            overlayClassName="rounded-full"
           >
-            {user.posts.length} Publications
-          </div>
+            <div
+              className={clsx(
+                "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit",
+                tabs === "publications" &&
+                  "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]",
+                showSkeleton && "pointer-events-none"
+              )}
+              onClick={() => setTabs("publications")}
+            >
+              {`${publicationsCount} Publications`}
+            </div>
+          </SkeletonWrapper>
         </div>
         <div className="flex-1 flex justify-center">
-          <div
-            className={clsx(
-              "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit",
-              tabs === "pins" &&
-                "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]"
-            )}
-            onClick={() => setTabs("pins")}
+          <SkeletonWrapper
+            show={showSkeleton}
+            className="max-w-fit"
+            containerClassName="max-w-fit"
+            overlayClassName="rounded-full"
           >
-            {user.pins.length} Pins
-          </div>
+            <div
+              className={clsx(
+                "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit min-w-[80px]",
+                tabs === "pins" &&
+                  "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]",
+                showSkeleton && "pointer-events-none"
+              )}
+              onClick={() => setTabs("pins")}
+            >
+              {`${pinsCount} Pins`}
+            </div>
+          </SkeletonWrapper>
         </div>
       </div>
       {tabs === "publications" && (
         <>
-          {user.posts.length === 0 ? (
+          {!showSkeleton && publicationsCount === 0 ? (
             <div className="flex justify-center mt-[10px] text-[#A0A0A0]">
               No publications yet
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
-              {user.posts.map((post) => {
-                return (
-                  <Link
-                    key={post.id}
-                    href={`/post/${post.id}`}
-                    className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
-                  >
-                    <Image
-                      src={post.imageUrl}
-                      alt="publication"
-                      className="w-full h-full object-cover"
-                      width={1}
-                      height={1}
-                      unoptimized
-                    />
+              {showSkeleton
+                ? skeletonPlaceholders.map((placeholder) => (
                     <div
-                      className={clsx(
-                        "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
-                        "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
-                      )}
+                      key={`skeleton-publication-${placeholder}`}
+                      className="w-full aspect-square bg-gray-200 animate-pulse"
                     ></div>
-                  </Link>
-                );
-              })}
+                  ))
+                : (user?.posts ?? []).map((post) => renderPostTile(post))}
             </div>
           )}
         </>
       )}
       {tabs === "pins" && (
         <>
-          {user.pins.length === 0 ? (
+          {!showSkeleton && pinsCount === 0 ? (
             <div className="flex justify-center mt-[10px] text-[#A0A0A0]">
               No pinned posts yet
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
-              {user.pins.map((pin) => {
-                const post = pin.post;
-                return (
-                  <Link
-                    key={post.id}
-                    href={`/post/${post.id}`}
-                    className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
-                  >
-                    <Image
-                      src={post.imageUrl}
-                      alt="publication"
-                      className="w-full h-full object-cover"
-                      width={1}
-                      height={1}
-                      unoptimized
-                    />
+              {showSkeleton
+                ? skeletonPlaceholders.map((placeholder) => (
                     <div
-                      className={clsx(
-                        "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
-                        "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
-                      )}
+                      key={`skeleton-pin-${placeholder}`}
+                      className="w-full aspect-square bg-gray-200 animate-pulse"
                     ></div>
-                  </Link>
-                );
-              })}
+                  ))
+                : (user?.pins ?? []).map((pin) => renderPostTile(pin.post))}
             </div>
           )}
         </>
