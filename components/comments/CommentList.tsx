@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Comment } from "@prisma/client";
 import { User } from "@/app/types/postWithUser";
 import UserText from "@/app/(public)/components/UserText";
@@ -17,26 +18,34 @@ export function CommentList({ comments }: CommentListProps) {
     <>
       {comments.map((comment) => (
         <div key={comment.id} className="flex gap-2 px-[16px] py-[8px]">
-          <div className="w-[32px] h-[32px] cursor-pointer">
+          <Link
+            href={`/profile/${comment.author.username}`}
+            className="inline-flex w-[32px] h-[32px] cursor-pointer flex-shrink-0"
+          >
             {comment.author.pictureUrl ? (
               <img
                 src={comment.author.pictureUrl}
                 alt="profile image"
-                className="rounded-full w-[32px] h-[32px]"
+                className="rounded-full w-full h-full object-cover"
               />
             ) : (
-              <div
+              <span
                 className={clsx(
                   "w-full h-full bg-(--fly-primary) flex",
                   "justify-center items-center text-(--fly-white) rounded-full"
                 )}
               >
                 {comment.author.username?.charAt(0).toUpperCase()}
-              </div>
+              </span>
             )}
-          </div>
+          </Link>
           <div className="flex flex-col flex-1">
-            <strong>{comment.author.username}</strong>
+            <Link
+              href={`/profile/${comment.author.username}`}
+              className="font-semibold text-[#343434] w-fit"
+            >
+              {comment.author.username}
+            </Link>
             <UserText postText={comment.text} />
           </div>
         </div>
