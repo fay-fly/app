@@ -8,6 +8,9 @@ import AppAuthWrapper from "@/components/AppAuthWrapper";
 export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang="en" className="h-full bg-(--fly-bg-primary)">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className="h-full">
         <ToastProvider>
           <SessionProvider>
