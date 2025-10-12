@@ -40,7 +40,7 @@ export default function UserMenu() {
         transition
         menuClassName={clsx(
           "bg-(--fly-white) font-[14px] text-[#5B5B5B]",
-          "whitespace-nowrap shadow-md shadow-black/10 rounded"
+          "whitespace-nowrap shadow-md shadow-black/10 rounded z-50"
         )}
         position="anchor"
         gap={12}

@@ -6,6 +6,7 @@ import UserMenu from "@/app/(public)/components/UserMenu";
 import MobileMenu from "@/app/(public)/components/MobileMenu";
 import Link from "next/link";
 import { MainDesktopHeader } from "@/app/(public)/components/MainDesktopHeader";
+import MobileHeader from "@/app/(public)/components/MobileHeader";
 
 export default function PublicLayout({ children }: LayoutProps) {
   return (
@@ -13,12 +14,7 @@ export default function PublicLayout({ children }: LayoutProps) {
       <div className="flex flex-col md:flex-row flex-1">
         <LeftSidebar />
         <div className="w-full bg-white flex-1 md:ml-[220px] mb-[48px] md:mb-0">
-          <div className="w-full flex bg-white border-b border-gray-200 justify-between items-center px-[16px] h-[56px] md:hidden sticky top-0">
-            <Link href="/">
-              <Logo />
-            </Link>
-            <UserMenu />
-          </div>
+          <MobileHeader />
           <MainDesktopHeader />
           {children}
         </div>

@@ -96,7 +96,7 @@ export default function ProfileContent({ username }: { username: string }) {
           <ProfileEditModal isOpen={isModalOpen} onCloseAction={() => setIsModalOpen(false)} onSaveAction={handleSaveProfile} username={user.username} pictureUrl={user.pictureUrl} bio={user.bio} fullName={user.fullName} profileBgUrl={user.profileBgUrl} />
         </div>
       )}
-      <div className={isOwnProfile ? 'mx-[16px]' : 'mb-[16px] mt-[60px]'}>
+      <div className={isOwnProfile ? 'mx-[16px]' : 'mx-[16px] mb-[16px] mt-[60px]'}>
         <div>
           <span className="text-[#F883B8] font-semibold text-[14px]">
             Member
@@ -152,7 +152,7 @@ export default function ProfileContent({ username }: { username: string }) {
         <>
           {user.posts.length === 0 ? (
             <div className="flex justify-center mt-[10px] text-[#A0A0A0]">
-              You don&#39;t have any publications
+              No publications yet
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
@@ -188,7 +188,7 @@ export default function ProfileContent({ username }: { username: string }) {
         <>
           {user.pins.length === 0 ? (
             <div className="flex justify-center mt-[10px] text-[#A0A0A0]">
-              You don&#39;t have any pinned posts
+              No pinned posts yet
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-[2px] mt-[15px]">

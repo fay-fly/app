@@ -106,7 +106,7 @@ export default function ViewSubs({
             </div>
           ) : (
             <div className="text-center text-[#A0A0A0]">
-              You don&#39;t have any {kind}
+              No {kind} yet
             </div>
           )}
         </div>
