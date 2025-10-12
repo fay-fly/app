@@ -57,7 +57,7 @@ export default function ViewSubs({
       <ReactModal
         isOpen={open}
         onRequestClose={close}
-        className="w-full max-w-md mx-auto bg-white rounded-lg outline-none"
+        className="w-full max-w-md mx-auto bg-white rounded-lg outline-none min-h-[173px]"
         overlayClassName="fixed inset-0 bg-black/40 flex items-center justify-center px-4"
         ariaHideApp={false}
       >
@@ -75,7 +75,7 @@ export default function ViewSubs({
           </button>
         </div>
 
-        <div className="p-2 min-h-[100px]">
+        <div className="p-2">
           {loading ? (
             <div className="overflow-auto flex flex-col gap-2">
               {[...Array(3)].map((_, index) => (

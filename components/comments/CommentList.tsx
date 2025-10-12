@@ -22,7 +22,7 @@ export function CommentList({ comments }: CommentListProps) {
               <img
                 src={comment.author.pictureUrl}
                 alt="profile image"
-                className="rounded-full"
+                className="rounded-full w-[32px] h-[32px]"
               />
             ) : (
               <div

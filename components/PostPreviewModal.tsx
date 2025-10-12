@@ -21,24 +21,28 @@ type PostPreviewModalProps = {
 
 export default function PostPreviewModal(props: PostPreviewModalProps) {
   const commentsRef = useRef<HTMLDivElement>(null);
+  const shouldAutoScrollRef = useRef(false);
   const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [processing, setProcessing] = useState(false);
-  const [firstRun, setFirstRun] = useState(true);
 
   useEffect(() => {
-    if (!firstRun && commentsRef.current) {
+    if (shouldAutoScrollRef.current && commentsRef.current) {
       const commentsDivScrollHeight = commentsRef.current.scrollHeight;
       if (commentsDivScrollHeight) {
         commentsRef.current.scrollTop = commentsDivScrollHeight;
       }
-    } else {
-      setFirstRun(false);
+      shouldAutoScrollRef.current = false;
     }
   }, [comments]);
 
   useEffect(() => {
     if (props.post.id) {
+      setComments([]);
       setProcessing(true);
+      shouldAutoScrollRef.current = false;
+      if (commentsRef.current) {
+        commentsRef.current.scrollTop = 0;
+      }
       axios
         .get<CommentWithUser[]>(`/api/comments/get?postId=${props.post.id}`)
         .then((response) => {
@@ -49,6 +53,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
   }, [props.post.id]);
 
   const onCommentAdded = (newComment: CommentWithUser) => {
+    shouldAutoScrollRef.current = true;
     setComments((prev) => {
       const update = [...(prev ?? [])];
       update.push(newComment);
@@ -112,7 +117,21 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
           <div className="px-[8px] text-[#A0A0A0]">
             {getFormattedDate(props.post.createdAt)}
           </div>
-          <CommentList comments={comments} />
+          {processing ? (
+            <>
+              {[...Array(8)].map((_, index) => (
+                <div key={index} className="flex gap-2 px-[16px] py-[8px] animate-pulse">
+                  <div className="w-[32px] h-[32px] bg-gray-200 rounded-full flex-shrink-0" />
+                  <div className="flex flex-col flex-1 gap-1">
+                    <div className="h-4 bg-gray-200 rounded w-24" />
+                    <div className="h-4 bg-gray-200 rounded w-full" />
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <CommentList comments={comments} />
+          )}
         </div>
         <div className="flex justify-between text-[#A0A0A0]">
           <div className="flex">
