@@ -33,6 +33,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Pull Vercel Environment Variables (Preview)
+        run: npx vercel@latest env pull .env.local --environment=preview --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
       - name: Build
         run: npm run build
 
@@ -63,6 +68,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Pull Vercel Environment Variables (Production)
+        run: npx vercel@latest env pull .env.local --environment=production --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Build
         run: npm run build
