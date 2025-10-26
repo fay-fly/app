@@ -14,6 +14,7 @@ import axios from "axios";
 import UserCard from "@/app/(public)/components/UserCard";
 import ChevronLeft from "@/icons/ChevronLeft";
 import ChevronRight from "@/icons/ChevronRight";
+import FireFilled from "@/icons/FireFilled";
 
 type PostPreviewModalProps = {
   open: boolean;
@@ -27,8 +28,10 @@ type PostPreviewModalProps = {
 export default function PostPreviewModal(props: PostPreviewModalProps) {
   const commentsRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(false);
+  const likeButtonRef = useRef<{ triggerLike: () => void }>(null);
   const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [processing, setProcessing] = useState(false);
+  const [showLikeAnimation, setShowLikeAnimation] = useState(false);
 
   useEffect(() => {
     if (shouldAutoScrollRef.current && commentsRef.current) {
@@ -64,6 +67,12 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
       update.push(newComment);
       return update;
     });
+  };
+
+  const handleImageDoubleClick = () => {
+    likeButtonRef.current?.triggerLike();
+    setShowLikeAnimation(true);
+    setTimeout(() => setShowLikeAnimation(false), 1000);
   };
 
   useEffect(() => {
@@ -145,7 +154,10 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
           </button>
         )}
         <div className="flex w-full h-full lg:w-auto lg:h-auto">
-          <div className="justify-center items-center bg-black hidden lg:flex w-[900px] h-[900px]">
+          <div
+            className="relative justify-center items-center bg-black hidden lg:flex w-[900px] h-[900px] cursor-pointer select-none"
+            onDoubleClick={handleImageDoubleClick}
+          >
             <Image
               src={props.post.imageUrl}
               alt="image"
@@ -154,6 +166,13 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
               width={1}
               height={1}
             />
+            {showLikeAnimation && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="animate-like-burst">
+                  <FireFilled className="w-[100px] h-[100px] text-[#FF6B6B] drop-shadow-[0_0_20px_rgba(255,107,107,0.8)]" />
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex flex-col w-full lg:w-[500px] h-full lg:h-[900px]">
             <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
@@ -203,6 +222,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
             <div className="flex justify-between text-[#A0A0A0]">
               <div className="flex">
                 <LikeButton
+                  ref={likeButtonRef}
                   postId={props.post.id}
                   likesCount={props.post.likesCount}
                   likedByMe={props.post.likedByMe}

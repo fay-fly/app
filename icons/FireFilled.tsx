@@ -1,4 +1,8 @@
-export default function FireFilled() {
+type FireFilledProps = {
+  className?: string;
+};
+
+export default function FireFilled({ className }: FireFilledProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,6 +10,7 @@ export default function FireFilled() {
       height="24"
       viewBox="0 0 24 24"
       fill="currentColor"
+      className={className}
     >
       <path
         fillRule="evenodd"

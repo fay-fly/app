@@ -10,6 +10,8 @@ import CommentButton from "@/app/(public)/discover/components/CommentButton";
 import PinButton from "@/app/(public)/discover/components/PinButton";
 import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
 import { useSafeSession } from "@/hooks/useSafeSession";
+import { useState, useRef } from "react";
+import FireFilled from "@/icons/FireFilled";
 
 type PostProps = {
   post: PostWithUser;
@@ -18,10 +20,18 @@ type PostProps = {
 
 export default function Post({ post, onSubscribe }: PostProps) {
   const { session } = useSafeSession();
+  const [showLikeAnimation, setShowLikeAnimation] = useState(false);
+  const likeButtonRef = useRef<{ triggerLike: () => void }>(null);
+
+  const handleImageDoubleClick = () => {
+    likeButtonRef.current?.triggerLike();
+    setShowLikeAnimation(true);
+    setTimeout(() => setShowLikeAnimation(false), 1000);
+  };
 
   return (
-    <div className="flex flex-col gap-[8px] mb-[12px]">
-      <div className="py-[8px] flex justify-between px-[16px]">
+    <div className="flex flex-col mb-[12px]">
+      <div className="py-[8px] flex justify-between px-[16px] mb-[8px]">
         <div className="flex gap-[8px] items-center">
           <div className="w-[32px] h-[32px]">
             {post.author.pictureUrl ? (
@@ -60,17 +70,30 @@ export default function Post({ post, onSubscribe }: PostProps) {
           <ThreeDots />
         </div>
       </div>
-      <Image
-        src={post.imageUrl}
-        alt="foto"
-        className="w-full"
-        width={1}
-        height={1}
-        unoptimized
-      />
-      <div className="flex justify-between text-[#A0A0A0]">
+      <div
+        className="relative cursor-pointer select-none overflow-hidden"
+        onDoubleClick={handleImageDoubleClick}
+      >
+        <Image
+          src={post.imageUrl}
+          alt="foto"
+          className="w-full block leading-none"
+          width={1}
+          height={1}
+          unoptimized
+        />
+        {showLikeAnimation && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="animate-like-burst">
+              <FireFilled className="w-[100px] h-[100px] text-[#FF6B6B] drop-shadow-[0_0_20px_rgba(255,107,107,0.8)]" />
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="flex justify-between text-[#A0A0A0] mt-[8px]">
         <div className="flex">
           <LikeButton
+            ref={likeButtonRef}
             postId={post.id}
             likesCount={post.likesCount}
             likedByMe={post.likedByMe}
@@ -87,11 +110,11 @@ export default function Post({ post, onSubscribe }: PostProps) {
           </div>
         </div>
       </div>
-      <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
+      <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap mt-[8px]">
         <span className="font-semibold">{post.author.username}</span>{" "}
         <UserText postText={post.text} />
       </p>
-      <div className="px-[16px] text-[#A0A0A0]">
+      <div className="px-[16px] text-[#A0A0A0] mt-[8px]">
         {getFormattedDate(post.createdAt)}
       </div>
     </div>
