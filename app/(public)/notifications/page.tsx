@@ -5,7 +5,6 @@ import { Notification, User, Post } from "@prisma/client";
 import PageLoader from "@/components/PageLoader";
 import NotificationItem from "@/app/(public)/post/[id]/components/NotificationItem";
 import clsx from "clsx";
-import { usePathname } from "next/navigation";
 
 export type NotificationWithRelations = Notification & {
   sender: User;
@@ -15,8 +14,6 @@ export type NotificationWithRelations = Notification & {
 };
 
 export default function Notifications() {
-  const pathname = usePathname();
-  const prevPath = useRef<string | null>(null);
   const [notifications, setNotifications] =
     useState<NotificationWithRelations[]>();
 
@@ -26,44 +23,8 @@ export default function Notifications() {
       .then((response) => {
         setNotifications(response.data);
       });
+    axios.post("/api/notifications/mark-read");
   }, []);
-
-  useEffect(() => {
-    const markAllRead = async () => {
-      try {
-        await axios.post("/api/notifications/mark-read");
-      } catch (err) {
-        console.error("Failed to mark notifications:", err);
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        markAllRead();
-      }
-    };
-
-    const handleBeforeUnload = () => {
-      navigator.sendBeacon("/api/notifications/mark-read");
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    if (
-      prevPath.current === "/notifications" &&
-      pathname !== "/notifications"
-    ) {
-      markAllRead();
-    }
-
-    prevPath.current = pathname;
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [pathname]);
 
   return (
     <>
