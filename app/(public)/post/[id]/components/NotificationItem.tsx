@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import Verified from "@/icons/Verified";
 
 type User = {
   id: number;
@@ -62,7 +61,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           href={`/profile/${notification.sender.username}`}
           className="flex text-[#5B5B5B] font-bold"
         >
-          {notification.sender.username} <Verified />
+          {notification.sender.username}
         </Link>
         <div className="text-[#5B5B5B]">{notification.message}</div>
       </div>
