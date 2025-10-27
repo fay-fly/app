@@ -5,7 +5,6 @@ import { handleError } from "@/utils/errors";
 import clsx from "clsx";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import Send from "@/icons/Send";
-import AuthRequiredModal from "@/components/AuthRequiredModal";
 
 type CommentFormProps = {
   postId: number;
@@ -20,7 +19,6 @@ export function CommentForm({
 }: CommentFormProps) {
   const [newComment, setNewComment] = useState("");
   const [processing, setProcessing] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const { session } = useSafeSession();
 
   if (!session) {
