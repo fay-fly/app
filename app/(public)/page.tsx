@@ -4,15 +4,26 @@ import type { PostWithUser } from "@/app/types/postWithUser";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PageLoader from "@/components/PageLoader";
+import { useSafeSession } from "@/hooks/useSafeSession";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const { session, status } = useSafeSession();
+  const router = useRouter();
   const [posts, setPosts] = useState<PostWithUser[]>();
 
   useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session) {
+      router.push("/discover");
+      return;
+    }
+
     axios.get<PostWithUser[]>("/api/posts/all").then((response) => {
       setPosts(response.data);
     });
-  }, []);
+  }, [session, status, router]);
 
   const onSubscribe = (authorId: number) => {
     setPosts((prev) =>

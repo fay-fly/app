@@ -19,6 +19,7 @@ const menuConfig: MenuItem[] = [
     icon: Home,
     text: "Home",
     mobileIndex: 1,
+    requiresAuth: true,
   },
   {
     route: "/discover",
