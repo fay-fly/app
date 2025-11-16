@@ -33,7 +33,7 @@ export default function Post({ post, onSubscribe }: PostProps) {
     <div className="flex flex-col mb-[12px]">
       <div className="py-[8px] flex justify-between px-[16px] mb-[8px]">
         <div className="flex gap-[8px] items-center">
-          <div className="w-[32px] h-[32px]">
+          <a href={`/profile/${post.author.username}`} className="w-[32px] h-[32px]">
             {post.author.pictureUrl ? (
               <img
                 src={post.author.pictureUrl}
@@ -50,7 +50,7 @@ export default function Post({ post, onSubscribe }: PostProps) {
                 {post.author.username.charAt(0).toUpperCase()}
               </div>
             )}
-          </div>
+          </a>
           <a
             href={`/profile/${post.author.username}`}
             className="text-(--fly-text-primary) font-semibold"

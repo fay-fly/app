@@ -30,7 +30,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   const senderAvatar = (
     <>
       <Link
-        href={`/profile/${notification.senderId}`}
+        href={`/profile/${notification.sender.username}`}
         className="w-[32px] h-[32px] cursor-pointer"
       >
         {notification.sender.pictureUrl ? (
