@@ -1,4 +1,4 @@
-export default function PinFilled() {
+export default function PinFilled({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,6 +6,7 @@ export default function PinFilled() {
       height="19"
       viewBox="0 0 19 19"
       fill="none"
+      className={className}
     >
       <path
         fillRule="evenodd"
