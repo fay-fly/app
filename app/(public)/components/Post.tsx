@@ -12,6 +12,7 @@ import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton"
 import { useSafeSession } from "@/hooks/useSafeSession";
 import { useState, useRef } from "react";
 import FireFilled from "@/icons/FireFilled";
+import PinFilled from "@/icons/PinFilled";
 
 type PostProps = {
   post: PostWithUser;
@@ -31,6 +32,20 @@ export default function Post({ post, onSubscribe }: PostProps) {
 
   return (
     <div className="flex flex-col mb-[12px]">
+      {post.isPinned && post.pinnedBy && (
+        <div className="flex items-center gap-[8px] px-[16px] pt-[8px] text-[#A0A0A0] text-[12px]">
+          <PinFilled className="w-[14px] h-[14px]" />
+          <span>
+            Pinned by{" "}
+            <a
+              href={`/profile/${post.pinnedBy.username}`}
+              className="font-semibold hover:underline"
+            >
+              {post.pinnedBy.username}
+            </a>
+          </span>
+        </div>
+      )}
       <div className="py-[8px] flex justify-between px-[16px] mb-[8px]">
         <div className="flex gap-[8px] items-center">
           <a href={`/profile/${post.author.username}`} className="w-[32px] h-[32px]">

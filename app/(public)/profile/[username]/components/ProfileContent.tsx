@@ -11,6 +11,7 @@ import ProfileEditModal from "@/app/(public)/profile/[username]/components/Profi
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { handleError } from "@/utils/errors";
+import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
 
 export type EditProfilePayload = {
   fullName: string;
@@ -80,6 +81,22 @@ export default function ProfileContent({ username }: { username: string }) {
     }
   };
 
+  const handleSubscribe = () => {
+    if (!user) return;
+    setUser((prev) => {
+      if (!prev) return prev;
+      const newFollowState = !prev.isFollowedByMe;
+      return {
+        ...prev,
+        isFollowedByMe: newFollowState,
+        _count: {
+          ...prev._count,
+          followers: prev._count.followers + (newFollowState ? 1 : -1),
+        },
+      };
+    });
+  };
+
   if (!user) {
     return null;
   }
@@ -135,7 +152,7 @@ export default function ProfileContent({ username }: { username: string }) {
           )}
         </div>
       </div>
-      {isOwnProfile && (
+      {isOwnProfile ? (
         <div className="flex justify-end mt-[16px] mr-[16px] p-[8px]">
           <div
             className="bg-[#F7F8FF] rounded-full cursor-pointer"
@@ -154,9 +171,17 @@ export default function ProfileContent({ username }: { username: string }) {
             profileBgUrl={user.profileBgUrl}
           />
         </div>
+      ) : session && (
+        <div className="flex justify-end p-[8px]">
+          <SubscribeButton
+            subscribingId={user.id}
+            isSubscribed={user.isFollowedByMe}
+            onSuccess={handleSubscribe}
+          />
+        </div>
       )}
       <div
-        className={isOwnProfile ? "mx-[16px]" : "mx-[16px] mb-[16px] mt-[60px]"}
+        className={isOwnProfile || session ? "mx-[16px]" : "mx-[16px] mb-[16px] mt-[60px]"}
       >
         <div className="space-y-1">
           <span className="text-[#F883B8] font-semibold text-[14px]">

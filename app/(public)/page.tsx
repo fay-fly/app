@@ -20,7 +20,7 @@ export default function Home() {
       return;
     }
 
-    axios.get<PostWithUser[]>("/api/posts/all").then((response) => {
+    axios.get<PostWithUser[]>("/api/posts/feed").then((response) => {
       setPosts(response.data);
     });
   }, [session, status, router]);
@@ -44,6 +44,13 @@ export default function Home() {
         <div className="flex flex-col">
           {!posts ? (
             <PageLoader />
+          ) : posts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-[48px] text-[#A0A0A0]">
+              <p className="text-[16px]">No posts yet</p>
+              <p className="text-[14px] mt-[8px]">
+                Follow users to see their posts here
+              </p>
+            </div>
           ) : (
             posts.map((post) => {
               return (

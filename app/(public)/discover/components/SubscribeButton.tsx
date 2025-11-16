@@ -28,7 +28,7 @@ export default function SubscribeButton({
     <Button
       onClick={handleFollow}
       type="button"
-      className="bg-(--fly-primary) text-(--fly-white) px-[16px] py-[5px] h-[32px]"
+      className="bg-(--fly-primary) text-(--fly-white) px-[12px] py-[5px] h-[32px] text-[14px] max-w-[100px]"
     >
       {hasSubscribeState ? "Unsub" : "Subscribe"}
     </Button>

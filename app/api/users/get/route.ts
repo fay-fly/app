@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  const currentUserId = session?.user?.id ? session.user.id : null;
+
   const { searchParams } = new URL(req.url);
   const username = searchParams.get("username");
   console.log("test", username);
@@ -33,6 +38,12 @@ export async function GET(req: NextRequest) {
           subscriptions: true,
         },
       },
+      ...(currentUserId && {
+        followers: {
+          where: { followerId: currentUserId },
+          select: { id: true },
+        },
+      }),
     },
   });
 
@@ -42,5 +53,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  return NextResponse.json(user);
+  const { followers, ...restUser } = user as typeof user & {
+    followers?: { id: number }[];
+  };
+
+  return NextResponse.json({
+    ...restUser,
+    isFollowedByMe: currentUserId ? (followers?.length ?? 0) > 0 : false,
+  });
 }

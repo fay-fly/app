@@ -25,6 +25,12 @@ export type PostWithUser = Post & {
   likedByMe: boolean;
   pinnedByMe: boolean;
   isFollowed: boolean;
+  isPinned?: boolean;
+  pinnedBy?: {
+    id: number;
+    username: string;
+    pictureUrl: string;
+  } | null;
 };
 
 type SubsCount = {
@@ -44,4 +50,5 @@ export type UserWithPosts = User &
     pins: {
       post: Post;
     }[];
+    isFollowedByMe: boolean;
   };
