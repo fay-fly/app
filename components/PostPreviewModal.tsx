@@ -139,7 +139,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
         },
       }}
     >
-      <div className="relative flex items-center w-full h-full lg:w-auto lg:h-auto">
+      <div className="relative flex items-center w-full h-full lg:w-auto lg:h-auto lg:max-h-[90vh]">
         {props.showNavigation && props.onPrevious && (
           <button
             onClick={props.onPrevious}
@@ -153,9 +153,9 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
             <ChevronLeft />
           </button>
         )}
-        <div className="flex w-full h-full lg:w-auto lg:h-auto">
+        <div className="flex w-full h-full lg:w-auto lg:h-auto lg:max-h-[90vh] lg:max-w-[calc(100vw-120px)]">
           <div
-            className="relative justify-center items-center bg-black hidden lg:flex w-[900px] h-[900px] cursor-pointer select-none"
+            className="relative justify-center items-center bg-black hidden lg:flex w-[900px] max-w-[calc(100vw-620px)] max-h-[90vh] aspect-square cursor-pointer select-none"
             onDoubleClick={handleImageDoubleClick}
           >
             <Image
@@ -174,8 +174,8 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
               </div>
             )}
           </div>
-          <div className="flex flex-col w-full lg:w-[500px] h-full lg:h-[900px]">
-            <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color)">
+          <div className="flex flex-col w-full lg:w-[500px] lg:min-w-[400px] h-full lg:h-[90vh] lg:max-h-[90vh]">
+            <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color) flex-shrink-0">
               <UserCard
                 user={{
                   username: props.post.author.username,
@@ -190,7 +190,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                 <Close />
               </button>
             </div>
-            <div ref={commentsRef} className="flex-1 overflow-auto">
+            <div ref={commentsRef} className="flex-1 overflow-auto min-h-0">
               <p className="px-[8px] text-[#5B5B5B] whitespace-pre-wrap overflow-auto">
                 <span className="font-semibold">
                   {props.post.author.username}
@@ -219,7 +219,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                 <CommentList comments={comments} />
               )}
             </div>
-            <div className="flex justify-between text-[#A0A0A0]">
+            <div className="flex justify-between text-[#A0A0A0] flex-shrink-0 border-t border-(--fly-border-color)">
               <div className="flex">
                 <LikeButton
                   ref={likeButtonRef}
@@ -242,11 +242,13 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                 </div>
               </div>
             </div>
-            <CommentForm
-              postId={props.post.id}
-              disabled={processing}
-              onCommentAdded={onCommentAdded}
-            />
+            <div className="flex-shrink-0">
+              <CommentForm
+                postId={props.post.id}
+                disabled={processing}
+                onCommentAdded={onCommentAdded}
+              />
+            </div>
           </div>
         </div>
         {props.showNavigation && props.onNext && (
