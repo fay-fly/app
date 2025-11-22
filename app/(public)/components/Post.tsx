@@ -4,7 +4,6 @@ import ThreeDots from "@/icons/ThreeDots";
 import { PostWithUser } from "@/app/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
-import Image from "next/image";
 import UserText from "@/app/(public)/components/UserText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
 import PinButton from "@/app/(public)/discover/components/PinButton";
@@ -22,12 +21,53 @@ type PostProps = {
 export default function Post({ post, onSubscribe }: PostProps) {
   const { session } = useSafeSession();
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const likeButtonRef = useRef<{ triggerLike: () => void }>(null);
 
   const handleImageDoubleClick = () => {
     likeButtonRef.current?.triggerLike();
     setShowLikeAnimation(true);
     setTimeout(() => setShowLikeAnimation(false), 1000);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev < post.imageUrls.length - 1 ? prev + 1 : prev
+    );
+  };
+
+  const previousImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev > 0 ? prev - 1 : prev
+    );
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    const minSwipeDistance = 50;
+    const distance = touchStart - touchEnd;
+
+    if (Math.abs(distance) < minSwipeDistance) return;
+
+    if (distance > 0) {
+      nextImage();
+    } else {
+      previousImage();
+    }
   };
 
   return (
@@ -86,17 +126,80 @@ export default function Post({ post, onSubscribe }: PostProps) {
         </div>
       </div>
       <div
-        className="relative cursor-pointer select-none overflow-hidden"
+        className="relative cursor-pointer select-none overflow-hidden group"
         onDoubleClick={handleImageDoubleClick}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        <Image
-          src={post.imageUrl}
-          alt="foto"
-          className="w-full block leading-none"
-          width={1}
-          height={1}
-          unoptimized
-        />
+        <div
+          className="flex transition-transform duration-300 ease-out"
+          style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+        >
+          {post.imageUrls && post.imageUrls.map((url, index) => (
+            <div key={index} className="min-w-full">
+              <img
+                src={url}
+                alt={`foto ${index + 1}`}
+                className="w-full h-auto block"
+                loading={index === 0 ? "eager" : "lazy"}
+              />
+            </div>
+          ))}
+        </div>
+        {post.imageUrls && post.imageUrls.length > 1 && (
+          <>
+            {currentImageIndex > 0 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  previousImage();
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                }}
+                className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-8 h-8 items-center justify-center shadow-md hover:bg-white transition-colors cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 18L9 12L15 6" stroke="#262626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+            {currentImageIndex < post.imageUrls.length - 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextImage();
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                }}
+                className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-8 h-8 items-center justify-center shadow-md hover:bg-white transition-colors cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 18L15 12L9 6" stroke="#262626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+              {post.imageUrls.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentImageIndex(index);
+                  }}
+                  className={`w-1.5 h-1.5 rounded-full transition-all ${
+                    index === currentImageIndex
+                      ? "bg-white"
+                      : "bg-white/50 hover:bg-white/70"
+                  }`}
+                  aria-label={`Go to image ${index + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
         {showLikeAnimation && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="animate-like-burst">

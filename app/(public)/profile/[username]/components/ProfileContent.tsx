@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { handleError } from "@/utils/errors";
 import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
+import MultiplePhotos from "@/icons/MultiplePhotos";
 
 export type EditProfilePayload = {
   fullName: string;
@@ -114,14 +115,21 @@ export default function ProfileContent({ username }: { username: string }) {
       href={`/post/${post.id}`}
       className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
     >
-      <Image
-        src={post.imageUrl}
-        alt="publication"
-        className="w-full h-full object-cover"
-        width={1}
-        height={1}
-        unoptimized
-      />
+      {post.imageUrls && post.imageUrls.length > 0 && (
+        <Image
+          src={post.imageUrls[0]}
+          alt="publication"
+          className="w-full h-full object-cover"
+          width={1}
+          height={1}
+          unoptimized
+        />
+      )}
+      {post.imageUrls && post.imageUrls.length > 1 && (
+        <div className="absolute top-2 right-2">
+          <MultiplePhotos />
+        </div>
+      )}
       <div
         className={clsx(
           "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",

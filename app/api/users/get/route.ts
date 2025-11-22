@@ -22,8 +22,15 @@ export async function GET(req: NextRequest) {
   const user = await prisma.user.findUnique({
     where: { username },
     include: {
-      posts: true,
+      posts: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
       pins: {
+        orderBy: {
+          createdAt: 'desc',
+        },
         include: {
           post: {
             include: {

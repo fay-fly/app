@@ -13,38 +13,40 @@ import { useSafeSession } from "@/hooks/useSafeSession";
 export default function AddPost() {
   const router = useRouter();
   const { session } = useSafeSession();
-  const [image, setImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [text, setText] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    setImage(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    setImages(prev => [...prev, ...acceptedFiles]);
+    const newPreviewUrls = acceptedFiles.map(file => URL.createObjectURL(file));
+    setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    multiple: false,
+    multiple: true,
     accept: { "image/*": [] },
   });
 
-  const removeImage = () => {
-    setImage(null);
-    setPreviewUrl(null);
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   async function handlePublish(e: React.FormEvent) {
     e.preventDefault();
-    if (!image || !text.trim()) {
+    if (images.length === 0 || !text.trim()) {
       return;
     }
 
     setIsProcessing(true);
     try {
       const formData = new FormData();
-      formData.append("image", image);
+      images.forEach((image) => {
+        formData.append("images", image);
+      });
       formData.append("text", text);
       formData.append("authorId", String(session?.user.id));
       await axios.post("/api/posts/create", formData);
@@ -63,39 +65,43 @@ export default function AddPost() {
           onSubmit={handlePublish}
           className="space-y-4 w-full max-w-[630px]"
         >
-          {!image ? (
-            <div
-              {...getRootProps()}
-              className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[300px] md:min-h-[450px] ${
-                isDragActive ? "bg-gray-100" : ""
-              }`}
-            >
-              <input {...getInputProps()} />
-              <div className="flex flex-col gap-[12px] items-center">
-                <UploadCloud />
-                <p>Take a photo or upload media</p>
-              </div>
+          <div
+            {...getRootProps()}
+            className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[120px] ${
+              isDragActive ? "bg-gray-100" : ""
+            }`}
+          >
+            <input {...getInputProps()} />
+            <div className="flex flex-col gap-[12px] items-center">
+              <UploadCloud />
+              <p>Take a photo or upload media</p>
             </div>
-          ) : (
-            <div className="relative">
-              <button
-                onClick={removeImage}
-                className="absolute right-[-12] top-[-12] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer"
-              >
-                <Close />
-              </button>
-              {previewUrl && (
-                <Image
-                  src={previewUrl}
-                  alt="Preview"
-                  className="mx-auto mb-4 w-full"
-                  width={1}
-                  height={1}
-                  unoptimized
-                />
-              )}
+          </div>
+
+          {images.length > 0 && (
+            <div className="grid grid-cols-2 gap-4">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute right-[-8px] top-[-8px] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer z-10"
+                  >
+                    <Close />
+                  </button>
+                  <Image
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-[200px] object-cover rounded"
+                    width={1}
+                    height={1}
+                    unoptimized
+                  />
+                </div>
+              ))}
             </div>
           )}
+
           <textarea
             rows={4}
             className="w-full rounded p-2"

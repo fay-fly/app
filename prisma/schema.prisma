@@ -37,7 +37,7 @@ model User {
 
 model Post {
   id             Int            @id @default(autoincrement())
-  imageUrl       String
+  imageUrls      String[]       @default([])
   text           String
   author         User?          @relation(fields: [authorId], references: [id])
   authorId       Int

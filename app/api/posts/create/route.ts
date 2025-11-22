@@ -7,24 +7,29 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
 
-  const file = formData.get("image") as File;
+  const files = formData.getAll("images") as File[];
   const text = formData.get("text") as string;
   const authorId = formData.get("authorId") as string;
 
-  if (!file || !text || !authorId) {
+  if (!files || files.length === 0 || !text || !authorId) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
-
-  const extension = file.name.split(".").pop();
-  const uniqueName = `${crypto.randomUUID()}.${extension}`;
-  const blob = await put(uniqueName, file, {
-    access: "public",
+  
+  const uploadPromises = files.map(async (file) => {
+    const extension = file.name.split(".").pop();
+    const uniqueName = `${crypto.randomUUID()}.${extension}`;
+    const blob = await put(uniqueName, file, {
+      access: "public",
+    });
+    return blob.url;
   });
+
+  const imageUrls = await Promise.all(uploadPromises);
 
   const post = await prisma.post.create({
     data: {
       text,
-      imageUrl: blob.url,
+      imageUrls,
       authorId: parseInt(authorId),
     },
   });

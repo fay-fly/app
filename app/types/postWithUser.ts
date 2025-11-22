@@ -13,7 +13,7 @@ export type User = {
 export type Post = {
   id: number;
   text: string;
-  imageUrl: string;
+  imageUrls: string[];
   likesCount: number;
   commentsCount: number;
   pinsCount: number;

@@ -19,7 +19,7 @@ type NotificationItemProps = {
     senderId: number;
     post?: {
       id: number;
-      imageUrl: string;
+      imageUrls: string[];
     } | null;
   };
 };
@@ -71,13 +71,13 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <div className="flex justify-between flex-1">
       {content}
-      {notification.post && (
+      {notification.post && notification.post.imageUrls.length > 0 && (
         <a
           href={`/post/${notification.post.id}`}
           className="flex items-center ml-4"
         >
           <img
-            src={notification.post.imageUrl}
+            src={notification.post.imageUrls[0]}
             alt="post"
             className="w-10 h-10 object-cover"
           />

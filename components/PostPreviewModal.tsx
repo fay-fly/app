@@ -32,6 +32,10 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
   const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [processing, setProcessing] = useState(false);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (shouldAutoScrollRef.current && commentsRef.current) {
@@ -47,6 +51,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
     if (props.post.id) {
       setComments([]);
       setProcessing(true);
+      setCurrentImageIndex(0);
       shouldAutoScrollRef.current = false;
       if (commentsRef.current) {
         commentsRef.current.scrollTop = 0;
@@ -73,6 +78,41 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
     likeButtonRef.current?.triggerLike();
     setShowLikeAnimation(true);
     setTimeout(() => setShowLikeAnimation(false), 1000);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev < props.post.imageUrls.length - 1 ? prev + 1 : prev
+    );
+  };
+
+  const previousImage = () => {
+    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : prev));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    const minSwipeDistance = 50;
+    const distance = touchStart - touchEnd;
+
+    if (Math.abs(distance) < minSwipeDistance) return;
+
+    if (distance > 0) {
+      nextImage();
+    } else {
+      previousImage();
+    }
   };
 
   useEffect(() => {
@@ -155,17 +195,82 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
         )}
         <div className="flex w-full h-full lg:w-auto lg:h-auto lg:max-h-[90vh] lg:max-w-[calc(100vw-120px)]">
           <div
-            className="relative justify-center items-center bg-black hidden lg:flex w-[900px] max-w-[calc(100vw-620px)] max-h-[90vh] aspect-square cursor-pointer select-none"
+            className="relative justify-center items-center bg-black hidden lg:flex w-[900px] max-w-[calc(100vw-620px)] max-h-[90vh] aspect-square cursor-pointer select-none overflow-hidden group"
             onDoubleClick={handleImageDoubleClick}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
-            <Image
-              src={props.post.imageUrl}
-              alt="image"
-              className="w-full h-full object-contain"
-              unoptimized
-              width={1}
-              height={1}
-            />
+            <div
+              className="flex h-full transition-transform duration-300 ease-out"
+              style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+            >
+              {props.post.imageUrls && props.post.imageUrls.map((url, index) => (
+                <div key={index} className="min-w-full h-full flex items-center justify-center">
+                  <Image
+                    src={url}
+                    alt={`image ${index + 1}`}
+                    className="w-full h-full object-contain"
+                    unoptimized
+                    width={1}
+                    height={1}
+                  />
+                </div>
+              ))}
+            </div>
+            {props.post.imageUrls && props.post.imageUrls.length > 1 && (
+              <>
+                {currentImageIndex > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      previousImage();
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-9 h-9 flex items-center justify-center shadow-lg hover:bg-white transition-colors cursor-pointer"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M15 18L9 12L15 6" stroke="#262626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                )}
+                {currentImageIndex < props.post.imageUrls.length - 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      nextImage();
+                    }}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-9 h-9 flex items-center justify-center shadow-lg hover:bg-white transition-colors cursor-pointer"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 18L15 12L9 6" stroke="#262626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                )}
+                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {props.post.imageUrls.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentImageIndex(index);
+                      }}
+                      className={`w-1.5 h-1.5 rounded-full transition-all ${
+                        index === currentImageIndex
+                          ? "bg-white"
+                          : "bg-white/50 hover:bg-white/70"
+                      }`}
+                      aria-label={`Go to image ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
             {showLikeAnimation && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="animate-like-burst">
