@@ -33,6 +33,8 @@ model User {
   pins                     Pin[]
   subscriptions            Subscription[] @relation("UserFollows")
   followers                Subscription[] @relation("UserFollowed")
+  recentSearches           RecentSearch[] @relation("RecentSearchOwner")
+  appearedInRecentSearches RecentSearch[] @relation("RecentSearchTarget")
 }
 
 model Post {
@@ -131,4 +133,23 @@ model PostHashtag {
   @@unique([postId, hashtagId])
   @@index([hashtagId])
   @@index([postId])
+}
+
+model RecentSearch {
+  id              Int               @id @default(autoincrement())
+  owner           User              @relation("RecentSearchOwner", fields: [ownerId], references: [id])
+  ownerId         Int
+  searchedUser    User?             @relation("RecentSearchTarget", fields: [searchedUserId], references: [id])
+  searchedUserId  Int?
+  hashtag         String?
+  type            RecentSearchType
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([ownerId, createdAt])
+}
+
+enum RecentSearchType {
+  USER
+  HASHTAG
 }

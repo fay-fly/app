@@ -1,6 +1,12 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import clsx from "clsx";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
@@ -26,6 +32,22 @@ type HashtagSearchResult = {
   };
 };
 
+type RecentSearchResponse =
+  | {
+      id: number;
+      type: "user";
+      user: {
+        id: number | null;
+        username: string | null;
+        pictureUrl: string | null;
+      };
+    }
+  | {
+      id: number;
+      type: "hashtag";
+      hashtag: string;
+    };
+
 export default function DiscoverSearchInput({
   variant,
   wrapperClassName,
@@ -42,7 +64,67 @@ export default function DiscoverSearchInput({
     null
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<RecentSearchResponse[]>(
+    []
+  );
+  const [recentsLoaded, setRecentsLoaded] = useState(false);
+  const [recentsLoading, setRecentsLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchRecentSearches = useCallback(async () => {
+    setRecentsLoading(true);
+    try {
+      const response = await axios.get<RecentSearchResponse[]>(
+        "/api/search/recent"
+      );
+      setRecentSearches(response.data ?? []);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setRecentSearches([]);
+      } else {
+        console.error("Failed to load recent searches", error);
+      }
+    } finally {
+      setRecentsLoaded(true);
+      setRecentsLoading(false);
+    }
+  }, []);
+
+  const recordUserRecent = useCallback(
+    async (targetUserId: number) => {
+      try {
+        await axios.post("/api/search/recent", {
+          type: "user",
+          userId: targetUserId,
+        });
+        fetchRecentSearches();
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          return;
+        }
+        console.error("Failed to record recent user search", error);
+      }
+    },
+    [fetchRecentSearches]
+  );
+
+  const recordHashtagRecent = useCallback(
+    async (hashtagName: string) => {
+      try {
+        await axios.post("/api/search/recent", {
+          type: "hashtag",
+          hashtag: hashtagName,
+        });
+        fetchRecentSearches();
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          return;
+        }
+        console.error("Failed to record recent hashtag search", error);
+      }
+    },
+    [fetchRecentSearches]
+  );
 
   useEffect(() => {
     const trimmedQuery = value.trim();
@@ -145,23 +227,27 @@ export default function DiscoverSearchInput({
     setResultType(null);
     setUserResults([]);
     setHashtagResults([]);
+    setIsSearching(false);
   };
 
   const handleFocus = () => {
-    if (value.trim()) {
-      setDropdownOpen(true);
+    if (!recentsLoaded && !recentsLoading) {
+      fetchRecentSearches();
     }
+    setDropdownOpen(true);
   };
 
-  const handleOpenProfile = (username: string | null) => {
-    if (!username) {
+  const handleOpenProfile = (user: UserSearchResult) => {
+    if (!user.username) {
       return;
     }
-    router.push(`/profile/${username}`);
+    void recordUserRecent(user.id);
+    router.push(`/profile/${user.username}`);
     handleClear();
   };
 
   const handleOpenHashtag = (hashtag: string) => {
+    void recordHashtagRecent(hashtag);
     router.push(`/discover?hashtag=${encodeURIComponent(hashtag)}`);
     handleClear();
   };
@@ -172,8 +258,17 @@ export default function DiscoverSearchInput({
     variant === "desktop" ? "px-4 py-2 text-sm" : "px-3 py-2 text-sm"
   );
 
-  const shouldShowDropdown = dropdownOpen && value.trim().length > 0;
+  const trimmedValue = value.trim();
+  const hasQuery = trimmedValue.length > 0;
+  const shouldShowDropdown =
+    dropdownOpen && (hasQuery || recentsLoaded || recentsLoading);
   const isHashtagMode = resultType === "hashtags";
+  const showRecentList = dropdownOpen && !hasQuery;
+  const headerLabel = showRecentList
+    ? "Recent searches"
+    : isHashtagMode
+    ? "Matching hashtags"
+    : "Matching users";
 
   return (
     <div className={clsx("relative", wrapperClassName)} ref={containerRef}>
@@ -198,14 +293,82 @@ export default function DiscoverSearchInput({
         <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 rounded-2xl border border-gray-200 bg-white shadow-lg">
           <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
             <span className="font-semibold text-(--fly-text-primary)">
-              {isHashtagMode ? "Matching hashtags" : "Matching users"}
+              {headerLabel}
             </span>
-            {isSearching && (
+            {!showRecentList && isSearching && (
               <span className="text-sm text-[#A0A0A0]">Searching...</span>
             )}
           </div>
           <div className="p-4 max-h-80 overflow-y-auto">
-            {isSearching ? (
+            {showRecentList ? (
+              recentsLoading ? (
+                <div className="flex flex-col gap-3">
+                  {[...Array(3)].map((_, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 animate-pulse"
+                    >
+                      <div className="h-10 w-10 rounded-full bg-gray-200" />
+                      <div className="h-4 w-32 rounded bg-gray-200" />
+                    </div>
+                  ))}
+                </div>
+              ) : recentsLoaded && recentSearches.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  {recentSearches.map((item) => {
+                    if (item.type === "user") {
+                      if (!item.user || !item.user.username || !item.user.id) {
+                        return null;
+                      }
+                      const recentUser = item.user;
+                      return (
+                        <button
+                          key={`recent-user-${item.id}`}
+                          onClick={() =>
+                            handleOpenProfile({
+                              id: recentUser.id,
+                              username: recentUser.username,
+                              pictureUrl: recentUser.pictureUrl,
+                            })
+                          }
+                          className="w-full rounded-xl px-2 py-2 text-left transition-colors hover:bg-gray-50"
+                        >
+                          <UserCard
+                            showStatus={false}
+                            user={{
+                              image: recentUser.pictureUrl,
+                              username: recentUser.username,
+                            }}
+                          />
+                        </button>
+                      );
+                    }
+
+                    if (!item.hashtag) {
+                      return null;
+                    }
+
+                    return (
+                      <button
+                        key={`recent-hashtag-${item.id}`}
+                        onClick={() => handleOpenHashtag(item.hashtag)}
+                        className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition-colors hover:bg-gray-50"
+                      >
+                        <div>
+                          <p className="font-semibold text-(--fly-text-primary)">
+                            #{item.hashtag}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-6 text-center text-[#A0A0A0]">
+                  No recent searches yet
+                </div>
+              )
+            ) : isSearching ? (
               <div className="flex flex-col gap-3">
                 {[...Array(3)].map((_, index) => (
                   <div
@@ -252,7 +415,7 @@ export default function DiscoverSearchInput({
                   return (
                     <button
                       key={user.id}
-                      onClick={() => handleOpenProfile(user.username)}
+                      onClick={() => handleOpenProfile(user)}
                       className="w-full rounded-xl px-2 py-2 text-left transition-colors hover:bg-gray-50"
                     >
                       <UserCard
