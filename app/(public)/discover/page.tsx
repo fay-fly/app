@@ -5,6 +5,8 @@ import axios from "axios";
 import PostsPreview from "@/app/(public)/discover/components/PostsPreview";
 import UserCard from "@/app/(public)/components/UserCard";
 import { handleError } from "@/utils/errors";
+import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 type UserSearchResult = {
   id: number;
@@ -12,42 +14,118 @@ type UserSearchResult = {
   pictureUrl: string | null;
 };
 
+type HashtagSearchResult = {
+  id: number;
+  name: string;
+  _count: {
+    posts: number;
+  };
+};
+
 export default function Discover() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const activeHashtag = searchParams.get("hashtag");
+
   const [posts, setPosts] = useState<PostWithUser[]>();
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
+  const [userResults, setUserResults] = useState<UserSearchResult[]>([]);
+  const [hashtagResults, setHashtagResults] = useState<HashtagSearchResult[]>(
+    []
+  );
   const [isSearching, setIsSearching] = useState(false);
+  const [resultType, setResultType] = useState<"users" | "hashtags" | null>(
+    null
+  );
+
+  const clearHashtagFilter = () => {
+    router.push("/discover");
+  };
 
   useEffect(() => {
-    axios.get<PostWithUser[]>("/api/posts/all").then((response) => {
-      setPosts(response.data);
-    });
-  }, []);
+    let cancelled = false;
+    setPosts(undefined);
+
+    const endpoint = activeHashtag
+      ? `/api/posts/byHashtag?name=${encodeURIComponent(activeHashtag)}`
+      : "/api/posts/all";
+
+    axios
+      .get<PostWithUser[]>(endpoint)
+      .then((response) => {
+        if (!cancelled) {
+          setPosts(response.data);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          handleError(error);
+          setPosts([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeHashtag]);
 
   useEffect(() => {
     const trimmedQuery = searchTerm.trim();
 
     if (!trimmedQuery) {
-      setSearchResults([]);
+      setUserResults([]);
+      setHashtagResults([]);
+      setResultType(null);
       setIsSearching(false);
       return;
     }
+
+    const startsWithHash = trimmedQuery.startsWith("#");
+    setResultType(startsWithHash ? "hashtags" : "users");
 
     let cancelled = false;
     setIsSearching(true);
 
     const timeoutId = setTimeout(async () => {
       try {
-        const response = await axios.get<UserSearchResult[]>(
-          `/api/users/search?query=${encodeURIComponent(trimmedQuery)}`
-        );
-        if (!cancelled) {
-          setSearchResults(response.data ?? []);
+        if (startsWithHash) {
+          const response = await axios.get<HashtagSearchResult[]>(
+            `/api/hashtags/search?query=${encodeURIComponent(trimmedQuery)}`
+          );
+
+          if (!cancelled) {
+            setHashtagResults(response.data ?? []);
+            setUserResults([]);
+          }
+        } else {
+          const response = await axios.get<UserSearchResult[]>(
+            `/api/users/search?query=${encodeURIComponent(trimmedQuery)}`
+          );
+
+          if (!cancelled) {
+            const users = response.data ?? [];
+            setUserResults(users);
+            setHashtagResults([]);
+
+            if (users.length === 0) {
+              const hashtagFallback = await axios.get<HashtagSearchResult[]>(
+                `/api/hashtags/search?query=${encodeURIComponent(trimmedQuery)}`
+              );
+
+              if (!cancelled) {
+                setHashtagResults(hashtagFallback.data ?? []);
+                setResultType("hashtags");
+              }
+            } else {
+              setResultType("users");
+            }
+          }
         }
       } catch (error) {
         if (!cancelled) {
           handleError(error);
-          setSearchResults([]);
+          setUserResults([]);
+          setHashtagResults([]);
         }
       } finally {
         if (!cancelled) {
@@ -63,6 +141,7 @@ export default function Discover() {
   }, [searchTerm]);
 
   const hasQuery = searchTerm.trim().length > 0;
+  const isHashtagQuery = resultType === "hashtags";
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -76,22 +155,37 @@ export default function Discover() {
             Discover creators
           </h1>
           <p className="text-sm text-[#666] mt-1">
-            Search by username to jump straight to someone&apos;s profile.
+            Search by username or explore posts with #hashtags.
           </p>
           <div className="mt-4">
             <input
               type="search"
               value={searchTerm}
               onChange={handleSearchChange}
-              placeholder="Search by username"
+              placeholder="Search by username or #hashtag"
               className="w-full rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-(--fly-text-primary) focus:border-(--fly-primary) focus:outline-none"
             />
           </div>
+          {activeHashtag && (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-(--fly-primary)/30 bg-(--fly-primary)/5 px-4 py-3 text-sm text-(--fly-text-primary)">
+              <span>
+                Showing posts for{" "}
+                <span className="font-semibold">#{activeHashtag}</span>
+              </span>
+              <button
+                type="button"
+                onClick={clearHashtagFilter}
+                className="rounded-full border border-(--fly-primary) px-3 py-1 text-(--fly-primary) transition hover:bg-(--fly-primary)/10"
+              >
+                Clear filter
+              </button>
+            </div>
+          )}
           {hasQuery && (
             <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
               <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
                 <span className="font-semibold text-(--fly-text-primary)">
-                  Matching users
+                  {isHashtagQuery ? "Matching hashtags" : "Matching users"}
                 </span>
                 {isSearching && (
                   <span className="text-sm text-[#A0A0A0]">Searching...</span>
@@ -110,15 +204,43 @@ export default function Discover() {
                       </div>
                     ))}
                   </div>
-                ) : searchResults.length > 0 ? (
+                ) : isHashtagQuery ? (
+                  hashtagResults.length > 0 ? (
+                    <div className="flex max-h-80 flex-col gap-2 overflow-y-auto">
+                      {hashtagResults.map((hashtag) => (
+                        <Link
+                          key={hashtag.id}
+                          href={`/discover?hashtag=${encodeURIComponent(
+                            hashtag.name
+                          )}`}
+                          className="flex items-center justify-between rounded-xl px-3 py-3 transition-colors hover:bg-gray-50"
+                        >
+                          <div>
+                            <p className="font-semibold text-(--fly-text-primary)">
+                              #{hashtag.name}
+                            </p>
+                            <p className="text-sm text-[#909090]">
+                              {hashtag._count.posts}{" "}
+                              {hashtag._count.posts === 1 ? "post" : "posts"}
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-6 text-center text-[#A0A0A0]">
+                      No hashtags found
+                    </div>
+                  )
+                ) : userResults.length > 0 ? (
                   <div className="flex max-h-80 flex-col gap-2 overflow-y-auto">
-                    {searchResults.map((user) => {
+                    {userResults.map((user) => {
                       if (!user.username) {
                         return null;
                       }
 
                       return (
-                        <a
+                        <Link
                           key={user.id}
                           href={`/profile/${user.username}`}
                           className="rounded-xl px-2 py-2 text-left transition-colors hover:bg-gray-50"
@@ -130,7 +252,7 @@ export default function Discover() {
                               username: user.username,
                             }}
                           />
-                        </a>
+                        </Link>
                       );
                     })}
                   </div>

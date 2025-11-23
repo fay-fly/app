@@ -48,6 +48,7 @@ model Post {
   notifications  Notification[]
   comments       Comment[]
   pins           Pin[]
+  hashtags       PostHashtag[]
   createdAt      DateTime       @default(now())
 }
 
@@ -110,4 +111,24 @@ enum NotificationType {
   COMMENT
   FOLLOW
   PIN
+}
+
+model Hashtag {
+  id        Int            @id @default(autoincrement())
+  name      String         @unique
+  posts     PostHashtag[]
+  createdAt DateTime       @default(now())
+}
+
+model PostHashtag {
+  id        Int      @id @default(autoincrement())
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  hashtag   Hashtag  @relation(fields: [hashtagId], references: [id])
+  hashtagId Int
+  createdAt DateTime @default(now())
+
+  @@unique([postId, hashtagId])
+  @@index([hashtagId])
+  @@index([postId])
 }

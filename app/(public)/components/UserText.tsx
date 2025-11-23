@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 
 const highlightHashtags = (text: string) => {
   const hashtagRegex = /(#\w+)/g;
@@ -6,9 +7,13 @@ const highlightHashtags = (text: string) => {
 
   return parts.map((part, index) =>
     hashtagRegex.test(part) ? (
-      <span key={index} className="text-[#19B4F6]">
+      <Link
+        key={index}
+        href={`/discover?hashtag=${encodeURIComponent(part.slice(1))}`}
+        className="text-[#19B4F6] hover:underline"
+      >
         {part}
-      </span>
+      </Link>
     ) : (
       part
     )
