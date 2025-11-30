@@ -13,11 +13,7 @@ export type NotificationWithRelations = Notification & {
   read: boolean;
 };
 
-type GroupedNotifications = {
-  recent: NotificationWithRelations[];
-  yesterday: NotificationWithRelations[];
-  earlier: NotificationWithRelations[];
-};
+type GroupedNotifications = Record<string, NotificationWithRelations[]>;
 
 export default function Notifications() {
   const [notifications, setNotifications] =
@@ -37,35 +33,24 @@ export default function Notifications() {
 
   const groupedNotifications = useMemo<GroupedNotifications>(() => {
     if (!notifications) {
-      return { recent: [], yesterday: [], earlier: [] };
+      return {};
     }
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    return notifications.reduce<GroupedNotifications>((groups, notification) => {
+      const notificationDate = new Date(notification.createdAt);
+      const label = notificationDate.toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      });
 
-    return notifications.reduce<GroupedNotifications>(
-      (groups, notification) => {
-        const notificationDate = new Date(notification.createdAt);
-        const notificationDay = new Date(
-          notificationDate.getFullYear(),
-          notificationDate.getMonth(),
-          notificationDate.getDate()
-        );
+      if (!groups[label]) {
+        groups[label] = [];
+      }
 
-        if (notificationDay.getTime() === today.getTime()) {
-          groups.recent.push(notification);
-        } else if (notificationDay.getTime() === yesterday.getTime()) {
-          groups.yesterday.push(notification);
-        } else {
-          groups.earlier.push(notification);
-        }
-
-        return groups;
-      },
-      { recent: [], yesterday: [], earlier: [] }
-    );
+      groups[label].push(notification);
+      return groups;
+    }, {});
   }, [notifications]);
 
   const renderNotificationGroup = (
@@ -150,15 +135,29 @@ export default function Notifications() {
     );
   };
 
+  const renderDateGroup = () => {
+    if (!groupedNotifications || Object.keys(groupedNotifications).length === 0) {
+      return (
+        <div className="text-center text-[#A0A0A0] mt-10">
+          No notifications yet
+        </div>
+      );
+    }
+
+    return Object.entries(groupedNotifications).map(
+      ([label, notifications]) => (
+        <div key={label}>{renderNotificationGroup(label, notifications)}</div>
+      )
+    );
+  };
+
   return (
     <>
       {!notifications ? (
         renderSkeletonLoader()
       ) : (
         <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-[16px] md:px-[16px] mt-5">
-          {renderNotificationGroup("Recent", groupedNotifications.recent)}
-          {renderNotificationGroup("Yesterday", groupedNotifications.yesterday)}
-          {renderNotificationGroup("Earlier", groupedNotifications.earlier)}
+          {renderDateGroup()}
         </div>
       )}
     </>
