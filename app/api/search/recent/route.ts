@@ -23,10 +23,49 @@ export async function GET() {
           id: true,
           username: true,
           pictureUrl: true,
+          bio: true,
         },
       },
     },
   });
+
+  const recentHashtagNames = Array.from(
+    new Set(
+      recentSearches
+        .filter(
+          (item) => item.type === RecentSearchType.HASHTAG && item.hashtag
+        )
+        .map((item) => (item.hashtag ?? "").toLowerCase())
+    )
+  ).filter(Boolean);
+
+  let hashtagCounts: Record<string, number> = {};
+
+  if (recentHashtagNames.length > 0) {
+    const hashtagRecords = await prisma.hashtag.findMany({
+      where: {
+        name: {
+          in: recentHashtagNames,
+        },
+      },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            posts: true,
+          },
+        },
+      },
+    });
+
+    hashtagCounts = hashtagRecords.reduce<Record<string, number>>(
+      (acc, hashtag) => {
+        acc[hashtag.name.toLowerCase()] = hashtag._count.posts;
+        return acc;
+      },
+      {}
+    );
+  }
 
   return NextResponse.json(
     recentSearches.map((item) =>
@@ -38,12 +77,17 @@ export async function GET() {
               id: item.searchedUser?.id ?? null,
               username: item.searchedUser?.username ?? null,
               pictureUrl: item.searchedUser?.pictureUrl ?? null,
+              bio: item.searchedUser?.bio ?? null,
             },
           }
         : {
             id: item.id,
             type: "hashtag" as const,
             hashtag: item.hashtag ?? "",
+            postsCount:
+              item.hashtag
+                ? hashtagCounts[item.hashtag.toLowerCase()] ?? 0
+                : 0,
           }
     )
   );
@@ -114,4 +158,35 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+}
+
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  const ownerId = session?.user?.id;
+
+  if (!ownerId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const searchIdParam = searchParams.get("id");
+
+  if (searchIdParam) {
+    const searchId = Number(searchIdParam);
+    if (Number.isNaN(searchId)) {
+      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+    }
+    await prisma.recentSearch.deleteMany({
+      where: {
+        id: searchId,
+        ownerId,
+      },
+    });
+  } else {
+    await prisma.recentSearch.deleteMany({
+      where: { ownerId },
+    });
+  }
+
+  return NextResponse.json({ success: true });
 }

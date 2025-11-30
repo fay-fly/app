@@ -12,6 +12,8 @@ import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import UserCard from "@/app/(public)/components/UserCard";
 import { handleError } from "@/utils/errors";
+import CloseIcon from "@/icons/CloseIcon";
+import SearchIcon from "@/icons/SearchIcon";
 
 type DiscoverSearchInputProps = {
   variant: "desktop" | "mobile";
@@ -22,6 +24,7 @@ type UserSearchResult = {
   id: number;
   username: string | null;
   pictureUrl: string | null;
+  bio: string | null;
 };
 
 type HashtagSearchResult = {
@@ -37,15 +40,17 @@ type RecentSearchResponse =
       id: number;
       type: "user";
       user: {
-        id: number | null;
+        id: number;
         username: string | null;
         pictureUrl: string | null;
+        bio: string | null;
       };
     }
   | {
       id: number;
       type: "hashtag";
       hashtag: string;
+      postsCount: number;
     };
 
 export default function DiscoverSearchInput({
@@ -252,10 +257,38 @@ export default function DiscoverSearchInput({
     handleClear();
   };
 
+  const handleDeleteRecent = useCallback(async (recentId: number) => {
+    try {
+      await axios.delete(`/api/search/recent?id=${recentId}`);
+      setRecentSearches((prev) => prev.filter((item) => item.id !== recentId));
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setRecentSearches([]);
+        return;
+      }
+      console.error("Failed to delete recent search", error);
+    }
+  }, []);
+
+  const handleClearAllRecents = useCallback(async () => {
+    try {
+      await axios.delete(`/api/search/recent`);
+      setRecentSearches([]);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setRecentSearches([]);
+        return;
+      }
+      console.error("Failed to clear recent searches", error);
+    }
+  }, []);
+
   const inputClasses = clsx(
-    "w-full rounded-full border border-gray-200 bg-gray-50 text-(--fly-text-primary)",
+    "w-full text-(--fly-text-primary)",
     "focus:border-(--fly-primary) focus:outline-none",
-    variant === "desktop" ? "px-4 py-2 text-sm" : "px-3 py-2 text-sm"
+    variant === "desktop"
+      ? "pl-4 pr-24 py-2 text-sm"
+      : "pl-3 pr-20 py-2 text-sm"
   );
 
   const trimmedValue = value.trim();
@@ -265,7 +298,7 @@ export default function DiscoverSearchInput({
   const isHashtagMode = resultType === "hashtags";
   const showRecentList = dropdownOpen && !hasQuery;
   const headerLabel = showRecentList
-    ? "Recent searches"
+    ? "Recent"
     : isHashtagMode
     ? "Matching hashtags"
     : "Matching users";
@@ -273,33 +306,55 @@ export default function DiscoverSearchInput({
   return (
     <div className={clsx("relative", wrapperClassName)} ref={containerRef}>
       <input
-        type="search"
         value={value}
         onChange={handleChange}
         onFocus={handleFocus}
-        placeholder="Search users or #hashtags"
+        placeholder="Search"
         className={inputClasses}
+        style={{
+          borderRadius: "12px",
+          border: "1.5px solid var(--Primary-colors-Gray-200, #EDEDED)",
+          background: "var(--Default-White, #FFF)",
+          WebkitAppearance: "none",
+          appearance: "none",
+        }}
       />
-      {value && (
-        <button
-          type="button"
-          onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#666]"
-        >
-          Clear
-        </button>
-      )}
+      <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2">
+        {value && (
+          <button
+            type="button"
+            aria-label="Clear search"
+            onClick={handleClear}
+            className="rounded-full p-1 text-[#A0A0A0] transition hover:text-(--fly-text-primary)"
+          >
+            <CloseIcon />
+          </button>
+        )}
+        <span className="pointer-events-none text-[#A0A0A0]">
+          <SearchIcon />
+        </span>
+      </div>
       {shouldShowDropdown && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 rounded-2xl border border-gray-200 bg-white shadow-lg">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-            <span className="font-semibold text-(--fly-text-primary)">
-              {headerLabel}
-            </span>
-            {!showRecentList && isSearching && (
-              <span className="text-sm text-[#A0A0A0]">Searching...</span>
-            )}
-          </div>
-          <div className="p-4 max-h-80 overflow-y-auto">
+        <div className="absolute top-[calc(100%+8px)] z-50 flex w-full flex-col rounded-2xl border border-gray-200 bg-white shadow-lg">
+          <div className="px-4 pt-6 pb-8 max-h-80 w-full overflow-y-auto">
+            {showRecentList ? (
+              <div className="flex w-full items-center justify-between py-[7px] mb-[16px]">
+                <span className="font-semibold text-(--fly-text-primary)">
+                  {headerLabel}
+                </span>
+                {recentsLoaded && recentSearches.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void handleClearAllRecents();
+                    }}
+                    className="text-sm font-semibold text-(--fly-primary) hover:underline"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+            ) : null}
             {showRecentList ? (
               recentsLoading ? (
                 <div className="flex flex-col gap-3">
@@ -314,33 +369,53 @@ export default function DiscoverSearchInput({
                   ))}
                 </div>
               ) : recentsLoaded && recentSearches.length > 0 ? (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
                   {recentSearches.map((item) => {
                     if (item.type === "user") {
                       if (!item.user || !item.user.username || !item.user.id) {
                         return null;
                       }
-                      const recentUser = item.user;
+                      const recentUser = item.user!;
                       return (
-                        <button
+                        <div
                           key={`recent-user-${item.id}`}
-                          onClick={() =>
-                            handleOpenProfile({
-                              id: recentUser.id,
-                              username: recentUser.username,
-                              pictureUrl: recentUser.pictureUrl,
-                            })
-                          }
-                          className="w-full rounded-xl px-2 py-2 text-left transition-colors hover:bg-gray-50"
+                          className="flex w-full items-center gap-2 rounded-xl py-[12px] transition-colors hover:bg-gray-50"
                         >
-                          <UserCard
-                            showStatus={false}
-                            user={{
-                              image: recentUser.pictureUrl,
-                              username: recentUser.username,
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleOpenProfile({
+                                id: recentUser.id,
+                                username: recentUser.username,
+                                pictureUrl: recentUser.pictureUrl,
+                                bio: recentUser.bio ?? null,
+                              })
+                            }
+                            className="flex-1 text-left"
+                          >
+                            <UserCard
+                              showStatus={false}
+                              showDescription
+                              user={{
+                                image: recentUser.pictureUrl,
+                                username: recentUser.username,
+                                description: recentUser.bio,
+                              }}
+                            />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="Remove from recents"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              void handleDeleteRecent(item.id);
                             }}
-                          />
-                        </button>
+                            className="rounded-full p-1 text-[#A0A0A0] transition hover:text-(--fly-text-primary)"
+                          >
+                            <CloseIcon />
+                          </button>
+                        </div>
                       );
                     }
 
@@ -349,17 +424,37 @@ export default function DiscoverSearchInput({
                     }
 
                     return (
-                      <button
+                      <div
                         key={`recent-hashtag-${item.id}`}
-                        onClick={() => handleOpenHashtag(item.hashtag)}
-                        className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition-colors hover:bg-gray-50"
+                        className="flex w-full items-center gap-2 rounded-xl py-[12px] transition-colors hover:bg-gray-50"
                       >
-                        <div>
-                          <p className="font-semibold text-(--fly-text-primary)">
-                            #{item.hashtag}
-                          </p>
-                        </div>
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenHashtag(item.hashtag)}
+                          className="flex-1 text-left"
+                        >
+                          <div>
+                            <p className="font-semibold text-(--fly-text-primary)">
+                              #{item.hashtag}
+                            </p>
+                            <p className="text-sm text-[#909090]">
+                              {item.postsCount} {item.postsCount === 1 ? "post" : "posts"}
+                            </p>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Remove from recents"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            void handleDeleteRecent(item.id);
+                          }}
+                          className="rounded-full p-1 text-[#A0A0A0] transition hover:text-(--fly-text-primary)"
+                        >
+                          <CloseIcon />
+                        </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -382,12 +477,12 @@ export default function DiscoverSearchInput({
               </div>
             ) : isHashtagMode ? (
               hashtagResults.length > 0 ? (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
                   {hashtagResults.map((hashtag) => (
                     <button
                       key={hashtag.id}
                       onClick={() => handleOpenHashtag(hashtag.name)}
-                      className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition-colors hover:bg-gray-50"
+                      className="flex w-full items-center justify-between rounded-xl py-[12px] text-left transition-colors hover:bg-gray-50"
                     >
                       <div>
                         <p className="font-semibold text-(--fly-text-primary)">
@@ -407,7 +502,7 @@ export default function DiscoverSearchInput({
                 </div>
               )
             ) : userResults.length > 0 ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col">
                 {userResults.map((user) => {
                   if (!user.username) {
                     return null;
@@ -416,13 +511,15 @@ export default function DiscoverSearchInput({
                     <button
                       key={user.id}
                       onClick={() => handleOpenProfile(user)}
-                      className="w-full rounded-xl px-2 py-2 text-left transition-colors hover:bg-gray-50"
+                      className="w-full rounded-xl text-left py-[12px] transition-colors hover:bg-gray-50"
                     >
                       <UserCard
                         showStatus={false}
+                        showDescription
                         user={{
                           image: user.pictureUrl,
                           username: user.username,
+                          description: user.bio,
                         }}
                       />
                     </button>

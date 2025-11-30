@@ -47,16 +47,23 @@ export default function Discover() {
   return (
     <div className="w-full bg-white h-auto min-h-full pb-[48px] md:pb-0 ">
       <div className="w-full h-full mr-auto ml-auto max-w-[1000px]">
-        <div className="px-4 md:px-0 py-6 border-b border-gray-100">
+        <div className="px-4 md:px-0 py-3 border-b border-gray-100">
           <h1 className="text-xl font-semibold text-(--fly-text-primary)">
-            Discover creators
+            Discover
           </h1>
           {activeHashtag && (
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-(--fly-primary)/30 bg-(--fly-primary)/5 px-4 py-3 text-sm text-(--fly-text-primary)">
-              <span>
-                Showing posts for{" "}
-                <span className="font-semibold">#{activeHashtag}</span>
-              </span>
+              <div className="flex flex-col">
+                <span>
+                  Showing posts for{" "}
+                  <span className="font-semibold">#{activeHashtag}</span>
+                </span>
+                {typeof posts !== "undefined" && (
+                  <span className="text-xs text-[#909090]">
+                    {posts.length} {posts.length === 1 ? "post" : "posts"}
+                  </span>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={clearHashtagFilter}

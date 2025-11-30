@@ -4,6 +4,7 @@ import clsx from "clsx";
 type User = {
   username: string | null;
   image: string | null;
+  description?: string | null;
 };
 
 type UserCardProps = {
@@ -12,6 +13,7 @@ type UserCardProps = {
   onClick?: () => void;
   showStatus?: boolean;
   alwaysShowUsername?: boolean;
+  showDescription?: boolean;
 };
 
 export function UserCard({
@@ -20,6 +22,7 @@ export function UserCard({
   onClick,
   showStatus = true,
   alwaysShowUsername = true,
+  showDescription = false,
 }: UserCardProps) {
   const initials = user.username?.charAt(0).toUpperCase() ?? "";
 
@@ -62,14 +65,21 @@ export function UserCard({
           />
         )}
       </div>
-      <span
+      <div
         className={clsx(
-          "text-(--fly-text-primary) font-bold",
-          !alwaysShowUsername && "hidden md:block"
+          "flex min-w-0 flex-col",
+          !alwaysShowUsername && "hidden md:flex"
         )}
       >
-        {user.username}
-      </span>
+        <span className={clsx("text-(--fly-text-primary) font-bold", showDescription && "truncate")}>
+          {user.username}
+        </span>
+        {showDescription && user.description && (
+          <span className="text-sm text-[#909090] truncate">
+            {user.description}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
