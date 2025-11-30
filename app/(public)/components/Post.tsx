@@ -27,6 +27,10 @@ export default function Post({ post, onSubscribe }: PostProps) {
   const [touchEnd, setTouchEnd] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const likeButtonRef = useRef<{ triggerLike: () => void }>(null);
+  const [landscapeMap, setLandscapeMap] = useState<Record<number, boolean>>({});
+  const [hasPortraitImage, setHasPortraitImage] = useState(true);
+  const portraitFoundRef = useRef(false);
+  const imagesLoadedRef = useRef(0);
 
   const handleImageDoubleClick = () => {
     likeButtonRef.current?.triggerLike();
@@ -127,23 +131,68 @@ export default function Post({ post, onSubscribe }: PostProps) {
         </div>
       </div>
       <div
-        className="relative cursor-pointer select-none overflow-hidden group bg-black"
-        style={{ aspectRatio: "4 / 5" }}
+        className={clsx(
+          "relative cursor-pointer select-none overflow-hidden group",
+          hasPortraitImage && "bg-[--fly-bg-primary]"
+        )}
+        style={hasPortraitImage ? { aspectRatio: "4 / 5" } : undefined}
         onDoubleClick={handleImageDoubleClick}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className="flex h-full transition-transform duration-300 ease-out"
+          className={clsx(
+            "flex transition-transform duration-300 ease-out",
+            hasPortraitImage && "h-full"
+          )}
           style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
         >
           {post.imageUrls && post.imageUrls.map((url, index) => (
-            <div key={index} className="min-w-full h-full">
+            <div
+              key={index}
+              className={clsx(
+                "min-w-full flex justify-center",
+                hasPortraitImage ? "h-full items-center bg-[--fly-bg-primary]" : "items-start"
+              )}
+            >
               <img
                 src={url}
                 alt={`foto ${index + 1}`}
-                className="w-full h-full object-cover"
+                className={clsx(
+                  hasPortraitImage
+                    ? landscapeMap[index]
+                      ? "max-h-full max-w-full object-contain"
+                      : "h-full w-full object-cover"
+                    : "w-full h-auto object-contain"
+                )}
+                onLoad={(event) => {
+                  const target = event.currentTarget;
+                  const isLandscape = target.naturalWidth >= target.naturalHeight;
+                  const isPortrait = target.naturalHeight > target.naturalWidth;
+
+                  if (isPortrait) {
+                    portraitFoundRef.current = true;
+                    if (!hasPortraitImage) {
+                      setHasPortraitImage(true);
+                    }
+                  }
+
+                  setLandscapeMap((prev) => {
+                    if (prev[index] === isLandscape) {
+                      return prev;
+                    }
+                    return { ...prev, [index]: isLandscape };
+                  });
+
+                  imagesLoadedRef.current += 1;
+                  if (
+                    imagesLoadedRef.current === (post.imageUrls?.length ?? 0) &&
+                    !portraitFoundRef.current
+                  ) {
+                    setHasPortraitImage(false);
+                  }
+                }}
                 loading={index === 0 ? "eager" : "lazy"}
               />
             </div>
