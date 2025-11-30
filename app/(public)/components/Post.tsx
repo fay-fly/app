@@ -20,6 +20,7 @@ type PostProps = {
 
 export default function Post({ post, onSubscribe }: PostProps) {
   const { session } = useSafeSession();
+  const isOwnPost = session?.user?.id === post.author.id;
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
@@ -219,15 +220,17 @@ export default function Post({ post, onSubscribe }: PostProps) {
           />
           <CommentButton commentsCount={post.commentsCount} post={post} />
         </div>
-        <div>
-          <div className="flex gap-[4px] m-[8px] items-center">
-            <PinButton
-              postId={post.id}
-              pinsCount={post.pinsCount}
-              pinnedByMe={post.pinnedByMe}
-            />
+        {!isOwnPost && (
+          <div>
+            <div className="flex gap-[4px] m-[8px] items-center">
+              <PinButton
+                postId={post.id}
+                pinsCount={post.pinsCount}
+                pinnedByMe={post.pinnedByMe}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <p className="px-[16px] text-[#5B5B5B] whitespace-pre-wrap mt-[8px]">
         <span className="font-semibold">{post.author.username}</span>{" "}

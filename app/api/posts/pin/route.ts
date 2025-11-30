@@ -60,6 +60,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (post.authorId === userId) {
+      return NextResponse.json(
+        { error: "You cannot pin your own post" },
+        { status: 400 }
+      );
+    }
+
     const operations: PrismaPromise<unknown>[] = [
       prisma.pin.create({
         data: {
@@ -77,19 +84,17 @@ export async function POST(req: NextRequest) {
       }),
     ];
 
-    if (post.authorId !== userId) {
-      operations.push(
-        prisma.notification.create({
-          data: {
-            type: "PIN",
-            message: "Pinned your post",
-            senderId: userId,
-            receiverId: post.authorId,
-            postId,
-          },
-        })
-      );
-    }
+    operations.push(
+      prisma.notification.create({
+        data: {
+          type: "PIN",
+          message: "Pinned your post",
+          senderId: userId,
+          receiverId: post.authorId,
+          postId,
+        },
+      })
+    );
 
     await prisma.$transaction(operations);
 
