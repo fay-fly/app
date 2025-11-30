@@ -126,22 +126,23 @@ export default function Post({ post, onSubscribe }: PostProps) {
         </div>
       </div>
       <div
-        className="relative cursor-pointer select-none overflow-hidden group"
+        className="relative cursor-pointer select-none overflow-hidden group bg-black"
+        style={{ aspectRatio: "4 / 5" }}
         onDoubleClick={handleImageDoubleClick}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className="flex transition-transform duration-300 ease-out"
+          className="flex h-full transition-transform duration-300 ease-out"
           style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
         >
           {post.imageUrls && post.imageUrls.map((url, index) => (
-            <div key={index} className="min-w-full">
+            <div key={index} className="min-w-full h-full">
               <img
                 src={url}
                 alt={`foto ${index + 1}`}
-                className="w-full h-auto block"
+                className="w-full h-full object-cover"
                 loading={index === 0 ? "eager" : "lazy"}
               />
             </div>
