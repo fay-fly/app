@@ -1,19 +1,23 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const prisma = new PrismaClient();
+const FETCH_MULTIPLIER = 2;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id ? session.user.id : null;
+  const { searchParams } = new URL(req.url);
+  const limit = Math.min(Math.max(Number(searchParams.get("limit")) || 5, 1), 20);
+  const cursorParam = searchParams.get("cursor");
+  const cursor = cursorParam ? Number(cursorParam) : null;
 
   if (!userId) {
-    return NextResponse.json([]);
+    return NextResponse.json({ posts: [], nextCursor: null, hasMore: false });
   }
 
-  // Fetch posts from followed users
   const posts = await prisma.post.findMany({
     where: {
       author: {
@@ -21,8 +25,10 @@ export async function GET() {
           some: { followerId: userId },
         },
       },
+      ...(cursor ? { id: { lt: cursor } } : {}),
     },
     orderBy: { id: "desc" },
+    take: limit * FETCH_MULTIPLIER,
     include: {
       author: {
         select: {
@@ -46,7 +52,6 @@ export async function GET() {
     },
   });
 
-  // Fetch pins from followed users
   const pins = await prisma.pin.findMany({
     where: {
       user: {
@@ -54,8 +59,12 @@ export async function GET() {
           some: { followerId: userId },
         },
       },
+      ...(cursor ? { post: { id: { lt: cursor } } } : {}),
     },
-    orderBy: { id: "desc" },
+    orderBy: {
+      post: { id: "desc" },
+    },
+    take: limit * FETCH_MULTIPLIER,
     include: {
       user: {
         select: {
@@ -104,38 +113,50 @@ export async function GET() {
     pinnedBy: null as { id: number; username: string; pictureUrl: string } | null,
   }));
 
-  const pinsWithFlags = pins.map((pin) => ({
-    ...pin.post,
-    author: {
-      id: pin.post.author?.id,
-      username: pin.post.author?.username,
-      pictureUrl: pin.post.author?.pictureUrl,
-    },
-    likedByMe: pin.post.likes.length > 0,
-    pinnedByMe: pin.post.pins.length > 0,
-    isFollowed: pin.user?.followers ? pin.user.followers.length > 0 : false,
-    isPinned: true,
-    pinnedBy: {
-      id: pin.user?.id,
-      username: pin.user?.username,
-      pictureUrl: pin.user?.pictureUrl,
-    },
-  }));
+  const pinsWithFlags = pins
+    .filter((pin) => pin.post)
+    .map((pin) => ({
+      ...pin.post,
+      author: {
+        id: pin.post.author?.id,
+        username: pin.post.author?.username,
+        pictureUrl: pin.post.author?.pictureUrl,
+      },
+      likedByMe: pin.post.likes.length > 0,
+      pinnedByMe: pin.post.pins.length > 0,
+      isFollowed: pin.user?.followers ? pin.user.followers.length > 0 : false,
+      isPinned: true,
+      pinnedBy: {
+        id: pin.user?.id ?? 0,
+      username: pin.user?.username ?? "",
+      pictureUrl: pin.user?.pictureUrl ?? "",
+      },
+    }));
 
-  // Combine and sort by id (newest first)
-  const allItems = [...postsWithFlags, ...pinsWithFlags].sort(
+  const combined = [...postsWithFlags, ...pinsWithFlags].sort(
     (a, b) => b.id - a.id
   );
 
-  // Remove duplicates (keep the first occurrence - could be either post or pin)
   const seen = new Set<number>();
-  const uniqueItems = allItems.filter((item) => {
+  const uniqueItems: typeof postsWithFlags = [];
+
+  for (const item of combined) {
     if (seen.has(item.id)) {
-      return false;
+      continue;
     }
     seen.add(item.id);
-    return true;
-  });
+    uniqueItems.push(item);
+    if (uniqueItems.length === limit) {
+      break;
+    }
+  }
 
-  return NextResponse.json(uniqueItems);
+  const nextCursorValue =
+    uniqueItems.length === limit ? uniqueItems[uniqueItems.length - 1].id : null;
+
+  return NextResponse.json({
+    posts: uniqueItems,
+    nextCursor: nextCursorValue,
+    hasMore: Boolean(nextCursorValue),
+  });
 }
