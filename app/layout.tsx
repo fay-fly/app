@@ -9,6 +9,10 @@ export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang="en" className="h-full bg-(--fly-bg-primary)">
       <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+        />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link
           rel="preconnect"
