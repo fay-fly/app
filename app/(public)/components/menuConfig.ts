@@ -27,13 +27,13 @@ const menuConfig: MenuItem[] = [
     text: "Discover",
     mobileIndex: 2,
   },
-  {
-    route: "/messages",
-    icon: Messages,
-    text: "Messages",
-    mobileIndex: 5,
-    requiresAuth: true,
-  },
+  // {
+  //   route: "/messages",
+  //   icon: Messages,
+  //   text: "Messages",
+  //   mobileIndex: 5,
+  //   requiresAuth: true,
+  // },
   {
     route: "/notifications",
     icon: Notifications,

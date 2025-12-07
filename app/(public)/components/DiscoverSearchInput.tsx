@@ -288,7 +288,7 @@ export default function DiscoverSearchInput({
     "focus:border-(--fly-primary) focus:outline-none",
     variant === "desktop"
       ? "pl-4 pr-24 py-2 text-sm"
-      : "pl-3 pr-20 py-2 text-sm"
+      : "pl-3 pr-20 py-2 text-[16px]"
   );
 
   const trimmedValue = value.trim();
