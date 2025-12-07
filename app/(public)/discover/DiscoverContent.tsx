@@ -46,12 +46,9 @@ export default function DiscoverContent() {
   }, [activeHashtag]);
 
   return (
-    <div className="w-full bg-white h-auto min-h-full pb-[48px] md:pb-0 ">
-      <div className="w-full h-full mr-auto ml-auto max-w-[1000px]">
-        <div className="px-4 md:px-0 py-3 border-b border-gray-100">
-          <h1 className="text-xl font-semibold text-(--fly-text-primary)">
-            Discover
-          </h1>
+    <div className="w-full bg-white">
+      <div className="w-full mr-auto ml-auto max-w-[1000px]">
+        <div className="px-4 md:px-0 py-3">
           {activeHashtag && (
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-(--fly-primary)/30 bg-(--fly-primary)/5 px-4 py-3 text-sm text-(--fly-text-primary)">
               <div className="flex flex-col">
@@ -76,7 +73,7 @@ export default function DiscoverContent() {
           )}
         </div>
 
-        <div className="px-0 py-6">
+        <div>
           {!posts ? (
             <div className="grid grid-cols-3 gap-[2px]">
               {[...Array(18)].map((_, index) => (

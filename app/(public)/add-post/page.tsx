@@ -87,7 +87,7 @@ export default function AddPost() {
   }
 
   return (
-    <div className="pb-[48px] md:pb-0 ">
+    <div>
       <div className="flex justify-center bg-(--fly-white) h-full pt-[24px] px-[24px] pb-[10px]">
         <form
           onSubmit={handlePublish}

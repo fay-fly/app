@@ -137,8 +137,8 @@ export default function Home() {
 
   if (sessionLoading) {
     return (
-      <div className="w-full bg-white h-auto min-h-full">
-        <div className="w-full mr-auto ml-auto max-w-[630px] h-full">
+      <div className="w-full bg-white">
+        <div className="w-full mr-auto ml-auto max-w-[630px]">
           <PageLoader />
         </div>
       </div>
@@ -146,8 +146,8 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full bg-white h-auto min-h-full">
-      <div className="w-full mr-auto ml-auto max-w-[630px] h-full">
+    <div className="w-full bg-white">
+      <div className="w-full mr-auto ml-auto max-w-[630px]">
         <div className="flex flex-col">
           {isLoading ? (
             <PageLoader />
@@ -162,7 +162,7 @@ export default function Home() {
               />
             ))
           )}
-          <div ref={loadMoreRef} className="h-10" />
+          <div ref={loadMoreRef} className="h-1" />
           {isLoadingMore && (
             <div className="py-4 text-center text-sm text-[#909090]">
               Loading more…

@@ -142,7 +142,7 @@ export default function ProfileContent({ username }: { username: string }) {
   );
 
   return (
-    <div className="w-full max-w-[1000px] mx-auto pb-[48px] md:pb-0">
+    <div className="w-full max-w-[1000px] mx-auto">
       <div className="h-[124px] relative">
         <div
           className="absolute inset-0"
