@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from "react";
 import axios from "axios";
-import { CommentWithUser } from "@/app/types/postWithUser";
+import { CommentWithUser } from "@/types/postWithUser";
 import { handleError } from "@/utils/errors";
 import clsx from "clsx";
 import { useSafeSession } from "@/hooks/useSafeSession";

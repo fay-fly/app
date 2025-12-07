@@ -1,6 +1,6 @@
 "use client";
 import LeftSidebar from "@/app/(public)/components/LeftSidebar";
-import { LayoutProps } from "@/app/types/layout";
+import { LayoutProps } from "@/types/layout";
 import MobileMenu from "@/app/(public)/components/MobileMenu";
 import { MainDesktopHeader } from "@/app/(public)/components/MainDesktopHeader";
 import MobileHeader from "@/app/(public)/components/MobileHeader";

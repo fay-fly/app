@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { UserWithPosts } from "@/app/types/postWithUser";
+import { UserWithPosts } from "@/types/postWithUser";
 import axios from "axios";
 import clsx from "clsx";
 import Link from "next/link";

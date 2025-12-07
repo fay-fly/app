@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { handleError } from "@/utils/errors";
 import Modal from "@/components/Modal";
-import { SubscribeItem } from "@/app/types/subscribeItem";
+import { SubscribeItem } from "@/types/subscribeItem";
 import Close from "@/icons/Close";
 import UserCard from "@/app/(public)/components/UserCard";
 

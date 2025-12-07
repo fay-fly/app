@@ -7,7 +7,7 @@ import Comments from "@/icons/Comments";
 import PinButton from "@/app/(public)/discover/components/PinButton";
 import { CommentForm } from "@/components/comments/CommentForm";
 import ReactModal from "react-modal";
-import { CommentWithUser, PostWithUser } from "@/app/types/postWithUser";
+import { CommentWithUser, PostWithUser } from "@/types/postWithUser";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import UserCard from "@/app/(public)/components/UserCard";

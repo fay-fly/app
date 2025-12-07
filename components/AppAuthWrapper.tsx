@@ -1,6 +1,6 @@
 "use client";
 import { useSafeSession } from "@/hooks/useSafeSession";
-import { LayoutProps } from "@/app/types/layout";
+import { LayoutProps } from "@/types/layout";
 import Logo from "@/icons/Logo";
 
 export default function AppAuthWrapper({ children }: LayoutProps) {

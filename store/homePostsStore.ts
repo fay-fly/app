@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { PostWithUser } from "@/app/types/postWithUser";
+import { PostWithUser } from "@/types/postWithUser";
 
 interface HomePostsState {
   posts: PostWithUser[];

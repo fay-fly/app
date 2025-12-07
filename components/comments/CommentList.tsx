@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Comment } from "@prisma/client";
-import { User } from "@/app/types/postWithUser";
+import { User } from "@/types/postWithUser";
 import UserText from "@/app/(public)/components/UserText";
 import clsx from "clsx";
 

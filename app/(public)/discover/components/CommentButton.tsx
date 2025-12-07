@@ -1,7 +1,7 @@
 import Comments from "@/icons/Comments";
 import { useState } from "react";
 import PostPreviewModal from "@/components/PostPreviewModal";
-import { PostWithUser } from "@/app/types/postWithUser";
+import { PostWithUser } from "@/types/postWithUser";
 
 type CommentButtonProps = {
   commentsCount: number;

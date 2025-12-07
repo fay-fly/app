@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Verified from "@/icons/Verified";
 import ThreeDots from "@/icons/ThreeDots";
-import { PostWithUser } from "@/app/types/postWithUser";
+import { PostWithUser } from "@/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import UserText from "@/app/(public)/components/UserText";

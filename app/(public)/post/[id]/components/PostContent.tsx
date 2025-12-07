@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { PostWithUser } from "@/app/types/postWithUser";
+import { PostWithUser } from "@/types/postWithUser";
 import axios from "axios";
 import PageLoader from "@/components/PageLoader";
 import Post from "@/app/(public)/components/Post";

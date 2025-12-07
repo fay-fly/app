@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { PostWithUser } from "@/app/types/postWithUser";
+import { PostWithUser } from "@/types/postWithUser";
 import PostPreview from "@/app/(public)/components/Post";
 import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/hooks/useScreenWidth";

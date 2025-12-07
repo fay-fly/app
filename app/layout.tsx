@@ -1,6 +1,6 @@
 "use client";
 import "./globals.css";
-import { LayoutProps } from "@/app/types/layout";
+import { LayoutProps } from "@/types/layout";
 import ToastProvider from "@/providers/ToastProvider";
 import { SessionProvider } from "next-auth/react";
 import AppAuthWrapper from "@/components/AppAuthWrapper";

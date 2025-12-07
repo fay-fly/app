@@ -1,6 +1,6 @@
 import "../globals.css";
 import Link from "next/link";
-import { LayoutProps } from "@/app/types/layout";
+import { LayoutProps } from "@/types/layout";
 
 export default function RootLayout({ children }: LayoutProps) {
   return (

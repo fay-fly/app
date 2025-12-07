@@ -1,6 +1,6 @@
 "use client";
 
-import type { PostWithUser } from "@/app/types/postWithUser";
+import type { PostWithUser } from "@/types/postWithUser";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PostsPreview from "@/app/(public)/discover/components/PostsPreview";
