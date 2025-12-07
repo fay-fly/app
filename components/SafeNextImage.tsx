@@ -13,6 +13,10 @@ type SafeNextImageProps = {
   onError?: (event: React.SyntheticEvent<HTMLImageElement>) => void;
   errorSize?: "small" | "medium" | "large";
   showErrorText?: boolean;
+  blurDataURL?: string;
+  priority?: boolean;
+  sizes?: string;
+  quality?: number;
 };
 
 export default function SafeNextImage({
@@ -21,11 +25,15 @@ export default function SafeNextImage({
   className,
   width = 1,
   height = 1,
-  unoptimized = true,
+  unoptimized = false,
   onLoad,
   onError,
   errorSize = "medium",
   showErrorText = true,
+  blurDataURL,
+  priority = false,
+  sizes = "100vw",
+  quality = 85,
 }: SafeNextImageProps) {
   const [hasError, setHasError] = useState(false);
 
@@ -48,6 +56,11 @@ export default function SafeNextImage({
       unoptimized={unoptimized}
       onLoad={onLoad}
       onError={handleError}
+      placeholder={blurDataURL ? "blur" : "empty"}
+      blurDataURL={blurDataURL}
+      priority={priority}
+      sizes={sizes}
+      quality={quality}
     />
   );
 }

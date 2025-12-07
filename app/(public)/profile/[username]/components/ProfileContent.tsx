@@ -122,6 +122,9 @@ export default function ProfileContent({ username }: { username: string }) {
           className="w-full h-full object-cover"
           errorSize="small"
           showErrorText={false}
+          sizes="(max-width: 768px) 33vw, 25vw"
+          width={400}
+          height={400}
         />
       )}
       {post.imageUrls && post.imageUrls.length > 1 && (

@@ -83,6 +83,9 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                     className="w-full h-full object-cover"
                     errorSize="small"
                     showErrorText={false}
+                    sizes="33vw"
+                    width={400}
+                    height={400}
                   />
                 )}
                 {post.imageUrls && post.imageUrls.length > 1 && (

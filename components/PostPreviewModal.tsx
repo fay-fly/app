@@ -212,6 +212,10 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                     alt={`image ${index + 1}`}
                     className="w-full h-full object-contain"
                     errorSize="large"
+                    sizes="(max-width: 1024px) 100vw, 900px"
+                    width={1200}
+                    height={1200}
+                    priority={index === 0}
                   />
                 </div>
               ))}

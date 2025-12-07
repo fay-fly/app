@@ -10,6 +10,11 @@ export default function RootLayout({ children }: LayoutProps) {
     <html lang="en" className="h-full bg-(--fly-bg-primary)">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link
+          rel="preconnect"
+          href="https://ovlcstnavogaxoxh.public.blob.vercel-storage.com"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="h-full">
         <ToastProvider>
