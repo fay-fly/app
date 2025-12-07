@@ -1,32 +1,39 @@
 "use client";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "sonner";
+import { useEffect, useState } from "react";
 
 interface ToastProviderProps {
   children: React.ReactNode;
 }
 
 export default function ToastProvider({ children }: ToastProviderProps) {
-  const contextClass = {
-    success: "bg-blue-600",
-    error: "bg-red-600",
-    info: "bg-gray-600",
-    warning: "bg-orange-400",
-    default: "bg-indigo-600",
-    dark: "bg-white-600 font-gray-300",
-  };
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
     <>
       {children}
-      <ToastContainer
-        toastClassName={(context) =>
-          contextClass[context?.type || "default"] +
-          " relative flex p-2 rounded-md justify-between items-center overflow-hidden cursor-pointer"
-        }
-        className="!gap-2 !flex !flex-col"
-        position="bottom-left"
-        autoClose={3000}
+      <Toaster
+        position={isMobile ? "bottom-left" : "bottom-right"}
+        duration={3000}
+        toastOptions={{
+          classNames: {
+            success: "bg-blue-600 text-white",
+            error: "bg-red-600 text-white",
+            info: "bg-gray-600 text-white",
+            warning: "bg-orange-400 text-white",
+          },
+        }}
       />
     </>
   );

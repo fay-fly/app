@@ -1,36 +1,26 @@
-import { toast, ToastContent, ToastOptions, Slide, Id } from "react-toastify";
-
-export const defaultToastOptions: ToastOptions = {
-  position: "top-right",
-  autoClose: 4000,
-  hideProgressBar: true,
-  progress: undefined,
-  theme: "colored",
-  closeButton: false,
-  transition: Slide,
-};
+import { toast } from "sonner";
 
 type ToastType = "success" | "error" | "info" | "warning" | "default";
 
 export const showToast = (
   type: ToastType,
-  content: ToastContent,
-  options: Partial<ToastOptions> = {}
-): Id => {
-  const optionsToApply = { ...defaultToastOptions, ...options };
-
+  content: string,
+  options?: {
+    duration?: number;
+  }
+): string | number => {
   switch (type) {
     case "success":
-      return toast.success(content, optionsToApply);
+      return toast.success(content, options);
     case "error":
-      return toast.error(content, optionsToApply);
+      return toast.error(content, options);
     case "info":
-      return toast.info(content, optionsToApply);
+      return toast.info(content, options);
     case "warning":
-      return toast.warn(content, optionsToApply);
+      return toast.warning(content, options);
     case "default":
-      return toast(content, optionsToApply);
+      return toast(content, options);
     default:
-      return toast(content, optionsToApply);
+      return toast(content, options);
   }
 };
