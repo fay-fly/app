@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000,
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    unoptimized: false,
   },
 };
 

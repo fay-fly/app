@@ -35,7 +35,8 @@
     "sharp": "^0.34.5",
     "sonner": "^2.0.7",
     "uuid": "^11.1.0",
-    "ws": "^8.18.3"
+    "ws": "^8.18.3",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

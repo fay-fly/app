@@ -36,15 +36,25 @@ export default function SafeNextImage({
   quality = 85,
 }: SafeNextImageProps) {
   const [hasError, setHasError] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
-  const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    setHasError(true);
-    onError?.(e);
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    // If optimization fails, fall back to unoptimized
+    if (!imageError) {
+      setImageError(true);
+    } else {
+      setHasError(true);
+      onError?.(e);
+    }
   };
 
   if (hasError) {
     return <ImageError size={errorSize} showText={showErrorText} />;
   }
+
+  // Check if file is unsupported format (TIF, TIFF)
+  const isUnsupportedFormat = /\.(tif|tiff)$/i.test(src);
+  const shouldUnoptimize = unoptimized || isUnsupportedFormat || imageError;
 
   return (
     <Image
@@ -53,14 +63,15 @@ export default function SafeNextImage({
       className={className}
       width={width}
       height={height}
-      unoptimized={unoptimized}
+      unoptimized={shouldUnoptimize}
       onLoad={onLoad}
-      onError={handleError}
+      onError={handleImageError}
       placeholder={blurDataURL ? "blur" : "empty"}
       blurDataURL={blurDataURL}
       priority={priority}
       sizes={sizes}
       quality={quality}
+      loading={priority ? "eager" : "lazy"}
     />
   );
 }

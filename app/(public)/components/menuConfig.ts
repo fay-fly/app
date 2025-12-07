@@ -3,7 +3,7 @@ import Home from "@/icons/menu/Home";
 import Discover from "@/icons/menu/Discover";
 import AddPost from "@/icons/menu/AddPost";
 import Notifications from "@/icons/menu/Notifications";
-import Messages from "@/icons/menu/Messages";
+// import Messages from "@/icons/menu/Messages";
 
 type MenuItem = {
   route: string;

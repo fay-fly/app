@@ -6,6 +6,7 @@ import axios from "axios";
 import PageLoader from "@/components/PageLoader";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import { useRouter } from "next/navigation";
+import { useHomePostsStore } from "@/store/homePostsStore";
 
 const PAGE_LIMIT = 5;
 
@@ -18,12 +19,22 @@ type FeedResponse = {
 export default function Home() {
   const { session, isLoading: sessionLoading } = useSafeSession();
   const router = useRouter();
-  const [posts, setPosts] = useState<PostWithUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [nextCursor, setNextCursor] = useState<number | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const {
+    posts,
+    nextCursor,
+    hasMore,
+    loaded,
+    setPosts,
+    appendPosts,
+    setNextCursor,
+    setHasMore,
+    setLoaded,
+    updatePost,
+  } = useHomePostsStore();
 
   const buildEndpoint = useCallback((cursor?: number | null) => {
     const params = new URLSearchParams();
@@ -49,11 +60,16 @@ export default function Home() {
       try {
         const endpoint = buildEndpoint(cursor ?? null);
         const response = await axios.get<FeedResponse>(endpoint);
-        setPosts((prev) =>
-          reset ? response.data.posts : [...prev, ...response.data.posts]
-        );
+
+        if (reset) {
+          setPosts(response.data.posts);
+        } else {
+          appendPosts(response.data.posts);
+        }
+
         setNextCursor(response.data.nextCursor);
         setHasMore(response.data.hasMore);
+        setLoaded(true);
       } catch (error) {
         console.error(error);
       } finally {
@@ -64,7 +80,7 @@ export default function Home() {
         }
       }
     },
-    [buildEndpoint, session]
+    [buildEndpoint, session, setPosts, appendPosts, setNextCursor, setHasMore, setLoaded]
   );
 
   useEffect(() => {
@@ -77,20 +93,20 @@ export default function Home() {
       return;
     }
 
-    let isMounted = true;
-    setPosts([]);
-    setNextCursor(null);
-    setHasMore(true);
-    fetchPosts({ reset: true, cursor: null }).catch(() => {
-      if (isMounted) {
-        setIsLoading(false);
-      }
-    });
+    // Only fetch if not already loaded
+    if (!loaded) {
+      let isMounted = true;
+      fetchPosts({ reset: true, cursor: null }).catch(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
 
-    return () => {
-      isMounted = false;
-    };
-  }, [session, sessionLoading, router, fetchPosts]);
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [session, sessionLoading, router, fetchPosts, loaded]);
 
   useEffect(() => {
     if (
@@ -121,11 +137,11 @@ export default function Home() {
   }, [fetchPosts, hasMore, isLoading, isLoadingMore, nextCursor, session, sessionLoading]);
 
   const onSubscribe = (authorId: number) => {
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.author.id === authorId ? { ...p, isFollowed: !p.isFollowed } : p
-      )
-    );
+    posts.forEach((post) => {
+      if (post.author.id === authorId) {
+        updatePost(post.id, { isFollowed: !post.isFollowed });
+      }
+    });
   };
 
   const renderEmptyState = () => (

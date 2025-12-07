@@ -6,13 +6,23 @@ import axios from "axios";
 import PostsPreview from "@/app/(public)/discover/components/PostsPreview";
 import { handleError } from "@/utils/errors";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useDiscoverPostsStore } from "@/store/discoverPostsStore";
 
 export default function DiscoverContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const activeHashtag = searchParams.get("hashtag");
 
-  const [posts, setPosts] = useState<PostWithUser[]>();
+  const {
+    posts: discoverPosts,
+    loaded: discoverLoaded,
+    setPosts: setDiscoverPosts,
+    setLoaded: setDiscoverLoaded,
+  } = useDiscoverPostsStore();
+
+  const [posts, setPosts] = useState<PostWithUser[] | undefined>(
+    discoverLoaded && !activeHashtag ? discoverPosts : undefined
+  );
 
   const clearHashtagFilter = () => {
     router.push("/discover");
@@ -20,30 +30,55 @@ export default function DiscoverContent() {
 
   useEffect(() => {
     let cancelled = false;
-    setPosts(undefined);
 
-    const endpoint = activeHashtag
-      ? `/api/posts/byHashtag?name=${encodeURIComponent(activeHashtag)}`
-      : "/api/posts/all";
+    // If filtering by hashtag, always fetch fresh data
+    if (activeHashtag) {
+      setPosts(undefined);
+      const endpoint = `/api/posts/byHashtag?name=${encodeURIComponent(activeHashtag)}`;
 
-    axios
-      .get<PostWithUser[]>(endpoint)
-      .then((response) => {
-        if (!cancelled) {
-          setPosts(response.data);
-        }
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          handleError(error);
-          setPosts([]);
-        }
-      });
+      axios
+        .get<PostWithUser[]>(endpoint)
+        .then((response) => {
+          if (!cancelled) {
+            setPosts(response.data);
+          }
+        })
+        .catch((error) => {
+          if (!cancelled) {
+            handleError(error);
+            setPosts([]);
+          }
+        });
+    } else {
+      // For all posts, use cached data if available
+      if (discoverLoaded) {
+        setPosts(discoverPosts);
+      } else {
+        setPosts(undefined);
+        const endpoint = "/api/posts/all";
+
+        axios
+          .get<PostWithUser[]>(endpoint)
+          .then((response) => {
+            if (!cancelled) {
+              setPosts(response.data);
+              setDiscoverPosts(response.data);
+              setDiscoverLoaded(true);
+            }
+          })
+          .catch((error) => {
+            if (!cancelled) {
+              handleError(error);
+              setPosts([]);
+            }
+          });
+      }
+    }
 
     return () => {
       cancelled = true;
     };
-  }, [activeHashtag]);
+  }, [activeHashtag, discoverLoaded, discoverPosts, setDiscoverPosts, setDiscoverLoaded]);
 
   return (
     <div className="w-full bg-white">
