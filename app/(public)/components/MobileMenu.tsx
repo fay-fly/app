@@ -9,7 +9,10 @@ export default function MobileMenu() {
   const { unreadCount } = useNotificationCount();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-[48px] md:hidden w-full pb-[env(safe-area-inset-bottom)]">
+    <div
+      className="fixed left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-[48px] md:hidden w-full after:content-[''] after:absolute after:top-full after:left-0 after:right-0 after:h-[100px] after:bg-white"
+      style={{ bottom: 'max(0px, env(safe-area-inset-bottom))' }}
+    >
       {[...menuConfig]
         .sort((a, b) => a.mobileIndex - b.mobileIndex)
         .map((item) => {
