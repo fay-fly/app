@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { UserWithPosts } from "@/app/types/postWithUser";
 import axios from "axios";
-import Image from "next/image";
 import clsx from "clsx";
 import Link from "next/link";
 import ViewSubs from "@/app/(public)/profile/[username]/components/ViewSubs";
@@ -13,6 +12,7 @@ import { useSession } from "next-auth/react";
 import { handleError } from "@/utils/errors";
 import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
 import MultiplePhotos from "@/icons/MultiplePhotos";
+import SafeNextImage from "@/components/SafeNextImage";
 
 export type EditProfilePayload = {
   fullName: string;
@@ -116,13 +116,12 @@ export default function ProfileContent({ username }: { username: string }) {
       className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
     >
       {post.imageUrls && post.imageUrls.length > 0 && (
-        <Image
+        <SafeNextImage
           src={post.imageUrls[0]}
           alt="publication"
           className="w-full h-full object-cover"
-          width={1}
-          height={1}
-          unoptimized
+          errorSize="small"
+          showErrorText={false}
         />
       )}
       {post.imageUrls && post.imageUrls.length > 1 && (

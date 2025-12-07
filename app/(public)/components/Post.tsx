@@ -12,6 +12,7 @@ import { useSafeSession } from "@/hooks/useSafeSession";
 import { useState, useRef } from "react";
 import FireFilled from "@/icons/FireFilled";
 import PinFilled from "@/icons/PinFilled";
+import SafeImage from "@/components/SafeImage";
 
 type PostProps = {
   post: PostWithUser;
@@ -156,7 +157,7 @@ export default function Post({ post, onSubscribe }: PostProps) {
                 hasPortraitImage ? "h-full items-center bg-[--fly-bg-primary]" : "items-start"
               )}
             >
-              <img
+              <SafeImage
                 src={url}
                 alt={`foto ${index + 1}`}
                 className={clsx(
@@ -194,6 +195,7 @@ export default function Post({ post, onSubscribe }: PostProps) {
                   }
                 }}
                 loading={index === 0 ? "eager" : "lazy"}
+                errorSize="medium"
               />
             </div>
           ))}

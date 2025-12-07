@@ -3,9 +3,9 @@ import { PostWithUser } from "@/app/types/postWithUser";
 import PostPreview from "@/app/(public)/components/Post";
 import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/hooks/useScreenWidth";
-import Image from "next/image";
 import PostPreviewModal from "@/components/PostPreviewModal";
 import MultiplePhotos from "@/icons/MultiplePhotos";
+import SafeNextImage from "@/components/SafeNextImage";
 
 type PostPreviewProps = {
   className?: string;
@@ -77,13 +77,12 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                 className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
               >
                 {post.imageUrls && post.imageUrls.length > 0 && (
-                  <Image
+                  <SafeNextImage
                     src={post.imageUrls[0]}
                     alt="publication"
                     className="w-full h-full object-cover"
-                    width={1}
-                    height={1}
-                    unoptimized
+                    errorSize="small"
+                    showErrorText={false}
                   />
                 )}
                 {post.imageUrls && post.imageUrls.length > 1 && (

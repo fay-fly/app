@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Close from "@/icons/Close";
 import UserText from "@/app/(public)/components/UserText";
 import { getFormattedDate } from "@/utils/dates";
@@ -15,6 +14,7 @@ import UserCard from "@/app/(public)/components/UserCard";
 import ChevronLeft from "@/icons/ChevronLeft";
 import ChevronRight from "@/icons/ChevronRight";
 import FireFilled from "@/icons/FireFilled";
+import SafeNextImage from "@/components/SafeNextImage";
 
 type PostPreviewModalProps = {
   open: boolean;
@@ -207,13 +207,11 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
             >
               {props.post.imageUrls && props.post.imageUrls.map((url, index) => (
                 <div key={index} className="min-w-full h-full flex items-center justify-center">
-                  <Image
+                  <SafeNextImage
                     src={url}
                     alt={`image ${index + 1}`}
                     className="w-full h-full object-contain"
-                    unoptimized
-                    width={1}
-                    height={1}
+                    errorSize="large"
                   />
                 </div>
               ))}

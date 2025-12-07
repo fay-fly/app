@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { handleError } from "@/utils/errors";
 import { useSafeSession } from "@/hooks/useSafeSession";
+import {showToast} from "@/utils/toastify";
 
 export default function AddPost() {
   const router = useRouter();
@@ -19,15 +20,42 @@ export default function AddPost() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setImages(prev => [...prev, ...acceptedFiles]);
-    const newPreviewUrls = acceptedFiles.map(file => URL.createObjectURL(file));
-    setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+    setImages(prev => {
+      const totalImages = prev.length + acceptedFiles.length;
+      if (totalImages > 10) {
+        showToast("error", `Maximum 10 images allowed. You can only add ${10 - prev.length} more image(s).`);
+        return prev;
+      }
+      return [...prev, ...acceptedFiles];
+    });
+    setPreviewUrls(prev => {
+      const totalImages = prev.length + acceptedFiles.length;
+      if (totalImages > 10) {
+        return prev;
+      }
+      const newPreviewUrls = acceptedFiles.map(file => URL.createObjectURL(file));
+      return [...prev, ...newPreviewUrls];
+    });
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: true,
-    accept: { "image/*": [] },
+    accept: {
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+      "image/gif": [".gif"],
+      "image/webp": [".webp"],
+      "image/svg+xml": [".svg"],
+      "image/avif": [".avif"]
+    },
+    maxSize: 30 * 1024 * 1024, // 30MB limit
+    onDropRejected: (fileRejections) => {
+      fileRejections.forEach((rejection) => {
+        const errors = rejection.errors.map((e) => e.message).join(", ");
+        showToast("error", `File "${rejection.file.name}" was rejected: ${errors}`);
+      });
+    },
   });
 
   const removeImage = (index: number) => {
@@ -75,6 +103,7 @@ export default function AddPost() {
             <div className="flex flex-col gap-[12px] items-center">
               <UploadCloud />
               <p>Take a photo or upload media</p>
+              <p className="text-xs">Supported: JPEG, PNG, GIF, WebP (max 10 images, 30MB each)</p>
             </div>
           </div>
 
