@@ -17,6 +17,7 @@ export async function GET() {
           id: true,
           username: true,
           pictureUrl: true,
+          role: true,
           ...(userId && {
             followers: {
               where: { followerId: userId },
@@ -53,6 +54,7 @@ export async function GET() {
       id: author?.id,
       username: author?.username,
       pictureUrl: author?.pictureUrl,
+      role: author?.role,
     },
     likedByMe: userId ? likes.length > 0 : false,
     pinnedByMe: userId ? pins.length > 0 : false,

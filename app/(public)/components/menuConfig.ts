@@ -11,6 +11,7 @@ type MenuItem = {
   text: string;
   mobileIndex: number;
   requiresAuth?: boolean;
+  requiredRoles?: string[];
 };
 
 const menuConfig: MenuItem[] = [
@@ -47,6 +48,7 @@ const menuConfig: MenuItem[] = [
     text: "Add post",
     mobileIndex: 3,
     requiresAuth: true,
+    requiredRoles: ["creator", "admin"],
   },
 ];
 

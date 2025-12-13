@@ -97,6 +97,7 @@ export default function ViewSubs({
                       user={{
                         image: subscriber.pictureUrl,
                         username: subscriber.username,
+                        role: subscriber.role,
                       }}
                     />
                   </a>

@@ -4,6 +4,8 @@ import { Comment } from "@prisma/client";
 import { User } from "@/types/postWithUser";
 import UserText from "@/app/(public)/components/UserText";
 import clsx from "clsx";
+import Verified from "@/icons/Verified";
+import { hasVerifiedBadge } from "@/lib/permissions";
 
 type CommentWithUser = Comment & {
   author: User;
@@ -40,12 +42,15 @@ export function CommentList({ comments }: CommentListProps) {
             )}
           </Link>
           <div className="flex flex-col flex-1">
-            <Link
-              href={`/profile/${comment.author.username}`}
-              className="font-semibold text-[#343434] w-fit"
-            >
-              {comment.author.username}
-            </Link>
+            <div className="flex items-center gap-[4px]">
+              <Link
+                href={`/profile/${comment.author.username}`}
+                className="font-semibold text-[#343434] w-fit"
+              >
+                {comment.author.username}
+              </Link>
+              {hasVerifiedBadge(comment.author.role) && <Verified />}
+            </div>
             <UserText postText={comment.text} />
           </div>
         </div>

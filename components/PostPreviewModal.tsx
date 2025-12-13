@@ -15,6 +15,8 @@ import ChevronLeft from "@/icons/ChevronLeft";
 import ChevronRight from "@/icons/ChevronRight";
 import FireFilled from "@/icons/FireFilled";
 import SafeNextImage from "@/components/SafeNextImage";
+import Verified from "@/icons/Verified";
+import { hasVerifiedBadge } from "@/lib/permissions";
 
 type PostPreviewModalProps = {
   open: boolean;
@@ -287,8 +289,10 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                 user={{
                   username: props.post.author.username,
                   image: props.post.author.pictureUrl,
+                  role: props.post.author.role,
                 }}
                 showStatus={false}
+                clickable={true}
               />
               <button
                 onClick={() => props.onRequestClose()}

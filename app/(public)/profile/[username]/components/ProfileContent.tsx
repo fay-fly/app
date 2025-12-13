@@ -13,6 +13,8 @@ import { handleError } from "@/utils/errors";
 import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
 import MultiplePhotos from "@/icons/MultiplePhotos";
 import SafeNextImage from "@/components/SafeNextImage";
+import Verified from "@/icons/Verified";
+import { hasVerifiedBadge, canCreatePosts } from "@/lib/permissions";
 
 export type EditProfilePayload = {
   fullName: string;
@@ -24,13 +26,16 @@ export type EditProfilePayload = {
 };
 
 export default function ProfileContent({ username }: { username: string }) {
-  const [tabs, setTabs] = useState<"publications" | "pins">("publications");
   const [user, setUser] = useState<UserWithPosts>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { data: session, update } = useSession();
 
   const isOwnProfile = session?.user?.username === username;
+
+  const canShowPosts = user ? canCreatePosts(user.role) : true;
+
+  const [tabs, setTabs] = useState<"publications" | "pins">(canShowPosts ? "publications" : "pins");
 
   useEffect(() => {
     let isActive = true;
@@ -42,6 +47,9 @@ export default function ProfileContent({ username }: { username: string }) {
         );
         if (isActive) {
           setUser(response.data);
+          if (!canCreatePosts(response.data.role)) {
+            setTabs("pins");
+          }
         }
       } catch (error) {
         handleError(error);
@@ -197,8 +205,9 @@ export default function ProfileContent({ username }: { username: string }) {
           <span className="text-[#F883B8] font-semibold text-[14px]">
             Member
           </span>
-          <h1 className="text-[#A0A0A0] font-bold text-[16px] flex items-center w-fit">
+          <h1 className="text-[#A0A0A0] font-bold text-[16px] flex items-center gap-[8px] w-fit">
             <span>@{user.username}</span>
+            {hasVerifiedBadge(user.role) && <Verified />}
           </h1>
           {user.fullName && (
             <h1 className="text-[24px] text-[#343434] font-bold">
@@ -227,19 +236,21 @@ export default function ProfileContent({ username }: { username: string }) {
         </div>
       </div>
       <div className="flex">
-        <div className="flex-1 flex justify-center">
-          <div
-            className={clsx(
-              "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit text-center",
-              tabs === "publications" &&
-                "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]"
-            )}
-            onClick={() => setTabs("publications")}
-          >
-            {`${publicationsCount} Publications`}
+        {canShowPosts && (
+          <div className="flex-1 flex justify-center">
+            <div
+              className={clsx(
+                "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit text-center",
+                tabs === "publications" &&
+                  "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]"
+              )}
+              onClick={() => setTabs("publications")}
+            >
+              {`${publicationsCount} Publications`}
+            </div>
           </div>
-        </div>
-        <div className="flex-1 flex justify-center">
+        )}
+        <div className={clsx(canShowPosts ? "flex-1" : "w-full", "flex justify-center")}>
           <div
             className={clsx(
               "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit min-w-[80px] text-center",

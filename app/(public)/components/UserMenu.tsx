@@ -30,7 +30,11 @@ export default function UserMenu() {
         menuButton={
           <MenuButton>
             <UserCard
-              user={session.user}
+              user={{
+                username: session.user.username,
+                image: session.user.image,
+                role: session.user.role,
+              }}
               showStatus={true}
               alwaysShowUsername={false}
               size={32}

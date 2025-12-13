@@ -8,6 +8,8 @@ export type User = {
   gender: "male" | "female";
   pictureUrl: string;
   profileBgUrl: string;
+  role: string;
+  emailVerified: boolean;
 };
 
 export type Post = {
@@ -30,6 +32,7 @@ export type PostWithUser = Post & {
     id: number;
     username: string;
     pictureUrl: string;
+    role?: string;
   } | null;
 };
 

@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
           id: true,
           username: true,
           pictureUrl: true,
+          role: true,
           followers: {
             where: { followerId: userId },
             select: { id: true },
@@ -71,6 +72,7 @@ export async function GET(req: NextRequest) {
           id: true,
           username: true,
           pictureUrl: true,
+          role: true,
           followers: {
             where: { followerId: userId },
             select: { id: true },
@@ -84,6 +86,7 @@ export async function GET(req: NextRequest) {
               id: true,
               username: true,
               pictureUrl: true,
+              role: true,
             },
           },
           likes: {
@@ -105,6 +108,7 @@ export async function GET(req: NextRequest) {
       id: author?.id,
       username: author?.username,
       pictureUrl: author?.pictureUrl,
+      role: author?.role,
     },
     likedByMe: likes.length > 0,
     pinnedByMe: pins.length > 0,
@@ -121,6 +125,7 @@ export async function GET(req: NextRequest) {
         id: pin.post.author?.id,
         username: pin.post.author?.username,
         pictureUrl: pin.post.author?.pictureUrl,
+        role: pin.post.author?.role,
       },
       likedByMe: pin.post.likes.length > 0,
       pinnedByMe: pin.post.pins.length > 0,
@@ -130,6 +135,7 @@ export async function GET(req: NextRequest) {
         id: pin.user?.id ?? 0,
       username: pin.user?.username ?? "",
       pictureUrl: pin.user?.pictureUrl ?? "",
+      role: pin.user?.role,
       },
     }));
 

@@ -23,6 +23,15 @@ export async function GET(req: NextRequest) {
           id: true,
           username: true,
           pictureUrl: true,
+          role: true,
+          ...(userId
+            ? {
+                followers: {
+                  where: { followerId: userId },
+                  select: { id: true },
+                },
+              }
+            : {}),
         },
       },
       ...(userId
@@ -44,6 +53,13 @@ export async function GET(req: NextRequest) {
               select: { id: true, userId: true },
             },
           }),
+      _count: {
+        select: {
+          likes: true,
+          pins: true,
+          comments: true,
+        },
+      },
     },
   });
 
@@ -53,11 +69,18 @@ export async function GET(req: NextRequest) {
 
   const likedByMe = Boolean(post.likes && post.likes.length > 0);
   const pinnedByMe = Boolean(post.pins && post.pins.length > 0);
+  const isFollowed = Boolean(
+    post.author?.followers && post.author.followers.length > 0
+  );
 
   const response = {
     ...post,
     likedByMe,
     pinnedByMe,
+    isFollowed,
+    likesCount: post._count.likes,
+    pinsCount: post._count.pins,
+    commentsCount: post._count.comments,
   };
 
   return NextResponse.json(response);

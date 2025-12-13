@@ -16,12 +16,22 @@ export default function LeftSidebar() {
         <Logo />
       </Link>
       <div className="flex flex-col mt-[20px]">
-        {menuConfig.map((item) => {
-          const MenuIcon = item.icon;
-          const showBadge = item.route === "/notifications" && unreadCount > 0;
+        {menuConfig
+          .filter((item) => {
+            if (item.requiresAuth && !session) return false;
 
-          return (
-            (!item.requiresAuth || (item.requiresAuth && session)) && (
+            if (item.requiredRoles && session) {
+              const hasRole = item.requiredRoles.includes(session.user.role);
+              if (!hasRole) return false;
+            }
+
+            return true;
+          })
+          .map((item) => {
+            const MenuIcon = item.icon;
+            const showBadge = item.route === "/notifications" && unreadCount > 0;
+
+            return (
               <MenuLink key={item.route} href={item.route}>
                 <div className="relative">
                   <MenuIcon />
@@ -33,9 +43,8 @@ export default function LeftSidebar() {
                 </div>
                 {item.text}
               </MenuLink>
-            )
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );

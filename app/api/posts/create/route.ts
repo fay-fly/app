@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { canCreatePosts } from "@/lib/permissions";
 
 const prisma = new PrismaClient();
 
@@ -13,15 +16,29 @@ const extractHashtags = (content: string) => {
 };
 
 export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!canCreatePosts(session.user.role)) {
+    return NextResponse.json(
+      { error: "Only creators and admins can create posts" },
+      { status: 403 }
+    );
+  }
+
   const formData = await req.formData();
 
   const files = formData.getAll("images") as File[];
   const text = formData.get("text") as string;
-  const authorId = formData.get("authorId") as string;
 
-  if (!files || files.length === 0 || !text || !authorId) {
+  if (!files || files.length === 0 || !text) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
+
+  const authorId = session.user.id;
 
   // Validate maximum number of images (10 max)
   if (files.length > 10) {
@@ -79,7 +96,7 @@ export async function POST(req: NextRequest) {
     data: {
       text,
       imageUrls,
-      authorId: parseInt(authorId),
+      authorId: authorId,
     },
   });
 

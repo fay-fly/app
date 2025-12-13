@@ -15,23 +15,31 @@ export default function MobileMenu() {
     >
       {[...menuConfig]
         .sort((a, b) => a.mobileIndex - b.mobileIndex)
+        .filter((item) => {
+          if (item.requiresAuth && !session) return false;
+
+          if (item.requiredRoles && session) {
+            const hasRole = item.requiredRoles.includes(session.user.role);
+            if (!hasRole) return false;
+          }
+
+          return true;
+        })
         .map((item) => {
           const MenuIcon = item.icon;
           const showBadge = item.route === "/notifications" && unreadCount > 0;
 
           return (
-            (!item.requiresAuth || (item.requiresAuth && session)) && (
-              <MenuLink key={item.route} href={item.route}>
-                <div className="relative">
-                  <MenuIcon />
-                  {showBadge && (
-                    <div className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-[4px]">
-                      {unreadCount > 99 ? "99+" : unreadCount}
-                    </div>
-                  )}
-                </div>
-              </MenuLink>
-            )
+            <MenuLink key={item.route} href={item.route}>
+              <div className="relative">
+                <MenuIcon />
+                {showBadge && (
+                  <div className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-[4px]">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </div>
+                )}
+              </div>
+            </MenuLink>
           );
         })}
     </div>

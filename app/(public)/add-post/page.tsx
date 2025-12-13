@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import Button from "@/components/Button";
 import UploadCloud from "@/icons/UploadCloud";
@@ -10,6 +10,7 @@ import Image from "next/image";
 import { handleError } from "@/utils/errors";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import {showToast} from "@/utils/toastify";
+import { canCreatePosts } from "@/lib/permissions";
 
 export default function AddPost() {
   const router = useRouter();
@@ -18,6 +19,16 @@ export default function AddPost() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [text, setText] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    if (session && !canCreatePosts(session.user.role)) {
+      router.push("/");
+    }
+  }, [session, router]);
+
+  if (!session || !canCreatePosts(session.user.role)) {
+    return null;
+  }
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setImages(prev => {
@@ -76,7 +87,6 @@ export default function AddPost() {
         formData.append("images", image);
       });
       formData.append("text", text);
-      formData.append("authorId", String(session?.user.id));
       await axios.post("/api/posts/create", formData);
       router.push("/");
     } catch (error) {

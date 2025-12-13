@@ -13,6 +13,10 @@ import { useState, useRef } from "react";
 import FireFilled from "@/icons/FireFilled";
 import PinFilled from "@/icons/PinFilled";
 import SafeImage from "@/components/SafeImage";
+import { hasVerifiedBadge, canDeletePost } from "@/lib/permissions";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { handleError } from "@/utils/errors";
 
 type PostProps = {
   post: PostWithUser;
@@ -20,6 +24,7 @@ type PostProps = {
 };
 
 export default function Post({ post, onSubscribe }: PostProps) {
+  const router = useRouter();
   const { session } = useSafeSession();
   const isOwnPost = session?.user?.id === post.author.id;
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
@@ -27,11 +32,14 @@ export default function Post({ post, onSubscribe }: PostProps) {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const likeButtonRef = useRef<{ triggerLike: () => void }>(null);
   const [landscapeMap, setLandscapeMap] = useState<Record<number, boolean>>({});
   const [hasPortraitImage, setHasPortraitImage] = useState(true);
   const portraitFoundRef = useRef(false);
   const imagesLoadedRef = useRef(0);
+
+  const canDelete = session && canDeletePost(session.user.role, isOwnPost);
 
   const handleImageDoubleClick = () => {
     likeButtonRef.current?.triggerLike();
@@ -73,6 +81,17 @@ export default function Post({ post, onSubscribe }: PostProps) {
       nextImage();
     } else {
       previousImage();
+    }
+  };
+
+  const handleDeletePost = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      await axios.post("/api/posts/delete", { postId: post.id });
+      router.refresh();
+    } catch (error) {
+      handleError(error);
     }
   };
 
@@ -118,7 +137,7 @@ export default function Post({ post, onSubscribe }: PostProps) {
           >
             {post.author.username}
           </a>
-          <Verified />
+          {hasVerifiedBadge(post.author.role) && <Verified />}
         </div>
         <div className="flex gap-[16px] items-center">
           {session && post.author.id !== session.user.id && (
@@ -128,7 +147,23 @@ export default function Post({ post, onSubscribe }: PostProps) {
               onSuccess={() => onSubscribe && onSubscribe()}
             />
           )}
-          <ThreeDots />
+          {canDelete && (
+            <div className="relative">
+              <button onClick={() => setShowMenu(!showMenu)} className="cursor-pointer">
+                <ThreeDots />
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 top-8 bg-white shadow-lg rounded-lg border z-10 min-w-[120px]">
+                  <button
+                    onClick={handleDeletePost}
+                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 rounded-lg"
+                  >
+                    Delete Post
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div

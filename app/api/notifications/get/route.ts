@@ -15,7 +15,14 @@ export async function GET() {
   const notifications = await prisma.notification.findMany({
     where: { receiver: { email: session.user?.email ?? "" } },
     include: {
-      sender: true,
+      sender: {
+        select: {
+          id: true,
+          username: true,
+          pictureUrl: true,
+          role: true,
+        },
+      },
       post: true,
     },
     orderBy: {

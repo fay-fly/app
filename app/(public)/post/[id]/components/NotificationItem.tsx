@@ -1,11 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import clsx from "clsx";
+import Verified from "@/icons/Verified";
+import { hasVerifiedBadge } from "@/lib/permissions";
 
 type User = {
   id: number;
   username?: string | null;
   pictureUrl?: string | null;
+  role?: string;
 };
 
 type NotificationType = "LIKE" | "COMMENT" | "FOLLOW" | "PIN";
@@ -57,12 +60,15 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     <div className="flex items-center gap-[8px]">
       {senderAvatar}
       <div className="flex flex-col">
-        <Link
-          href={`/profile/${notification.sender.username}`}
-          className="flex text-[#5B5B5B] font-bold"
-        >
-          {notification.sender.username}
-        </Link>
+        <div className="flex items-center gap-[4px]">
+          <Link
+            href={`/profile/${notification.sender.username}`}
+            className="text-[#5B5B5B] font-bold"
+          >
+            {notification.sender.username}
+          </Link>
+          {notification.sender.role && hasVerifiedBadge(notification.sender.role) && <Verified />}
+        </div>
         <div className="text-[#5B5B5B]">{notification.message}</div>
       </div>
     </div>
