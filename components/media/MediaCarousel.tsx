@@ -195,7 +195,7 @@ export default function MediaCarousel({
       <div
         ref={wrapperRef}
         className={clsx(
-          "relative w-full overflow-hidden bg-black/5",
+          "relative w-full overflow-hidden bg-black/5 cursor-default",
           rounded ? "rounded-2xl" : "rounded-none"
         )}
         style={{ aspectRatio: aspectRatioValue }}
@@ -270,6 +270,7 @@ export default function MediaCarousel({
                   }}
                   className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[#262626] shadow-md transition hover:bg-white"
                   aria-label="Previous media"
+                  style={{ cursor: "pointer" }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -297,6 +298,7 @@ export default function MediaCarousel({
                   }}
                   className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[#262626] shadow-md transition hover:bg-white"
                   aria-label="Next media"
+                  style={{ cursor: "pointer" }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

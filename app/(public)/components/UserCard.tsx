@@ -19,6 +19,7 @@ type UserCardProps = {
   alwaysShowUsername?: boolean;
   showDescription?: boolean;
   clickable?: boolean;
+  disableHoverUnderline?: boolean;
 };
 
 export function UserCard({
@@ -29,6 +30,7 @@ export function UserCard({
   alwaysShowUsername = true,
   showDescription = false,
   clickable = false,
+  disableHoverUnderline = false,
 }: UserCardProps) {
   const initials = user.username?.charAt(0).toUpperCase() ?? "";
   const profileUrl = `/profile/${user.username}`;
@@ -98,7 +100,10 @@ export function UserCard({
         )}
       >
         {clickable ? (
-          <Link href={profileUrl} className="hover:underline">
+          <Link
+            href={profileUrl}
+            className={clsx(!disableHoverUnderline && "hover:underline")}
+          >
             {usernameContent}
           </Link>
         ) : (

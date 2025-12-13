@@ -31,6 +31,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
   const commentsRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(false);
   const likeButtonRef = useRef<{ triggerLike: () => void }>(null);
+  const commentsCacheRef = useRef<Map<number, CommentWithUser[]>>(new Map());
   const [comments, setComments] = useState<CommentWithUser[]>([]);
   const [processing, setProcessing] = useState(false);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
@@ -48,28 +49,55 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
   }, [comments]);
 
   useEffect(() => {
-    if (props.post.id) {
-      setComments([]);
-      setProcessing(true);
-      setCurrentImageIndex(0);
-      shouldAutoScrollRef.current = false;
-      if (commentsRef.current) {
-        commentsRef.current.scrollTop = 0;
-      }
-      axios
-        .get<CommentWithUser[]>(`/api/comments/get?postId=${props.post.id}`)
-        .then((response) => {
-          setComments(response.data);
-        })
-        .finally(() => setProcessing(false));
+    const postId = props.post.id;
+    if (!props.open || !postId) {
+      return;
     }
-  }, [props.post.id]);
+
+    setCurrentImageIndex(0);
+    shouldAutoScrollRef.current = false;
+    if (commentsRef.current) {
+      commentsRef.current.scrollTop = 0;
+    }
+
+    const cachedComments = commentsCacheRef.current.get(postId);
+    if (cachedComments) {
+      setComments(cachedComments);
+      setProcessing(false);
+      return;
+    }
+
+    setComments([]);
+    setProcessing(true);
+
+    let cancelled = false;
+
+    axios
+      .get<CommentWithUser[]>(`/api/comments/get?postId=${postId}`)
+      .then((response) => {
+        if (cancelled) {
+          return;
+        }
+        commentsCacheRef.current.set(postId, response.data);
+        setComments(response.data);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setProcessing(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [props.open, props.post.id]);
 
   const onCommentAdded = (newComment: CommentWithUser) => {
     shouldAutoScrollRef.current = true;
     setComments((prev) => {
       const update = [...(prev ?? [])];
       update.push(newComment);
+      commentsCacheRef.current.set(props.post.id, update);
       return update;
     });
   };
@@ -153,6 +181,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
           <button
             onClick={props.onPrevious}
             className="absolute left-[-60px] top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 transition-colors hover:bg-gray-100 lg:flex z-10"
+            style={{ cursor: "pointer" }}
             aria-label="Previous post"
           >
             <ChevronLeft />
@@ -194,6 +223,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                 }}
                 showStatus={false}
                 clickable={true}
+                disableHoverUnderline={true}
               />
               <button
                 onClick={() => props.onRequestClose()}
@@ -267,6 +297,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
           <button
             onClick={props.onNext}
             className="absolute right-[-60px] top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 transition-colors hover:bg-gray-100 lg:flex z-10"
+            style={{ cursor: "pointer" }}
             aria-label="Next post"
           >
             <ChevronRight />

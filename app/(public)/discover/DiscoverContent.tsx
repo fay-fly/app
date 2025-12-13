@@ -86,7 +86,7 @@ export default function DiscoverContent() {
   return (
     <div className="w-full bg-white">
       <div className="w-full mr-auto ml-auto max-w-[1000px]">
-        <div className="px-4 md:px-0 py-3">
+        <div className="px-4 md:px-0">
           {activeHashtag && (
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-(--fly-primary)/30 bg-(--fly-primary)/5 px-4 py-3 text-sm text-(--fly-text-primary)">
               <div className="flex flex-col">
