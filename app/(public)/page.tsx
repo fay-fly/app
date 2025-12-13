@@ -7,6 +7,7 @@ import PageLoader from "@/components/PageLoader";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import { useRouter } from "next/navigation";
 import { useHomePostsStore } from "@/store/homePostsStore";
+import { hydratePostsMedia } from "@/utils/mediaDimensions";
 
 const PAGE_LIMIT = 5;
 
@@ -61,10 +62,12 @@ export default function Home() {
         const endpoint = buildEndpoint(cursor ?? null);
         const response = await axios.get<FeedResponse>(endpoint);
 
+        const hydratedPosts = await hydratePostsMedia(response.data.posts);
+
         if (reset) {
-          setPosts(response.data.posts);
+          setPosts(hydratedPosts);
         } else {
-          appendPosts(response.data.posts);
+          appendPosts(hydratedPosts);
         }
 
         setNextCursor(response.data.nextCursor);
@@ -170,9 +173,9 @@ export default function Home() {
           ) : posts.length === 0 ? (
             renderEmptyState()
           ) : (
-            posts.map((post) => (
+            posts.map((post, index) => (
               <Post
-                key={`${post.isFollowed}-${post.id}`}
+                key={`${post.id}-${post.isPinned ? "pin" : "post"}-${post.pinnedBy?.id ?? "none"}-${index}`}
                 post={post}
                 onSubscribe={() => onSubscribe(post.author.id)}
               />

@@ -15,6 +15,7 @@ import MultiplePhotos from "@/icons/MultiplePhotos";
 import SafeNextImage from "@/components/SafeNextImage";
 import Verified from "@/icons/Verified";
 import { hasVerifiedBadge, canCreatePosts } from "@/lib/permissions";
+import { hydrateUserPostsMedia } from "@/utils/mediaDimensions";
 
 export type EditProfilePayload = {
   fullName: string;
@@ -45,9 +46,14 @@ export default function ProfileContent({ username }: { username: string }) {
         const response = await axios.get<UserWithPosts>(
           `/api/users/get?username=${username}`
         );
+        if (!isActive) {
+          return;
+        }
+
+        const hydrated = await hydrateUserPostsMedia(response.data);
         if (isActive) {
-          setUser(response.data);
-          if (!canCreatePosts(response.data.role)) {
+          setUser(hydrated);
+          if (!canCreatePosts(hydrated.role)) {
             setTabs("pins");
           }
         }
@@ -74,12 +80,13 @@ export default function ProfileContent({ username }: { username: string }) {
       const response = await axios.get<UserWithPosts>(
         `/api/users/get?username=${data.username}`
       );
-      setUser(response.data);
+      const hydrated = await hydrateUserPostsMedia(response.data);
+      setUser(hydrated);
       setIsModalOpen(false);
 
       await update({
-        username: response.data.username,
-        image: response.data.pictureUrl,
+        username: hydrated.username,
+        image: hydrated.pictureUrl,
       });
 
       if (data.username !== username) {
@@ -117,37 +124,57 @@ export default function ProfileContent({ username }: { username: string }) {
     ? `url(${profileBgUrl}) center/cover`
     : "linear-gradient(135deg, #d8ddff 0%, #a2aaff 50%, #7c89ff 100%)";
 
-  const renderPostTile = (post: UserWithPosts["posts"][number]) => (
-    <Link
-      key={post.id}
-      href={`/post/${post.id}`}
-      className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
-    >
-      {post.imageUrls && post.imageUrls.length > 0 && (
-        <SafeNextImage
-          src={post.imageUrls[0]}
-          alt="publication"
-          className="w-full h-full object-cover"
-          errorSize="small"
-          showErrorText={false}
-          sizes="(max-width: 768px) 33vw, 25vw"
-          width={400}
-          height={400}
-        />
-      )}
-      {post.imageUrls && post.imageUrls.length > 1 && (
-        <div className="absolute top-2 right-2">
-          <MultiplePhotos />
-        </div>
-      )}
-      <div
-        className={clsx(
-          "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
-          "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
+  const renderPostTile = (post: UserWithPosts["posts"][number]) => {
+    const primaryMedia = post.media?.[0];
+    const hasMultiple =
+      (post.media?.length ?? post.imageUrls?.length ?? 0) > 1;
+
+    return (
+      <Link
+        key={post.id}
+        href={`/post/${post.id}`}
+        className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
+      >
+        {primaryMedia ? (
+          <SafeNextImage
+            src={primaryMedia.url}
+            alt="publication"
+            className="w-full h-full object-cover"
+            errorSize="small"
+            showErrorText={false}
+            sizes="(max-width: 768px) 33vw, 25vw"
+            width={primaryMedia.width || 400}
+            height={primaryMedia.height || 400}
+          />
+        ) : (
+          post.imageUrls &&
+          post.imageUrls.length > 0 && (
+            <SafeNextImage
+              src={post.imageUrls[0]}
+              alt="publication"
+              className="w-full h-full object-cover"
+              errorSize="small"
+              showErrorText={false}
+              sizes="(max-width: 768px) 33vw, 25vw"
+              width={400}
+              height={400}
+            />
+          )
         )}
-      ></div>
-    </Link>
-  );
+        {hasMultiple && (
+          <div className="absolute top-2 right-2">
+            <MultiplePhotos />
+          </div>
+        )}
+        <div
+          className={clsx(
+            "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
+            "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
+          )}
+        ></div>
+      </Link>
+    );
+  };
 
   return (
     <div className="w-full max-w-[1000px] mx-auto">

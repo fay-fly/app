@@ -1,12 +1,15 @@
 import { create } from "zustand";
-import { PostWithUser } from "@/types/postWithUser";
+import { HydratedPostWithUser } from "@/types/postWithUser";
 
 interface DiscoverPostsState {
-  posts: PostWithUser[];
+  posts: HydratedPostWithUser[];
   loaded: boolean;
-  setPosts: (posts: PostWithUser[]) => void;
+  setPosts: (posts: HydratedPostWithUser[]) => void;
   setLoaded: (loaded: boolean) => void;
-  updatePost: (postId: number, updates: Partial<PostWithUser>) => void;
+  updatePost: (
+    postId: number,
+    updates: Partial<HydratedPostWithUser>
+  ) => void;
   reset: () => void;
 }
 

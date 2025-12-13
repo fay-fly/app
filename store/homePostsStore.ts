@@ -1,17 +1,20 @@
 import { create } from "zustand";
-import { PostWithUser } from "@/types/postWithUser";
+import { HydratedPostWithUser } from "@/types/postWithUser";
 
 interface HomePostsState {
-  posts: PostWithUser[];
+  posts: HydratedPostWithUser[];
   nextCursor: number | null;
   hasMore: boolean;
   loaded: boolean;
-  setPosts: (posts: PostWithUser[]) => void;
-  appendPosts: (posts: PostWithUser[]) => void;
+  setPosts: (posts: HydratedPostWithUser[]) => void;
+  appendPosts: (posts: HydratedPostWithUser[]) => void;
   setNextCursor: (cursor: number | null) => void;
   setHasMore: (hasMore: boolean) => void;
   setLoaded: (loaded: boolean) => void;
-  updatePost: (postId: number, updates: Partial<PostWithUser>) => void;
+  updatePost: (
+    postId: number,
+    updates: Partial<HydratedPostWithUser>
+  ) => void;
   reset: () => void;
 }
 

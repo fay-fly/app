@@ -12,6 +12,12 @@ export type User = {
   emailVerified: boolean;
 };
 
+export type PostMediaItem = {
+  url: string;
+  width: number;
+  height: number;
+};
+
 export type Post = {
   id: number;
   text: string;
@@ -20,6 +26,7 @@ export type Post = {
   commentsCount: number;
   pinsCount: number;
   createdAt: string;
+  media?: PostMediaItem[];
 };
 
 export type PostWithUser = Post & {
@@ -34,6 +41,10 @@ export type PostWithUser = Post & {
     pictureUrl: string;
     role?: string;
   } | null;
+};
+
+export type HydratedPostWithUser = PostWithUser & {
+  media: PostMediaItem[];
 };
 
 type SubsCount = {

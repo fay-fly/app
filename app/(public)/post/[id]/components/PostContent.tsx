@@ -1,17 +1,30 @@
 "use client";
 import { useEffect, useState } from "react";
-import { PostWithUser } from "@/types/postWithUser";
+import { HydratedPostWithUser, PostWithUser } from "@/types/postWithUser";
 import axios from "axios";
 import PageLoader from "@/components/PageLoader";
 import Post from "@/app/(public)/components/Post";
+import { hydratePostMedia } from "@/utils/mediaDimensions";
 
 export default function PostContent({ id }: { id: number }) {
-  const [post, setPost] = useState<PostWithUser>();
+  const [post, setPost] = useState<HydratedPostWithUser>();
 
   useEffect(() => {
-    axios.get<PostWithUser>(`/api/posts/get?id=${id}`).then((response) => {
-      setPost(response.data);
-    });
+    let cancelled = false;
+
+    axios
+      .get<PostWithUser>(`/api/posts/get?id=${id}`)
+      .then(async (response) => {
+        if (cancelled) return;
+        const hydrated = await hydratePostMedia(response.data);
+        if (!cancelled) {
+          setPost(hydrated);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   return (

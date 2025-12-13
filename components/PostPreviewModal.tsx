@@ -7,20 +7,20 @@ import Comments from "@/icons/Comments";
 import PinButton from "@/app/(public)/discover/components/PinButton";
 import { CommentForm } from "@/components/comments/CommentForm";
 import ReactModal from "react-modal";
-import { CommentWithUser, PostWithUser } from "@/types/postWithUser";
+import { CommentWithUser, HydratedPostWithUser } from "@/types/postWithUser";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import UserCard from "@/app/(public)/components/UserCard";
 import ChevronLeft from "@/icons/ChevronLeft";
 import ChevronRight from "@/icons/ChevronRight";
 import FireFilled from "@/icons/FireFilled";
-import SafeNextImage from "@/components/SafeNextImage";
 import Verified from "@/icons/Verified";
 import { hasVerifiedBadge } from "@/lib/permissions";
+import MediaCarousel from "@/components/media/MediaCarousel";
 
 type PostPreviewModalProps = {
   open: boolean;
-  post: PostWithUser;
+  post: HydratedPostWithUser;
   onRequestClose: () => void;
   onNext?: () => void;
   onPrevious?: () => void;
@@ -35,9 +35,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
   const [processing, setProcessing] = useState(false);
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+  const mediaItems = props.post.media ?? [];
 
   useEffect(() => {
     if (shouldAutoScrollRef.current && commentsRef.current) {
@@ -82,39 +80,8 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
     setTimeout(() => setShowLikeAnimation(false), 1000);
   };
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) =>
-      prev < props.post.imageUrls.length - 1 ? prev + 1 : prev
-    );
-  };
-
-  const previousImage = () => {
-    setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : prev));
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-    setIsDragging(true);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
-
-    const minSwipeDistance = 50;
-    const distance = touchStart - touchEnd;
-
-    if (Math.abs(distance) < minSwipeDistance) return;
-
-    if (distance > 0) {
-      nextImage();
-    } else {
-      previousImage();
-    }
+  const handleMediaSlideChange = (index: number) => {
+    setCurrentImageIndex(index);
   };
 
   useEffect(() => {
@@ -181,109 +148,43 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
         },
       }}
     >
-      <div className="relative flex items-center w-full h-full lg:w-auto lg:h-auto lg:max-h-[90vh]">
+      <div className="relative flex h-full w-full flex-col lg:h-auto lg:w-auto lg:max-h-[90vh]">
         {props.showNavigation && props.onPrevious && (
           <button
             onClick={props.onPrevious}
-            className="hidden lg:block absolute left-[-60px] w-10 h-10 rounded-full bg-white text-gray-800 hover:bg-gray-100 flex items-center justify-center transition-colors z-10"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            className="absolute left-[-60px] top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 transition-colors hover:bg-gray-100 lg:flex z-10"
+            aria-label="Previous post"
           >
             <ChevronLeft />
           </button>
         )}
-        <div className="flex w-full h-full lg:w-auto lg:h-auto lg:max-h-[90vh] lg:max-w-[calc(100vw-120px)]">
-          <div
-            className="relative justify-center items-center bg-black hidden lg:flex w-[900px] max-w-[calc(100vw-620px)] max-h-[90vh] aspect-square cursor-pointer select-none overflow-hidden group"
-            onDoubleClick={handleImageDoubleClick}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div
-              className="flex h-full transition-transform duration-300 ease-out"
-              style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
-            >
-              {props.post.imageUrls && props.post.imageUrls.map((url, index) => (
-                <div key={index} className="min-w-full h-full flex items-center justify-center">
-                  <SafeNextImage
-                    src={url}
-                    alt={`image ${index + 1}`}
-                    className="w-full h-full object-contain"
-                    errorSize="large"
-                    sizes="(max-width: 1024px) 100vw, 900px"
-                    width={1200}
-                    height={1200}
-                    priority={index === 0}
-                  />
-                </div>
-              ))}
-            </div>
-            {props.post.imageUrls && props.post.imageUrls.length > 1 && (
-              <>
-                {currentImageIndex > 0 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      previousImage();
-                    }}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-9 h-9 flex items-center justify-center shadow-lg hover:bg-white transition-colors cursor-pointer"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M15 18L9 12L15 6" stroke="#262626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
+        <div className="flex w-full flex-1 flex-col lg:w-auto lg:flex-row lg:max-h-[90vh] lg:max-w-[calc(100vw-120px)]">
+          <div className="flex w-full items-center justify-center bg-black overflow-hidden lg:w-[900px] lg:max-w-[calc(100vw-620px)] lg:max-h-[90vh]">
+            {mediaItems.length > 0 ? (
+              <MediaCarousel
+                className="w-full"
+                media={mediaItems}
+                currentIndex={currentImageIndex}
+                onChange={handleMediaSlideChange}
+                onDoubleClick={handleImageDoubleClick}
+                ariaLabel={`${props.post.author.username}'s media carousel`}
+                rounded={false}
+              >
+                {showLikeAnimation && (
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <div className="animate-like-burst">
+                      <FireFilled className="h-[100px] w-[100px] text-[#FF6B6B] drop-shadow-[0_0_20px_rgba(255,107,107,0.8)]" />
+                    </div>
+                  </div>
                 )}
-                {currentImageIndex < props.post.imageUrls.length - 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      nextImage();
-                    }}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-9 h-9 flex items-center justify-center shadow-lg hover:bg-white transition-colors cursor-pointer"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M9 18L15 12L9 6" stroke="#262626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                )}
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {props.post.imageUrls.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCurrentImageIndex(index);
-                      }}
-                      className={`w-1.5 h-1.5 rounded-full transition-all ${
-                        index === currentImageIndex
-                          ? "bg-white"
-                          : "bg-white/50 hover:bg-white/70"
-                      }`}
-                      aria-label={`Go to image ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-            {showLikeAnimation && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="animate-like-burst">
-                  <FireFilled className="w-[100px] h-[100px] text-[#FF6B6B] drop-shadow-[0_0_20px_rgba(255,107,107,0.8)]" />
-                </div>
+              </MediaCarousel>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm text-white/70">
+                No media
               </div>
             )}
           </div>
-          <div className="flex flex-col w-full lg:w-[500px] lg:min-w-[400px] h-full lg:h-[90vh] lg:max-h-[90vh]">
+          <div className="flex h-full w-full flex-col lg:h-[90vh] lg:max-h-[90vh] lg:min-w-[400px] lg:w-[500px]">
             <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color) flex-shrink-0">
               <UserCard
                 user={{
@@ -365,12 +266,8 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
         {props.showNavigation && props.onNext && (
           <button
             onClick={props.onNext}
-            className="hidden lg:block absolute right-[-60px] w-10 h-10 rounded-full bg-white text-gray-800 hover:bg-gray-100 flex items-center justify-center transition-colors z-10"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            className="absolute right-[-60px] top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 transition-colors hover:bg-gray-100 lg:flex z-10"
+            aria-label="Next post"
           >
             <ChevronRight />
           </button>
