@@ -164,15 +164,14 @@ export default function Post({ post, onSubscribe }: PostProps) {
           />
           <CommentButton commentsCount={post.commentsCount} post={post} />
         </div>
-        {!isOwnPost && (
-          <div className="m-[8px] flex items-center gap-[4px]">
-            <PinButton
-              postId={post.id}
-              pinsCount={post.pinsCount}
-              pinnedByMe={post.pinnedByMe}
-            />
-          </div>
-        )}
+        <div className="m-[8px] flex items-center gap-[4px]">
+          <PinButton
+            postId={post.id}
+            pinsCount={post.pinsCount}
+            pinnedByMe={post.pinnedByMe}
+            disabled={isOwnPost}
+          />
+        </div>
       </div>
       <p className="mt-[8px] px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
         <span className="font-semibold">{post.author.username}</span>{" "}

@@ -21,14 +21,38 @@ export async function GET() {
           username: true,
           pictureUrl: true,
           role: true,
+          followers: {
+            where: { followerId: session.user?.id ?? 0 },
+            select: { id: true },
+          },
         },
       },
-      post: true,
+      post: {
+        select: {
+          id: true,
+          imageUrls: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
     },
   });
 
-  return NextResponse.json(notifications);
+  const mapped = notifications.map((notification) => ({
+    ...notification,
+    senderFollowing:
+      notification.sender?.followers &&
+      notification.sender.followers.length > 0,
+    sender: notification.sender
+      ? {
+          id: notification.sender.id,
+          username: notification.sender.username,
+          pictureUrl: notification.sender.pictureUrl,
+          role: notification.sender.role,
+        }
+      : null,
+  }));
+
+  return NextResponse.json(mapped);
 }

@@ -1,19 +1,16 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { Notification, User, Post } from "@prisma/client";
-import NotificationItem from "@/app/(public)/post/[id]/components/NotificationItem";
 import clsx from "clsx";
 import { useNotificationCount } from "@/contexts/NotificationContext";
+import {
+  NotificationRenderable,
+  NotificationWithRelations,
+} from "@/types/notifications";
+import { buildNotificationRenderables } from "@/lib/notifications/renderables";
+import GroupedNotificationItem from "@/app/(public)/notifications/components/GroupedNotificationItem";
 
-export type NotificationWithRelations = Notification & {
-  sender: User;
-  receiver: User;
-  post: Post | null;
-  read: boolean;
-};
-
-type GroupedNotifications = Record<string, NotificationWithRelations[]>;
+type GroupedNotifications = Record<string, NotificationRenderable[]>;
 
 export default function Notifications() {
   const [notifications, setNotifications] =
@@ -31,13 +28,20 @@ export default function Notifications() {
     });
   }, [setUnreadCount]);
 
-  const groupedNotifications = useMemo<GroupedNotifications>(() => {
+  const renderables = useMemo<NotificationRenderable[]>(() => {
     if (!notifications) {
+      return [];
+    }
+    return buildNotificationRenderables(notifications);
+  }, [notifications]);
+
+  const groupedNotifications = useMemo<GroupedNotifications>(() => {
+    if (renderables.length === 0) {
       return {};
     }
 
-    return notifications.reduce<GroupedNotifications>((groups, notification) => {
-      const notificationDate = new Date(notification.createdAt);
+    return renderables.reduce<GroupedNotifications>((groups, item) => {
+      const notificationDate = new Date(item.timestamp);
       const label = notificationDate.toLocaleDateString(undefined, {
         weekday: "long",
         month: "long",
@@ -48,39 +52,32 @@ export default function Notifications() {
         groups[label] = [];
       }
 
-      groups[label].push(notification);
+      groups[label].push(item);
       return groups;
     }, {});
-  }, [notifications]);
+  }, [renderables]);
 
   const renderNotificationGroup = (
     title: string,
-    notifications: NotificationWithRelations[]
+    notifications: NotificationRenderable[]
   ) => {
     if (notifications.length === 0) return null;
 
     return (
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-[#5B5B5B] mb-2 px-[5px]">
+        <h2 className="text-lg font-semibold text-[#5B5B5B] mb-4 ml-[16px]">
           {title}
         </h2>
-        <div className="flex flex-col gap-1">
-          {notifications.map((notification) => (
+        <div className="flex flex-col gap-1 w-full px-[16px]">
+          {notifications.map((item) => (
             <div
-              key={notification.id}
+              key={item.id}
               className={clsx(
-                !notification.read && "bg-[#7c89ff21]",
-                "flex items-center gap-[5px] py-2 pl-[5px] pr-[18px]"
+                item.unread && "bg-[#7c89ff21]",
+                "flex items-center gap-[5px] py-2 w-full"
               )}
             >
-              <span
-                className={clsx(
-                  "w-[8px] h-[8px] rounded-full",
-                  "bg-[#19b4f7]",
-                  notification.read && "opacity-0"
-                )}
-              />
-              <NotificationItem notification={notification} />
+              <GroupedNotificationItem item={item} />
             </div>
           ))}
         </div>
@@ -90,7 +87,7 @@ export default function Notifications() {
 
   const renderSkeletonLoader = () => {
     return (
-      <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-[16px] md:px-[16px] mt-5">
+      <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-0 mt-5">
         <div className="mb-6">
           <div className="h-5 bg-gray-200 rounded w-24 mb-2 px-[5px] animate-pulse" />
           <div className="flex flex-col gap-1">
@@ -136,7 +133,10 @@ export default function Notifications() {
   };
 
   const renderDateGroup = () => {
-    if (!groupedNotifications || Object.keys(groupedNotifications).length === 0) {
+    if (
+      !groupedNotifications ||
+      Object.keys(groupedNotifications).length === 0
+    ) {
       return (
         <div className="text-center text-[#A0A0A0] mt-10">
           No notifications yet
@@ -156,7 +156,7 @@ export default function Notifications() {
       {!notifications ? (
         renderSkeletonLoader()
       ) : (
-        <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-[16px] md:px-[16px] mt-5">
+        <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-0 mt-3">
           {renderDateGroup()}
         </div>
       )}

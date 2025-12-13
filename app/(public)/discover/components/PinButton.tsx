@@ -10,12 +10,14 @@ type PinButtonProps = {
   pinsCount: number;
   postId: number;
   pinnedByMe: boolean;
+  disabled?: boolean;
 };
 
 export default function PinButton({
   pinsCount,
   postId,
   pinnedByMe,
+  disabled = false,
 }: PinButtonProps) {
   const { session } = useSafeSession();
   const [count, setCount] = useState(pinsCount);
@@ -40,10 +42,11 @@ export default function PinButton({
     <>
       <div
         className={clsx(
-          "flex gap-[4px] m-[8px] items-center cursor-pointer",
-          hasPinnedByMe ? "text-[#7C89FF]" : "text-[#A0A0A0]"
+          "flex gap-[4px] m-[8px] items-center",
+          disabled ? "text-[#A0A0A0] cursor-default" : "cursor-pointer",
+          hasPinnedByMe && !disabled ? "text-[#7C89FF]" : "text-[#A0A0A0]"
         )}
-        onClick={onClick}
+        onClick={disabled ? undefined : onClick}
       >
         {hasPinnedByMe ? <PinFilled /> : <PinOutline />}
         {count}

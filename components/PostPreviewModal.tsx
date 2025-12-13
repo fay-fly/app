@@ -17,6 +17,7 @@ import FireFilled from "@/icons/FireFilled";
 import Verified from "@/icons/Verified";
 import { hasVerifiedBadge } from "@/lib/permissions";
 import MediaCarousel from "@/components/media/MediaCarousel";
+import { useSafeSession } from "@/hooks/useSafeSession";
 
 type PostPreviewModalProps = {
   open: boolean;
@@ -28,6 +29,7 @@ type PostPreviewModalProps = {
 };
 
 export default function PostPreviewModal(props: PostPreviewModalProps) {
+  const { session } = useSafeSession();
   const commentsRef = useRef<HTMLDivElement>(null);
   const shouldAutoScrollRef = useRef(false);
   const likeButtonRef = useRef<{ triggerLike: () => void }>(null);
@@ -37,6 +39,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const mediaItems = props.post.media ?? [];
+  const isOwnPost = session?.user?.id === props.post.author.id;
 
   useEffect(() => {
     if (shouldAutoScrollRef.current && commentsRef.current) {
@@ -280,6 +283,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                     postId={props.post.id}
                     pinsCount={props.post.pinsCount}
                     pinnedByMe={props.post.pinnedByMe}
+                    disabled={isOwnPost}
                   />
                 </div>
               </div>
