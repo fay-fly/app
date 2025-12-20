@@ -39,7 +39,6 @@ export default function SafeNextImage({
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    // If optimization fails, fall back to unoptimized
     if (!imageError) {
       setImageError(true);
     } else {
@@ -52,7 +51,6 @@ export default function SafeNextImage({
     return <ImageError size={errorSize} showText={showErrorText} />;
   }
 
-  // Check if file is unsupported format (TIF, TIFF)
   const isUnsupportedFormat = /\.(tif|tiff)$/i.test(src);
   const shouldUnoptimize = unoptimized || isUnsupportedFormat || imageError;
 

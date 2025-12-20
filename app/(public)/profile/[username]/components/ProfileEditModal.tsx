@@ -7,6 +7,7 @@ import Photo from "@/icons/Photo";
 import Button from "@/components/Button";
 import Close from "@/icons/Close";
 import { EditProfilePayload } from "@/app/(public)/profile/[username]/components/ProfileContent";
+import SafeNextImage from "@/components/SafeNextImage";
 
 type ProfileEditModalProps = {
   isOpen: boolean;
@@ -170,12 +171,17 @@ export default function ProfileEditModal({
             <Photo />
           </div>
           <div className="absolute -bottom-[48px] left-4 flex items-end gap-[24px]">
-            <div className="relative">
+            <div className="relative w-[80px] h-[80px]">
               {profileEditPayload.pictureUrl ? (
-                <img
+                <SafeNextImage
                   src={profileEditPayload.pictureUrl}
                   alt="profile picture"
-                  className="ring-[1.5px] ring-white w-[80px] h-[80px] rounded-full"
+                  className="ring-[1.5px] ring-white w-[80px] h-[80px] rounded-full object-cover"
+                  width={80}
+                  height={80}
+                  errorSize="small"
+                  showErrorText={false}
+                  sizes="80px"
                 />
               ) : (
                 <div className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white">

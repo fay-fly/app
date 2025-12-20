@@ -5,6 +5,7 @@ import { handleError } from "@/utils/errors";
 import clsx from "clsx";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import Send from "@/icons/Send";
+import SafeNextImage from "@/components/SafeNextImage";
 
 type CommentFormProps = {
   postId: number;
@@ -53,12 +54,17 @@ export function CommentForm({
       className="flex gap-[8px] border-t-[1px] border-(--fly-border-color) px-[16px] py-[8px]"
     >
       <div className="w-[32px] h-[32px]">
-        <div className="w-[32px] h-[32px]">
+        <div className="w-[32px] h-[32px] relative">
           {session?.user.image ? (
-            <img
+            <SafeNextImage
               src={session?.user.image}
               alt="profile image"
-              className="rounded-full w-[32px] h-[32px]"
+              className="rounded-full w-[32px] h-[32px] object-cover"
+              width={32}
+              height={32}
+              errorSize="small"
+              showErrorText={false}
+              sizes="32px"
             />
           ) : (
             <div

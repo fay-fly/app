@@ -3,6 +3,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import Verified from "@/icons/Verified";
 import { hasVerifiedBadge } from "@/lib/permissions";
+import SafeNextImage from "@/components/SafeNextImage";
 
 type User = {
   username: string | null;
@@ -36,12 +37,18 @@ export function UserCard({
   const profileUrl = `/profile/${user.username}`;
 
   const AvatarImg = (
-    <img
-      src={user.image ?? ""}
-      alt="profile image"
-      className="rounded-full"
-      style={{ width: size, height: size }}
-    />
+    <div style={{ width: size, height: size }}>
+      <SafeNextImage
+        src={user.image ?? ""}
+        alt="profile image"
+        className="rounded-full object-cover w-full h-full"
+        width={size}
+        height={size}
+        errorSize="small"
+        showErrorText={false}
+        sizes={`${size}px`}
+      />
+    </div>
   );
 
   const AvatarFallback = (

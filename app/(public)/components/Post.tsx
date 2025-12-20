@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import Image from "next/image";
 import Verified from "@/icons/Verified";
 import ThreeDots from "@/icons/ThreeDots";
 import { PostWithUser } from "@/types/postWithUser";
@@ -17,6 +16,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { handleError } from "@/utils/errors";
 import MediaCarousel from "@/components/media/MediaCarousel";
+import SafeNextImage from "@/components/SafeNextImage";
 
 type PostProps = {
   post: PostWithUser;
@@ -75,16 +75,18 @@ export default function Post({ post }: PostProps) {
         <div className="flex items-center gap-[8px]">
           <a
             href={`/profile/${post.author.username}`}
-            className="h-[32px] w-[32px] relative"
+            className="h-[32px] w-[32px] relative block"
           >
             {post.author.pictureUrl ? (
-              <Image
+              <SafeNextImage
                 src={post.author.pictureUrl}
                 alt="profile image"
                 width={32}
                 height={32}
                 className="rounded-full object-cover"
-                quality={85}
+                errorSize="small"
+                showErrorText={false}
+                sizes="32px"
               />
             ) : (
               <div

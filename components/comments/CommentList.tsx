@@ -6,6 +6,7 @@ import UserText from "@/app/(public)/components/UserText";
 import clsx from "clsx";
 import Verified from "@/icons/Verified";
 import { hasVerifiedBadge } from "@/lib/permissions";
+import SafeNextImage from "@/components/SafeNextImage";
 
 type CommentWithUser = Comment & {
   author: User;
@@ -22,13 +23,18 @@ export function CommentList({ comments }: CommentListProps) {
         <div key={comment.id} className="flex gap-2 px-[16px] py-[8px]">
           <Link
             href={`/profile/${comment.author.username}`}
-            className="inline-flex w-[32px] h-[32px] cursor-pointer flex-shrink-0"
+            className="inline-flex w-[32px] h-[32px] cursor-pointer flex-shrink-0 relative"
           >
             {comment.author.pictureUrl ? (
-              <img
+              <SafeNextImage
                 src={comment.author.pictureUrl}
                 alt="profile image"
                 className="rounded-full w-full h-full object-cover"
+                width={32}
+                height={32}
+                errorSize="small"
+                showErrorText={false}
+                sizes="32px"
               />
             ) : (
               <span

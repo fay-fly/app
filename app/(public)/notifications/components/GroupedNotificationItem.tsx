@@ -7,6 +7,7 @@ import { NotificationRenderable } from "@/types/notifications";
 import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
 import Verified from "@/icons/Verified";
 import { hasVerifiedBadge } from "@/lib/permissions";
+import SafeNextImage from "@/components/SafeNextImage";
 
 type Props = {
   item: NotificationRenderable;
@@ -54,12 +55,18 @@ const AvatarStack = ({
             ) : hasImage ? (
               <Link
                 href={avatar.username ? `/profile/${avatar.username}` : "#"}
+                className="relative h-10 w-10"
+                style={{ border: "1.5px solid #fff", borderRadius: "9999px" }}
               >
-                <img
+                <SafeNextImage
                   src={avatar.pictureUrl ?? ""}
                   alt={avatar.username ?? "User avatar"}
                   className="h-10 w-10 rounded-full object-cover"
-                  style={{ border: "1.5px solid #fff" }}
+                  errorSize="small"
+                  showErrorText={false}
+                  sizes="40px"
+                  width={40}
+                  height={40}
                 />
               </Link>
             ) : (
@@ -152,11 +159,16 @@ export default function GroupedNotificationItem({ item }: Props) {
       </div>
       <div className="flex items-center gap-3">
         {item.preview && (
-          <Link href={item.preview.href} className="flex items-center">
-            <img
+          <Link href={item.preview.href} className="relative h-10 w-10 flex-shrink-0">
+            <SafeNextImage
               src={item.preview.imageUrl}
               alt="Preview"
               className="h-10 w-10 object-cover"
+              errorSize="small"
+              showErrorText={false}
+              sizes="40px"
+              width={40}
+              height={40}
             />
           </Link>
         )}
