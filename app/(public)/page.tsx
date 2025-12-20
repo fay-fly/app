@@ -304,9 +304,9 @@ export default function Home() {
                 </>
               )}
 
-              {posts.map((post, index) => (
+              {posts.map((post) => (
                 <Post
-                  key={`${post.id}-${post.isPinned ? "pin" : "post"}-${post.pinnedBy?.id ?? "none"}-${index}`}
+                  key={`${post.id}-${post.isPinned ? "pin" : "post"}-${post.pinnedBy?.id ?? "none"}`}
                   post={post}
                 />
               ))}

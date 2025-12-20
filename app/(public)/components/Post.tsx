@@ -8,7 +8,7 @@ import UserText from "@/app/(public)/components/UserText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
 import PinButton from "@/app/(public)/discover/components/PinButton";
 import { useSafeSession } from "@/hooks/useSafeSession";
-import { useState, useRef } from "react";
+import { useState, useRef, memo } from "react";
 import FireFilled from "@/icons/FireFilled";
 import PinFilled from "@/icons/PinFilled";
 import { hasVerifiedBadge, canDeletePost } from "@/lib/permissions";
@@ -22,7 +22,7 @@ type PostProps = {
   post: PostWithUser;
 };
 
-export default function Post({ post }: PostProps) {
+function Post({ post }: PostProps) {
   const router = useRouter();
   const { session } = useSafeSession();
   const isOwnPost = session?.user?.id === post.author.id;
@@ -180,3 +180,5 @@ export default function Post({ post }: PostProps) {
     </div>
   );
 }
+
+export default memo(Post);
