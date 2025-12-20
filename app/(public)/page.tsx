@@ -1,5 +1,8 @@
 "use client";
 import Post from "@/app/(public)/components/Post";
+import PostSkeleton from "@/app/(public)/components/PostSkeleton";
+import NewPostsIndicator from "@/app/(public)/components/NewPostsIndicator";
+import ErrorRetry from "@/app/(public)/components/ErrorRetry";
 import type { PostWithUser } from "@/types/postWithUser";
 import { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
@@ -7,9 +10,10 @@ import PageLoader from "@/components/PageLoader";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import { useRouter } from "next/navigation";
 import { useHomePostsStore } from "@/store/homePostsStore";
-import { hydratePostsMedia } from "@/utils/mediaDimensions";
 
-const PAGE_LIMIT = 5;
+const PAGE_LIMIT = 10;
+const NEW_POSTS_CHECK_INTERVAL = 30000;
+const PREFETCH_THRESHOLD = 2;
 
 type FeedResponse = {
   posts: PostWithUser[];
@@ -20,20 +24,34 @@ type FeedResponse = {
 export default function Home() {
   const { session, isLoading: sessionLoading } = useSafeSession();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const newPostsCheckInterval = useRef<NodeJS.Timeout | null>(null);
 
   const {
     posts,
     nextCursor,
     hasMore,
     loaded,
+    error,
+    scrollPosition,
+    newPostsCount,
+    isLoadingNewPosts,
+    isLoadingMore,
+    loadingRequestId,
     setPosts,
     appendPosts,
+    prependPosts,
     setNextCursor,
     setHasMore,
     setLoaded,
+    setError,
+    setScrollPosition,
+    setNewPostsCount,
+    setIsLoadingNewPosts,
+    setIsLoadingMore,
+    setLoadingRequestId,
     updatePost,
   } = useHomePostsStore();
 
@@ -46,45 +64,113 @@ export default function Home() {
     return `/api/posts/feed?${params.toString()}`;
   }, []);
 
-  const fetchPosts = useCallback(
-    async ({ cursor, reset }: { cursor?: number | null; reset?: boolean } = {}) => {
-      if (!session) {
-        return;
+  const fetchMorePosts = useCallback(async () => {
+    if (!session || !hasMore || isLoadingMore || loadingRequestId) {
+      return;
+    }
+
+    const requestId = Math.random().toString(36);
+    setLoadingRequestId(requestId);
+    setIsLoadingMore(true);
+    setError(null);
+
+    try {
+      const endpoint = buildEndpoint(nextCursor);
+      const response = await axios.get<FeedResponse>(endpoint);
+
+      appendPosts(response.data.posts);
+      setNextCursor(response.data.nextCursor);
+      setHasMore(response.data.hasMore);
+    } catch (err) {
+      setError("Failed to load more posts");
+      console.error(err);
+    } finally {
+      setIsLoadingMore(false);
+      setLoadingRequestId(null);
+    }
+  }, [
+    session,
+    hasMore,
+    isLoadingMore,
+    loadingRequestId,
+    nextCursor,
+    buildEndpoint,
+    appendPosts,
+    setNextCursor,
+    setHasMore,
+    setIsLoadingMore,
+    setLoadingRequestId,
+    setError,
+  ]);
+
+  const fetchInitialPosts = useCallback(async () => {
+    if (!session) {
+      return;
+    }
+
+    setIsInitialLoad(true);
+    setError(null);
+
+    try {
+      const endpoint = buildEndpoint(null);
+      const response = await axios.get<FeedResponse>(endpoint);
+
+      setPosts(response.data.posts);
+      setNextCursor(response.data.nextCursor);
+      setHasMore(response.data.hasMore);
+      setLoaded(true);
+    } catch (err) {
+      setError("Failed to load feed");
+      console.error(err);
+    } finally {
+      setIsInitialLoad(false);
+    }
+  }, [session, buildEndpoint, setPosts, setNextCursor, setHasMore, setLoaded, setError]);
+
+  const checkNewPosts = useCallback(async () => {
+    if (!session || posts.length === 0 || isLoadingNewPosts) {
+      return;
+    }
+
+    const firstPostId = posts[0]?.id;
+    if (!firstPostId) return;
+
+    try {
+      const response = await axios.get<{ count: number; hasNew: boolean }>(
+        `/api/posts/feed/check-new?sinceId=${firstPostId}`
+      );
+
+      if (response.data.hasNew) {
+        setNewPostsCount(response.data.count);
       }
+    } catch (err) {
+      console.error("Failed to check for new posts", err);
+    }
+  }, [session, posts, isLoadingNewPosts, setNewPostsCount]);
 
-      if (reset) {
-        setIsLoading(true);
-      } else {
-        setIsLoadingMore(true);
-      }
+  const loadNewPosts = useCallback(async () => {
+    if (!session || isLoadingNewPosts) {
+      return;
+    }
 
-      try {
-        const endpoint = buildEndpoint(cursor ?? null);
-        const response = await axios.get<FeedResponse>(endpoint);
+    setIsLoadingNewPosts(true);
+    setError(null);
 
-        const hydratedPosts = await hydratePostsMedia(response.data.posts);
+    try {
+      const endpoint = buildEndpoint(null);
+      const response = await axios.get<FeedResponse>(endpoint);
 
-        if (reset) {
-          setPosts(hydratedPosts);
-        } else {
-          appendPosts(hydratedPosts);
-        }
+      prependPosts(response.data.posts);
+      setNewPostsCount(0);
 
-        setNextCursor(response.data.nextCursor);
-        setHasMore(response.data.hasMore);
-        setLoaded(true);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        if (reset) {
-          setIsLoading(false);
-        } else {
-          setIsLoadingMore(false);
-        }
-      }
-    },
-    [buildEndpoint, session, setPosts, appendPosts, setNextCursor, setHasMore, setLoaded]
-  );
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setError("Failed to load new posts");
+      console.error(err);
+    } finally {
+      setIsLoadingNewPosts(false);
+    }
+  }, [session, isLoadingNewPosts, buildEndpoint, prependPosts, setNewPostsCount, setIsLoadingNewPosts, setError]);
 
   useEffect(() => {
     if (sessionLoading) {
@@ -96,56 +182,86 @@ export default function Home() {
       return;
     }
 
-    // Only fetch if not already loaded
     if (!loaded) {
-      let isMounted = true;
-      fetchPosts({ reset: true, cursor: null }).catch(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      });
-
-      return () => {
-        isMounted = false;
-      };
+      fetchInitialPosts();
     }
-  }, [session, sessionLoading, router, fetchPosts, loaded]);
+  }, [session, sessionLoading, router, loaded, fetchInitialPosts]);
 
   useEffect(() => {
-    if (
-      !session ||
-      sessionLoading ||
-      !hasMore ||
-      isLoading ||
-      isLoadingMore ||
-      !loadMoreRef.current
-    ) {
+    if (loaded && posts.length > 0 && scrollPosition > 0) {
+      setTimeout(() => {
+        window.scrollTo(0, scrollPosition);
+        setScrollPosition(0);
+      }, 100);
+    }
+  }, [loaded, posts.length, scrollPosition, setScrollPosition]);
+
+  useEffect(() => {
+    const saveScroll = () => {
+      setScrollPosition(window.scrollY);
+    };
+
+    let timeoutId: NodeJS.Timeout;
+    const handleScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(saveScroll, 200);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(timeoutId);
+    };
+  }, [setScrollPosition]);
+
+  useEffect(() => {
+    if (!session || !hasMore || isLoadingMore || !loadMoreRef.current) {
       return;
     }
 
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) {
-        fetchPosts({ cursor: nextCursor ?? null });
-      }
-    });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          fetchMorePosts();
+        }
+      },
+      { rootMargin: "400px" }
+    );
 
     const current = loadMoreRef.current;
-    if (current) {
-      observer.observe(current);
-    }
+    observer.observe(current);
 
     return () => {
       observer.disconnect();
     };
-  }, [fetchPosts, hasMore, isLoading, isLoadingMore, nextCursor, session, sessionLoading]);
+  }, [session, hasMore, isLoadingMore, fetchMorePosts]);
 
-  const onSubscribe = (authorId: number) => {
-    posts.forEach((post) => {
-      if (post.author.id === authorId) {
-        updatePost(post.id, { isFollowed: !post.isFollowed });
+  useEffect(() => {
+    if (!session || posts.length === 0) {
+      return;
+    }
+    checkNewPosts();
+    newPostsCheckInterval.current = setInterval(checkNewPosts, NEW_POSTS_CHECK_INTERVAL);
+
+    return () => {
+      if (newPostsCheckInterval.current) {
+        clearInterval(newPostsCheckInterval.current);
       }
-    });
-  };
+    };
+  }, [session, posts.length, checkNewPosts]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && session && posts.length > 0) {
+        checkNewPosts();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [session, posts.length, checkNewPosts]);
 
   const renderEmptyState = () => (
     <div className="flex flex-col items-center justify-center py-[48px] text-[#A0A0A0]">
@@ -165,27 +281,59 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-white" ref={containerRef}>
       <div className="w-full mr-auto ml-auto max-w-[630px]">
+        <NewPostsIndicator count={newPostsCount} onClick={loadNewPosts} />
+
         <div className="flex flex-col">
-          {isLoading ? (
-            <PageLoader />
+          {isInitialLoad && !loaded ? (
+            <>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <PostSkeleton key={`skeleton-${i}`} />
+              ))}
+            </>
           ) : posts.length === 0 ? (
             renderEmptyState()
           ) : (
-            posts.map((post, index) => (
-              <Post
-                key={`${post.id}-${post.isPinned ? "pin" : "post"}-${post.pinnedBy?.id ?? "none"}-${index}`}
-                post={post}
-                onSubscribe={() => onSubscribe(post.author.id)}
-              />
-            ))
-          )}
-          <div ref={loadMoreRef} className="h-1" />
-          {isLoadingMore && (
-            <div className="py-4 text-center text-sm text-[#909090]">
-              Loading more…
-            </div>
+            <>
+              {isLoadingNewPosts && (
+                <>
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <PostSkeleton key={`new-skeleton-${i}`} />
+                  ))}
+                </>
+              )}
+
+              {posts.map((post, index) => (
+                <Post
+                  key={`${post.id}-${post.isPinned ? "pin" : "post"}-${post.pinnedBy?.id ?? "none"}-${index}`}
+                  post={post}
+                />
+              ))}
+
+              <div ref={loadMoreRef} className="h-1" />
+
+              {isLoadingMore && hasMore && (
+                <>
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <PostSkeleton key={`loading-skeleton-${i}`} />
+                  ))}
+                </>
+              )}
+
+              {error && (
+                <ErrorRetry
+                  message={error}
+                  onRetry={() => {
+                    if (error.includes("more")) {
+                      fetchMorePosts();
+                    } else {
+                      fetchInitialPosts();
+                    }
+                  }}
+                />
+              )}
+            </>
           )}
         </div>
       </div>

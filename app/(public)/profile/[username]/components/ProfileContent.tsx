@@ -15,7 +15,6 @@ import MultiplePhotos from "@/icons/MultiplePhotos";
 import SafeNextImage from "@/components/SafeNextImage";
 import Verified from "@/icons/Verified";
 import { hasVerifiedBadge, canCreatePosts } from "@/lib/permissions";
-import { hydrateUserPostsMedia } from "@/utils/mediaDimensions";
 
 export type EditProfilePayload = {
   fullName: string;
@@ -50,10 +49,9 @@ export default function ProfileContent({ username }: { username: string }) {
           return;
         }
 
-        const hydrated = await hydrateUserPostsMedia(response.data);
         if (isActive) {
-          setUser(hydrated);
-          if (!canCreatePosts(hydrated.role)) {
+          setUser(response.data);
+          if (!canCreatePosts(response.data.role)) {
             setTabs("pins");
           }
         }
@@ -80,13 +78,12 @@ export default function ProfileContent({ username }: { username: string }) {
       const response = await axios.get<UserWithPosts>(
         `/api/users/get?username=${data.username}`
       );
-      const hydrated = await hydrateUserPostsMedia(response.data);
-      setUser(hydrated);
+      setUser(response.data);
       setIsModalOpen(false);
 
       await update({
-        username: hydrated.username,
-        image: hydrated.pictureUrl,
+        username: response.data.username,
+        image: response.data.pictureUrl,
       });
 
       if (data.username !== username) {
@@ -126,8 +123,7 @@ export default function ProfileContent({ username }: { username: string }) {
 
   const renderPostTile = (post: UserWithPosts["posts"][number]) => {
     const primaryMedia = post.media?.[0];
-    const hasMultiple =
-      (post.media?.length ?? post.imageUrls?.length ?? 0) > 1;
+    const hasMultiple = (post.media?.length ?? 0) > 1;
 
     return (
       <Link
@@ -147,19 +143,9 @@ export default function ProfileContent({ username }: { username: string }) {
             height={primaryMedia.height || 400}
           />
         ) : (
-          post.imageUrls &&
-          post.imageUrls.length > 0 && (
-            <SafeNextImage
-              src={post.imageUrls[0]}
-              alt="publication"
-              className="w-full h-full object-cover"
-              errorSize="small"
-              showErrorText={false}
-              sizes="(max-width: 768px) 33vw, 25vw"
-              width={400}
-              height={400}
-            />
-          )
+          <div className="w-full h-full flex items-center justify-center text-gray-400">
+            No image
+          </div>
         )}
         {hasMultiple && (
           <div className="absolute top-2 right-2">

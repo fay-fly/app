@@ -1,13 +1,12 @@
 "use client";
 
-import type { HydratedPostWithUser, PostWithUser } from "@/types/postWithUser";
+import type { PostWithUser } from "@/types/postWithUser";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PostsPreview from "@/app/(public)/discover/components/PostsPreview";
 import { handleError } from "@/utils/errors";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useDiscoverPostsStore } from "@/store/discoverPostsStore";
-import { hydratePostsMedia } from "@/utils/mediaDimensions";
 
 export default function DiscoverContent() {
   const searchParams = useSearchParams();
@@ -21,7 +20,7 @@ export default function DiscoverContent() {
     setLoaded: setDiscoverLoaded,
   } = useDiscoverPostsStore();
 
-  const [posts, setPosts] = useState<HydratedPostWithUser[] | undefined>(
+  const [posts, setPosts] = useState<PostWithUser[] | undefined>(
     discoverLoaded && !activeHashtag ? discoverPosts : undefined
   );
 
@@ -41,9 +40,8 @@ export default function DiscoverContent() {
           )}`;
           const response = await axios.get<PostWithUser[]>(endpoint);
           if (cancelled) return;
-          const hydrated = await hydratePostsMedia(response.data);
           if (!cancelled) {
-            setPosts(hydrated);
+            setPosts(response.data);
           }
           return;
         }
@@ -56,10 +54,9 @@ export default function DiscoverContent() {
         setPosts(undefined);
         const response = await axios.get<PostWithUser[]>("/api/posts/all");
         if (cancelled) return;
-        const hydrated = await hydratePostsMedia(response.data);
         if (!cancelled) {
-          setPosts(hydrated);
-          setDiscoverPosts(hydrated);
+          setPosts(response.data);
+          setDiscoverPosts(response.data);
           setDiscoverLoaded(true);
         }
       } catch (error) {

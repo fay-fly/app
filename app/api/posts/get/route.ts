@@ -34,6 +34,14 @@ export async function GET(req: NextRequest) {
             : {}),
         },
       },
+      media: {
+        orderBy: { order: "asc" },
+        select: {
+          url: true,
+          width: true,
+          height: true,
+        },
+      },
       ...(userId
         ? {
             likes: {
@@ -75,6 +83,7 @@ export async function GET(req: NextRequest) {
 
   const response = {
     ...post,
+    media: post.media.length > 0 ? post.media : undefined,
     likedByMe,
     pinnedByMe,
     isFollowed,

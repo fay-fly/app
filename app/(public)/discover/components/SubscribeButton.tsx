@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@/components/Button";
 import axios from "axios";
 
@@ -16,6 +16,10 @@ export default function SubscribeButton({
   onSuccess,
 }: SubscribeButtonProps) {
   const [hasSubscribeState, setHasSubscribeState] = useState(isSubscribed);
+
+  useEffect(() => {
+    setHasSubscribeState(isSubscribed);
+  }, [isSubscribed]);
 
   const handleFollow = async () => {
     const newSubscribeState = !hasSubscribeState;

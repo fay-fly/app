@@ -30,7 +30,14 @@ export async function GET() {
       post: {
         select: {
           id: true,
-          imageUrls: true,
+          media: {
+            orderBy: { order: "asc" },
+            select: {
+              url: true,
+              width: true,
+              height: true,
+            },
+          },
         },
       },
     },

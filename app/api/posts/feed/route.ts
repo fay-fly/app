@@ -50,6 +50,14 @@ export async function GET(req: NextRequest) {
         where: { userId },
         select: { id: true },
       },
+      media: {
+        orderBy: { order: "asc" },
+        select: {
+          url: true,
+          width: true,
+          height: true,
+        },
+      },
     },
   });
 
@@ -97,12 +105,20 @@ export async function GET(req: NextRequest) {
             where: { userId },
             select: { id: true },
           },
+          media: {
+            orderBy: { order: "asc" },
+            select: {
+              url: true,
+              width: true,
+              height: true,
+            },
+          },
         },
       },
     },
   });
 
-  const postsWithFlags = posts.map(({ likes, pins, author, ...rest }) => ({
+  const postsWithFlags = posts.map(({ likes, pins, author, media, ...rest }) => ({
     ...rest,
     author: {
       id: author?.id,
@@ -110,6 +126,7 @@ export async function GET(req: NextRequest) {
       pictureUrl: author?.pictureUrl,
       role: author?.role,
     },
+    media: media.length > 0 ? media : undefined,
     likedByMe: likes.length > 0,
     pinnedByMe: pins.length > 0,
     isFollowed: author?.followers ? author.followers.length > 0 : false,
@@ -127,6 +144,7 @@ export async function GET(req: NextRequest) {
         pictureUrl: pin.post.author?.pictureUrl,
         role: pin.post.author?.role,
       },
+      media: pin.post.media.length > 0 ? pin.post.media : undefined,
       likedByMe: pin.post.likes.length > 0,
       pinnedByMe: pin.post.pins.length > 0,
       isFollowed: pin.user?.followers ? pin.user.followers.length > 0 : false,

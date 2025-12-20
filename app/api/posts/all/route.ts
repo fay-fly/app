@@ -26,6 +26,14 @@ export async function GET() {
           }),
         },
       },
+      media: {
+        orderBy: { order: "asc" },
+        select: {
+          url: true,
+          width: true,
+          height: true,
+        },
+      },
       ...(userId
         ? {
             likes: {
@@ -48,7 +56,7 @@ export async function GET() {
     },
   });
 
-  const postsWithFlags = posts.map(({ likes, pins, author, ...rest }) => ({
+  const postsWithFlags = posts.map(({ likes, pins, author, media, ...rest }) => ({
     ...rest,
     author: {
       id: author?.id,
@@ -56,6 +64,7 @@ export async function GET() {
       pictureUrl: author?.pictureUrl,
       role: author?.role,
     },
+    media: media.length > 0 ? media : undefined,
     likedByMe: userId ? likes.length > 0 : false,
     pinnedByMe: userId ? pins.length > 0 : false,
     isFollowed:

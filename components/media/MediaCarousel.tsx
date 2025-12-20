@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import type { PostMediaItem } from "@/types/postWithUser";
 
 type MediaCarouselProps = {
@@ -32,7 +33,6 @@ export default function MediaCarousel({
   rounded = true,
 }: MediaCarouselProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [isInView, setIsInView] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [loadedMap, setLoadedMap] = useState<Record<string, boolean>>({});
@@ -50,28 +50,6 @@ export default function MediaCarousel({
     const height = firstMedia.height || 1;
     return `${width} / ${height}`;
   }, [firstMedia]);
-
-  useEffect(() => {
-    if (!wrapperRef.current || typeof window === "undefined") {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry) {
-          setIsInView(entry.isIntersecting);
-        }
-      },
-      {
-        rootMargin: "200px",
-      }
-    );
-
-    observer.observe(wrapperRef.current);
-
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     if (
@@ -187,9 +165,6 @@ export default function MediaCarousel({
     );
   }
 
-  const shouldRenderImage = (index: number) =>
-    isInView || Math.abs(index - currentIndex) <= 1 || index === 0;
-
   return (
     <div className={clsx("relative w-full", className)}>
       <div
@@ -213,6 +188,7 @@ export default function MediaCarousel({
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
             {canonicalMedia.map((item, index) => {
+              const isCurrent = index === currentIndex;
               const isAdjacent = Math.abs(index - currentIndex) <= 1;
               const imageIsLoaded = Boolean(loadedMap[item.url]);
               const hasError = Boolean(errorMap[item.url]);
@@ -232,27 +208,23 @@ export default function MediaCarousel({
                     <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-[#909090]">
                       Unable to load media
                     </div>
-                  ) : shouldRenderImage(index) ? (
-                    <img
+                  ) : (
+                    <Image
                       src={item.url}
                       alt={`Slide ${index + 1}`}
-                      width={item.width}
-                      height={item.height}
+                      fill
                       className={clsx(
-                        "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
+                        "object-cover transition-opacity duration-300",
                         imageIsLoaded ? "opacity-100" : "opacity-0"
                       )}
-                      loading={isAdjacent ? "eager" : "lazy"}
-                      decoding="async"
-                      fetchPriority={isAdjacent ? "high" : "auto"}
+                      priority={isCurrent || isAdjacent}
+                      loading={isCurrent || isAdjacent ? "eager" : "lazy"}
+                      quality={85}
                       sizes="(max-width: 768px) 100vw, 630px"
-                      srcSet={`${item.url} 1x`}
                       onLoad={() => handleImageLoad(item.url)}
                       onError={() => handleImageError(item.url)}
                       draggable={false}
                     />
-                  ) : (
-                    <div className="absolute inset-0 bg-transparent" />
                   )}
                 </div>
               );

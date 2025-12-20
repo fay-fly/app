@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { HydratedPostWithUser } from "@/types/postWithUser";
+import { PostWithUser } from "@/types/postWithUser";
 import PostPreview from "@/app/(public)/components/Post";
 import { useEffect, useRef, useState } from "react";
 import useScreenWidth from "@/hooks/useScreenWidth";
@@ -9,7 +9,7 @@ import SafeNextImage from "@/components/SafeNextImage";
 
 type PostPreviewProps = {
   className?: string;
-  posts: HydratedPostWithUser[];
+  posts: PostWithUser[];
 };
 
 export default function PostsPreview({ posts, className }: PostPreviewProps) {
@@ -72,8 +72,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
         <div className={clsx("grid grid-cols-3 gap-[2px]", className)}>
           {posts.map((post) => {
             const primaryMedia = post.media?.[0];
-            const hasMultiple =
-              (post.media?.length ?? post.imageUrls?.length ?? 0) > 1;
+            const hasMultiple = (post.media?.length ?? 0) > 1;
             return (
               <div
                 key={post.id}
@@ -91,19 +90,9 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
                     height={primaryMedia.height || 400}
                   />
                 ) : (
-                  post.imageUrls &&
-                  post.imageUrls.length > 0 && (
-                    <SafeNextImage
-                      src={post.imageUrls[0]}
-                      alt="publication"
-                      className="w-full h-full object-cover"
-                      errorSize="small"
-                      showErrorText={false}
-                      sizes="33vw"
-                      width={400}
-                      height={400}
-                    />
-                  )
+                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    No image
+                  </div>
                 )}
                 {hasMultiple && (
                   <div className="absolute top-2 right-2">

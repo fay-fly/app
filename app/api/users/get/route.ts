@@ -26,6 +26,16 @@ export async function GET(req: NextRequest) {
         orderBy: {
           createdAt: 'desc',
         },
+        include: {
+          media: {
+            orderBy: { order: "asc" },
+            select: {
+              url: true,
+              width: true,
+              height: true,
+            },
+          },
+        },
       },
       pins: {
         orderBy: {
@@ -35,6 +45,14 @@ export async function GET(req: NextRequest) {
           post: {
             include: {
               author: true,
+              media: {
+                orderBy: { order: "asc" },
+                select: {
+                  url: true,
+                  width: true,
+                  height: true,
+                },
+              },
             },
           },
         },

@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { canCreatePosts } from "@/lib/permissions";
+import { processImage } from "@/utils/imageProcessing";
 
 const prisma = new PrismaClient();
 
@@ -79,24 +80,47 @@ export async function POST(req: NextRequest) {
   }
 
   const uploadPromises = files.map(async (file) => {
-    const extension = file.name.split(".").pop();
-    const uniqueName = `${crypto.randomUUID()}.${extension}`;
-    const blob = await put(uniqueName, file, {
-      access: "public",
-      contentType: file.type, // Set proper content type so browser displays instead of downloads
-      addRandomSuffix: false, // Don't add random suffix since we already have UUID
-    });
-    return blob.url;
+    try {
+      const processed = await processImage(file);
+      const extension = processed.mimeType === "image/webp" ? "webp" : file.name.split(".").pop();
+      const uniqueName = `${crypto.randomUUID()}.${extension}`;
+      const blob = await put(uniqueName, processed.buffer, {
+        access: "public",
+        contentType: processed.mimeType,
+        addRandomSuffix: false,
+      });
+      return {
+        url: blob.url,
+        width: processed.dimensions.width,
+        height: processed.dimensions.height,
+      };
+    } catch (error) {
+      const extension = file.name.split(".").pop();
+      const uniqueName = `${crypto.randomUUID()}.${extension}`;
+      const blob = await put(uniqueName, file, {
+        access: "public",
+        contentType: file.type,
+        addRandomSuffix: false,
+      });
+      return { url: blob.url, width: null, height: null };
+    }
   });
 
-  const imageUrls = await Promise.all(uploadPromises);
+  const processedImages = await Promise.all(uploadPromises);
   const hashtags = extractHashtags(text);
 
   const post = await prisma.post.create({
     data: {
       text,
-      imageUrls,
       authorId: authorId,
+      media: {
+        create: processedImages.map((img, index) => ({
+          url: img.url,
+          width: img.width || 800,
+          height: img.height || 600,
+          order: index,
+        })),
+      },
     },
   });
 

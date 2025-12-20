@@ -112,15 +112,15 @@ const buildPreview = (group: NotificationGroup) => {
   }
 
   const eventWithPost = group.events.find(
-    (event) => event.post && event.post.imageUrls.length > 0
+    (event) => event.post && event.post.media && event.post.media.length > 0
   );
 
-  if (!eventWithPost?.post?.imageUrls?.length || !eventWithPost.postId) {
+  if (!eventWithPost?.post?.media?.length || !eventWithPost.postId) {
     return undefined;
   }
 
   return {
-    imageUrl: eventWithPost.post.imageUrls[0],
+    imageUrl: eventWithPost.post.media[0].url,
     href: `/post/${eventWithPost.postId}`,
   };
 };

@@ -1,13 +1,13 @@
 import clsx from "clsx";
+import Image from "next/image";
 import Verified from "@/icons/Verified";
 import ThreeDots from "@/icons/ThreeDots";
-import { HydratedPostWithUser } from "@/types/postWithUser";
+import { PostWithUser } from "@/types/postWithUser";
 import { getFormattedDate } from "@/utils/dates";
 import LikeButton from "@/app/(public)/discover/components/LikeButton";
 import UserText from "@/app/(public)/components/UserText";
 import CommentButton from "@/app/(public)/discover/components/CommentButton";
 import PinButton from "@/app/(public)/discover/components/PinButton";
-import SubscribeButton from "@/app/(public)/discover/components/SubscribeButton";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import { useState, useRef } from "react";
 import FireFilled from "@/icons/FireFilled";
@@ -19,11 +19,10 @@ import { handleError } from "@/utils/errors";
 import MediaCarousel from "@/components/media/MediaCarousel";
 
 type PostProps = {
-  post: HydratedPostWithUser;
-  onSubscribe?: () => void;
+  post: PostWithUser;
 };
 
-export default function Post({ post, onSubscribe }: PostProps) {
+export default function Post({ post }: PostProps) {
   const router = useRouter();
   const { session } = useSafeSession();
   const isOwnPost = session?.user?.id === post.author.id;
@@ -76,13 +75,16 @@ export default function Post({ post, onSubscribe }: PostProps) {
         <div className="flex items-center gap-[8px]">
           <a
             href={`/profile/${post.author.username}`}
-            className="h-[32px] w-[32px]"
+            className="h-[32px] w-[32px] relative"
           >
             {post.author.pictureUrl ? (
-              <img
+              <Image
                 src={post.author.pictureUrl}
                 alt="profile image"
-                className="h-[32px] w-[32px] rounded-full"
+                width={32}
+                height={32}
+                className="rounded-full object-cover"
+                quality={85}
               />
             ) : (
               <div
@@ -104,13 +106,6 @@ export default function Post({ post, onSubscribe }: PostProps) {
           {hasVerifiedBadge(post.author.role) && <Verified />}
         </div>
         <div className="flex items-center gap-[16px]">
-          {session && post.author.id !== session.user.id && (
-            <SubscribeButton
-              subscribingId={post.author.id}
-              isSubscribed={post.isFollowed}
-              onSuccess={() => onSubscribe && onSubscribe()}
-            />
-          )}
           {canDelete && (
             <div className="relative">
               <button

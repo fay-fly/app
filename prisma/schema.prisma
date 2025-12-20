@@ -38,20 +38,34 @@ model User {
 }
 
 model Post {
-  id             Int            @id @default(autoincrement())
-  imageUrls      String[]       @default([])
-  text           String
-  author         User?          @relation(fields: [authorId], references: [id])
-  authorId       Int
-  likesCount     Int            @default(0)
-  commentsCount  Int            @default(0)
-  pinsCount      Int            @default(0)
-  likes          Like[]
-  notifications  Notification[]
-  comments       Comment[]
-  pins           Pin[]
-  hashtags       PostHashtag[]
-  createdAt      DateTime       @default(now())
+  id            Int            @id @default(autoincrement())
+  text          String
+  author        User?          @relation(fields: [authorId], references: [id])
+  authorId      Int
+  likesCount    Int            @default(0)
+  commentsCount Int            @default(0)
+  pinsCount     Int            @default(0)
+  likes         Like[]
+  notifications Notification[]
+  comments      Comment[]
+  pins          Pin[]
+  hashtags      PostHashtag[]
+  media         PostMedia[]
+  createdAt     DateTime       @default(now())
+}
+
+model PostMedia {
+  id        Int      @id @default(autoincrement())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  url       String
+  width     Int
+  height    Int
+  order     Int
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@index([postId, order])
 }
 
 model Like {

@@ -21,7 +21,6 @@ export type PostMediaItem = {
 export type Post = {
   id: number;
   text: string;
-  imageUrls: string[];
   likesCount: number;
   commentsCount: number;
   pinsCount: number;

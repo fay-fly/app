@@ -7,7 +7,7 @@ import Comments from "@/icons/Comments";
 import PinButton from "@/app/(public)/discover/components/PinButton";
 import { CommentForm } from "@/components/comments/CommentForm";
 import ReactModal from "react-modal";
-import { CommentWithUser, HydratedPostWithUser } from "@/types/postWithUser";
+import { CommentWithUser, PostWithUser } from "@/types/postWithUser";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import UserCard from "@/app/(public)/components/UserCard";
@@ -21,7 +21,7 @@ import { useSafeSession } from "@/hooks/useSafeSession";
 
 type PostPreviewModalProps = {
   open: boolean;
-  post: HydratedPostWithUser;
+  post: PostWithUser;
   onRequestClose: () => void;
   onNext?: () => void;
   onPrevious?: () => void;

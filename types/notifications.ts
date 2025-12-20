@@ -8,7 +8,14 @@ export type NotificationUser = Pick<
 export type NotificationWithRelations = Notification & {
   sender: NotificationUser;
   senderFollowing?: boolean;
-  post: Pick<Post, "id" | "imageUrls"> | null;
+  post: {
+    id: number;
+    media: {
+      url: string;
+      width: number;
+      height: number;
+    }[];
+  } | null;
 };
 
 export type NotificationAvatar = {

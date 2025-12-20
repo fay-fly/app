@@ -55,6 +55,14 @@ export async function GET(req: NextRequest) {
           },
         },
       },
+      media: {
+        orderBy: { order: "asc" },
+        select: {
+          url: true,
+          width: true,
+          height: true,
+        },
+      },
       ...(userId
         ? {
             likes: {
@@ -77,7 +85,7 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  const postsWithFlags = posts.map(({ likes, pins, author, hashtags, ...rest }) => ({
+  const postsWithFlags = posts.map(({ likes, pins, author, hashtags, media, ...rest }) => ({
     ...rest,
     author: {
       id: author?.id,
@@ -85,6 +93,7 @@ export async function GET(req: NextRequest) {
       pictureUrl: author?.pictureUrl,
       role: author?.role,
     },
+    media: media.length > 0 ? media : undefined,
     likedByMe: userId ? likes.length > 0 : false,
     pinnedByMe: userId ? pins.length > 0 : false,
     isFollowed:

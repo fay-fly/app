@@ -1,11 +1,11 @@
 import Comments from "@/icons/Comments";
 import { useState } from "react";
 import PostPreviewModal from "@/components/PostPreviewModal";
-import { HydratedPostWithUser } from "@/types/postWithUser";
+import { PostWithUser } from "@/types/postWithUser";
 
 type CommentButtonProps = {
   commentsCount: number;
-  post: HydratedPostWithUser;
+  post: PostWithUser;
 };
 
 export default function CommentButton({
