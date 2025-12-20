@@ -191,16 +191,18 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
           </button>
         )}
         <div className="flex w-full flex-1 flex-col lg:w-auto lg:flex-row lg:max-h-[90vh] lg:max-w-[calc(100vw-120px)]">
-          <div className="flex w-full items-center justify-center bg-black overflow-hidden lg:w-[900px] lg:max-w-[calc(100vw-620px)] lg:max-h-[90vh]">
+          <div className="flex w-full items-center justify-center bg-black overflow-hidden lg:w-[900px] lg:max-w-[calc(100vw-620px)] lg:h-[90vh] lg:max-h-[90vh]">
             {mediaItems.length > 0 ? (
               <MediaCarousel
-                className="w-full"
+                className="w-full h-full"
                 media={mediaItems}
                 currentIndex={currentImageIndex}
                 onChange={handleMediaSlideChange}
                 onDoubleClick={handleImageDoubleClick}
                 ariaLabel={`${props.post.author.username}'s media carousel`}
                 rounded={false}
+                objectFit="contain"
+                useAspectRatio={false}
               >
                 {showLikeAnimation && (
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center">

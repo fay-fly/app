@@ -16,6 +16,8 @@ type MediaCarouselProps = {
   ariaLabel?: string;
   children?: React.ReactNode;
   rounded?: boolean;
+  objectFit?: "cover" | "contain";
+  useAspectRatio?: boolean;
 };
 
 const MIN_SWIPE_DISTANCE = 45;
@@ -31,6 +33,8 @@ export default function MediaCarousel({
   ariaLabel = "Post media carousel",
   children,
   rounded = true,
+  objectFit = "cover",
+  useAspectRatio = true,
 }: MediaCarouselProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -171,9 +175,10 @@ export default function MediaCarousel({
         ref={wrapperRef}
         className={clsx(
           "relative w-full overflow-hidden bg-black/5 cursor-default",
-          rounded ? "rounded-2xl" : "rounded-none"
+          rounded ? "rounded-2xl" : "rounded-none",
+          !useAspectRatio && "h-full"
         )}
-        style={{ aspectRatio: aspectRatioValue }}
+        style={useAspectRatio ? { aspectRatio: aspectRatioValue } : undefined}
         role="region"
         aria-roledescription="carousel"
         aria-label={ariaLabel}
@@ -214,7 +219,8 @@ export default function MediaCarousel({
                       alt={`Slide ${index + 1}`}
                       fill
                       className={clsx(
-                        "object-cover transition-opacity duration-300",
+                        "transition-opacity duration-300",
+                        objectFit === "contain" ? "object-contain" : "object-cover",
                         imageIsLoaded ? "opacity-100" : "opacity-0"
                       )}
                       priority={isCurrent || isAdjacent}
