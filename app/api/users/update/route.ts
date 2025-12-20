@@ -64,9 +64,9 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(base64Data, "base64");
     const mimeType = pictureUrl.match(/data:([^;]+);/)?.[1] || "image/png";
     const extension = mimeType.split("/")[1];
-    const uniqueName = `profile-${userId}-${Date.now()}.${extension}`;
+    const uniqueName = `${userId}-${Date.now()}.${extension}`;
 
-    const url = await uploadToBunny(buffer, uniqueName, mimeType);
+    const url = await uploadToBunny(buffer, uniqueName, mimeType, 'profiles');
 
     updateData.pictureUrl = url;
   } else if (pictureUrl) {
@@ -78,9 +78,9 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(base64Data, "base64");
     const mimeType = profileBgUrl.match(/data:([^;]+);/)?.[1] || "image/png";
     const extension = mimeType.split("/")[1];
-    const uniqueName = `background-${userId}-${Date.now()}.${extension}`;
+    const uniqueName = `${userId}-${Date.now()}.${extension}`;
 
-    const url = await uploadToBunny(buffer, uniqueName, mimeType);
+    const url = await uploadToBunny(buffer, uniqueName, mimeType, 'backgrounds');
 
     updateData.profileBgUrl = url;
   } else if (profileBgUrl) {

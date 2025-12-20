@@ -119,8 +119,9 @@ const buildPreview = (group: NotificationGroup) => {
     return undefined;
   }
 
+  const media = eventWithPost.post.media[0];
   return {
-    imageUrl: eventWithPost.post.media[0].url,
+    imageUrl: media.thumbnailUrl || media.smallUrl || media.url,
     href: `/post/${eventWithPost.postId}`,
   };
 };

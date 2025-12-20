@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadToBunny } from "@/utils/bunnyStorage";
+import { uploadImageVariants } from "@/utils/bunnyStorage";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
@@ -83,23 +83,34 @@ export async function POST(req: NextRequest) {
     try {
       const processed = await processImage(file);
       const extension = processed.mimeType === "image/webp" ? "webp" : file.name.split(".").pop();
-      const uniqueName = `${crypto.randomUUID()}.${extension}`;
-      const url = await uploadToBunny(
-        processed.buffer,
-        uniqueName,
-        processed.mimeType
+      const baseFilename = `${crypto.randomUUID()}.${extension}`;
+
+      const urls = await uploadImageVariants(
+        baseFilename,
+        {
+          thumbnail: processed.thumbnail.buffer,
+          small: processed.small.buffer,
+          medium: processed.medium.buffer,
+          large: processed.large.buffer,
+          original: processed.original.buffer,
+        },
+        processed.mimeType,
+        processed.originalContentType,
+        'posts'
       );
+
       return {
-        url,
-        width: processed.dimensions.width,
-        height: processed.dimensions.height,
+        url: urls.largeUrl,
+        thumbnailUrl: urls.thumbnailUrl,
+        smallUrl: urls.smallUrl,
+        mediumUrl: urls.mediumUrl,
+        originalUrl: urls.originalUrl,
+        width: processed.large.width,
+        height: processed.large.height,
       };
     } catch (error) {
-      const extension = file.name.split(".").pop();
-      const uniqueName = `${crypto.randomUUID()}.${extension}`;
-      const fileBuffer = Buffer.from(await file.arrayBuffer());
-      const url = await uploadToBunny(fileBuffer, uniqueName, file.type);
-      return { url, width: null, height: null };
+      console.error("Failed to process image:", error);
+      throw error;
     }
   });
 
@@ -113,6 +124,10 @@ export async function POST(req: NextRequest) {
       media: {
         create: processedImages.map((img, index) => ({
           url: img.url,
+          thumbnailUrl: img.thumbnailUrl,
+          smallUrl: img.smallUrl,
+          mediumUrl: img.mediumUrl,
+          originalUrl: img.originalUrl,
           width: img.width || 800,
           height: img.height || 600,
           order: index,

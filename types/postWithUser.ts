@@ -14,6 +14,10 @@ export type User = {
 
 export type PostMediaItem = {
   url: string;
+  thumbnailUrl?: string;
+  smallUrl?: string;
+  mediumUrl?: string;
+  originalUrl?: string;
   width: number;
   height: number;
 };

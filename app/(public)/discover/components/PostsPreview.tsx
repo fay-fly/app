@@ -88,14 +88,14 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
             >
               {primaryMedia ? (
                 <SafeNextImage
-                  src={primaryMedia.url}
+                  src={primaryMedia.smallUrl || primaryMedia.url}
                   alt="publication"
                   className="w-full h-full object-cover"
                   errorSize="small"
                   showErrorText={false}
-                  sizes="33vw"
-                  width={primaryMedia.width || 400}
-                  height={primaryMedia.height || 400}
+                  sizes="(max-width: 768px) 33vw, 400px"
+                  width={400}
+                  height={400}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">

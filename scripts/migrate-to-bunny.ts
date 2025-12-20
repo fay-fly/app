@@ -25,7 +25,8 @@ async function migratePostMedia() {
       const filename = extractFilename(item.url);
       const contentType = `image/${filename.split('.').pop()}`;
 
-      const newUrl = await uploadToBunny(buffer, filename, contentType);
+      // Upload to posts/large folder (main variant)
+      const newUrl = await uploadToBunny(buffer, filename, contentType, 'posts/large');
 
       await prisma.postMedia.update({
         where: { id: item.id },
@@ -64,7 +65,7 @@ async function migrateUserImages() {
         const buffer = await downloadImage(user.pictureUrl);
         const filename = extractFilename(user.pictureUrl);
         const contentType = `image/${filename.split('.').pop()}`;
-        updateData.pictureUrl = await uploadToBunny(buffer, filename, contentType);
+        updateData.pictureUrl = await uploadToBunny(buffer, filename, contentType, 'profiles');
         migratedPictures++;
       }
 
@@ -72,7 +73,7 @@ async function migrateUserImages() {
         const buffer = await downloadImage(user.profileBgUrl);
         const filename = extractFilename(user.profileBgUrl);
         const contentType = `image/${filename.split('.').pop()}`;
-        updateData.profileBgUrl = await uploadToBunny(buffer, filename, contentType);
+        updateData.profileBgUrl = await uploadToBunny(buffer, filename, contentType, 'backgrounds');
         migratedBackgrounds++;
       }
 

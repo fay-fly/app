@@ -12,17 +12,19 @@ const STORAGE_ZONE_NAME = process.env.BUNNY_STORAGE_ZONE_NAME;
 const STORAGE_API_KEY = process.env.BUNNY_STORAGE_API_KEY;
 const STORAGE_REGION = process.env.BUNNY_STORAGE_REGION || 'de';
 
-function getStorageUrl(filename: string): string {
+function getStorageUrl(filepath: string): string {
   const baseUrl = `https://storage.bunnycdn.com/${STORAGE_ZONE_NAME}`;
-  return `${baseUrl}/${filename}`;
+  return `${baseUrl}/${filepath}`;
 }
 
 export async function uploadToBunny(
   buffer: Buffer,
   filename: string,
-  contentType: string
+  contentType: string,
+  folder?: string
 ): Promise<string> {
-  const url = getStorageUrl(filename);
+  const filepath = folder ? `${folder}/${filename}` : filename;
+  const url = getStorageUrl(filepath);
 
   await axios.put(url, buffer, {
     headers: {
@@ -32,10 +34,10 @@ export async function uploadToBunny(
   });
 
   if (process.env.BUNNY_CDN_HOSTNAME) {
-    return `https://${process.env.BUNNY_CDN_HOSTNAME}/${filename}`;
+    return `https://${process.env.BUNNY_CDN_HOSTNAME}/${filepath}`;
   }
 
-  return `https://${STORAGE_ZONE_NAME}.${STORAGE_REGION}.storage.bunnycdn.com/${filename}`;
+  return `https://${STORAGE_ZONE_NAME}.${STORAGE_REGION}.storage.bunnycdn.com/${filepath}`;
 }
 
 export async function deleteFromBunny(filename: string): Promise<void> {
@@ -46,4 +48,79 @@ export async function deleteFromBunny(filename: string): Promise<void> {
       'AccessKey': STORAGE_API_KEY,
     },
   });
+}
+
+export type ImageVariantUrls = {
+  thumbnailUrl: string;
+  smallUrl: string;
+  mediumUrl: string;
+  largeUrl: string;
+  originalUrl: string;
+};
+
+export async function uploadImageVariants(
+  baseFilename: string,
+  variants: {
+    thumbnail: Buffer;
+    small: Buffer;
+    medium: Buffer;
+    large: Buffer;
+    original: Buffer;
+  },
+  contentType: string,
+  originalContentType: string,
+  folder?: string
+): Promise<ImageVariantUrls> {
+  const ext = contentType === 'image/webp' ? 'webp' : 'jpg';
+  const base = baseFilename.replace(/\.[^/.]+$/, '');
+  const filename = `${base}.${ext}`;
+
+  // For original, preserve the original file extension
+  const originalExt = originalContentType.split('/')[1] || 'jpg';
+  const originalFilename = `${base}.${originalExt}`;
+
+  // For posts, organize by size in subfolders
+  // For other folders (profiles, backgrounds), keep flat structure
+  const isPostsFolder = folder === 'posts';
+
+  const [thumbnailUrl, smallUrl, mediumUrl, largeUrl, originalUrl] = await Promise.all([
+    uploadToBunny(
+      variants.thumbnail,
+      filename,
+      contentType,
+      isPostsFolder ? 'posts/thumbnail' : folder
+    ),
+    uploadToBunny(
+      variants.small,
+      filename,
+      contentType,
+      isPostsFolder ? 'posts/small' : folder
+    ),
+    uploadToBunny(
+      variants.medium,
+      filename,
+      contentType,
+      isPostsFolder ? 'posts/medium' : folder
+    ),
+    uploadToBunny(
+      variants.large,
+      filename,
+      contentType,
+      isPostsFolder ? 'posts/large' : folder
+    ),
+    uploadToBunny(
+      variants.original,
+      originalFilename,
+      originalContentType,
+      isPostsFolder ? 'posts/original' : folder
+    ),
+  ]);
+
+  return {
+    thumbnailUrl,
+    smallUrl,
+    mediumUrl,
+    largeUrl,
+    originalUrl,
+  };
 }

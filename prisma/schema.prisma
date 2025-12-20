@@ -55,14 +55,18 @@ model Post {
 }
 
 model PostMedia {
-  id        Int      @id @default(autoincrement())
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
-  url       String
-  width     Int
-  height    Int
-  order     Int
-  createdAt DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId       Int
+  url          String
+  thumbnailUrl String?
+  smallUrl     String?
+  mediumUrl    String?
+  originalUrl  String?
+  width        Int
+  height       Int
+  order        Int
+  createdAt    DateTime @default(now())
 
   @@index([postId])
   @@index([postId, order])

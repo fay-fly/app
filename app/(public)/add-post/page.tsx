@@ -26,10 +26,6 @@ export default function AddPost() {
     }
   }, [session, router]);
 
-  if (!session || !canCreatePosts(session.user.role)) {
-    return null;
-  }
-
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setImages(prev => {
       const totalImages = prev.length + acceptedFiles.length;
@@ -68,6 +64,10 @@ export default function AddPost() {
       });
     },
   });
+
+  if (!session || !canCreatePosts(session.user.role)) {
+    return null;
+  }
 
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
