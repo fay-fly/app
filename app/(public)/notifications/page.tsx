@@ -86,46 +86,68 @@ export default function Notifications() {
   };
 
   const renderSkeletonLoader = () => {
+    const textWidths = [
+      ["w-[85%]", "w-[60%]"],
+      ["w-[75%]", "w-[45%]"],
+      ["w-[90%]", "w-[55%]"],
+      ["w-[80%]", "w-[50%]"],
+      ["w-[70%]", "w-[40%]"],
+    ];
+
     return (
-      <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-0 mt-5">
+      <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-0 mt-3">
         <div className="mb-6">
-          <div className="h-5 bg-gray-200 rounded w-24 mb-2 px-[5px] animate-pulse" />
-          <div className="flex flex-col gap-1">
-            {[...Array(5)].map((_, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-[5px] py-2 pl-[5px] pr-[18px]"
-              >
-                <div className="w-[8px] h-[8px] rounded-full bg-gray-200 animate-pulse" />
-                <div className="flex gap-[8px] items-center flex-1">
-                  <div className="w-[32px] h-[32px] bg-gray-200 rounded-full animate-pulse flex-shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+          <div className="h-5 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-32 mb-4 ml-[16px] animate-pulse" />
+          <div className="flex flex-col gap-1 w-full px-[16px]">
+            {[...Array(5)].map((_, index) => {
+              const hasPreview = index === 1 || index === 3;
+              const [mainWidth, timeWidth] = textWidths[index % textWidths.length];
+
+              return (
+                <div
+                  key={index}
+                  className="flex items-start py-2 w-full"
+                >
+                  <div className="flex gap-[8px] items-start flex-1 min-w-0">
+                    <div className="w-[40px] h-[40px] bg-gradient-to-br from-gray-200 to-gray-300 rounded-full animate-pulse flex-shrink-0" />
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className={clsx("h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", mainWidth)} />
+                      <div className={clsx("h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", timeWidth)} />
+                    </div>
+                    {hasPreview && (
+                      <div className="w-[40px] h-[40px] bg-gradient-to-br from-gray-200 to-gray-300 rounded animate-pulse flex-shrink-0" />
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         <div className="mb-6">
-          <div className="h-5 bg-gray-200 rounded w-24 mb-2 px-[5px] animate-pulse" />
-          <div className="flex flex-col gap-1">
-            {[...Array(3)].map((_, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-[5px] py-2 pl-[5px] pr-[18px]"
-              >
-                <div className="w-[8px] h-[8px] rounded-full bg-gray-200 animate-pulse" />
-                <div className="flex gap-[8px] items-center flex-1">
-                  <div className="w-[32px] h-[32px] bg-gray-200 rounded-full animate-pulse flex-shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+          <div className="h-5 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-28 mb-4 ml-[16px] animate-pulse" />
+          <div className="flex flex-col gap-1 w-full px-[16px]">
+            {[...Array(3)].map((_, index) => {
+              const hasPreview = index === 0;
+              const [mainWidth, timeWidth] = textWidths[index % textWidths.length];
+
+              return (
+                <div
+                  key={index}
+                  className="flex items-start py-2 w-full"
+                >
+                  <div className="flex gap-[8px] items-start flex-1 min-w-0">
+                    <div className="w-[40px] h-[40px] bg-gradient-to-br from-gray-200 to-gray-300 rounded-full animate-pulse flex-shrink-0" />
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className={clsx("h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", mainWidth)} />
+                      <div className={clsx("h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", timeWidth)} />
+                    </div>
+                    {hasPreview && (
+                      <div className="w-[40px] h-[40px] bg-gradient-to-br from-gray-200 to-gray-300 rounded animate-pulse flex-shrink-0" />
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

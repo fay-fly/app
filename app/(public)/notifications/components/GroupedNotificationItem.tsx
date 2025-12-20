@@ -48,20 +48,20 @@ const AvatarStack = ({
             {isLastSlot ? (
               <div
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-(--fly-primary) text-sm font-semibold text-white"
-                style={{ border: "1.5px solid #fff" }}
+                style={{ boxShadow: "0 0 0 1.5px #fff" }}
               >
                 +{overflowCount}
               </div>
             ) : hasImage ? (
               <Link
                 href={avatar.username ? `/profile/${avatar.username}` : "#"}
-                className="relative h-10 w-10"
-                style={{ border: "1.5px solid #fff", borderRadius: "9999px" }}
+                className="block h-10 w-10 rounded-full overflow-hidden"
+                style={{ boxShadow: "0 0 0 1.5px #fff" }}
               >
                 <SafeNextImage
                   src={avatar.pictureUrl ?? ""}
                   alt={avatar.username ?? "User avatar"}
-                  className="h-10 w-10 rounded-full object-cover"
+                  className="h-full w-full rounded-full object-cover"
                   errorSize="small"
                   showErrorText={false}
                   sizes="40px"
@@ -75,7 +75,7 @@ const AvatarStack = ({
               >
                 <div
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-(--fly-primary) text-sm font-semibold text-white"
-                  style={{ border: "1.5px solid #fff" }}
+                  style={{ boxShadow: "0 0 0 1.5px #fff" }}
                 >
                   {initials}
                 </div>
@@ -139,8 +139,8 @@ export default function GroupedNotificationItem({ item }: Props) {
   };
 
   return (
-    <div className="flex w-full items-center justify-between gap-3">
-      <div className="flex flex-1 items-center gap-[8px]">
+    <div className="flex w-full items-start justify-between gap-3">
+      <div className="flex flex-1 items-start gap-[8px]">
         <AvatarStack avatars={item.avatarUsers} />
         <div className="flex flex-col">
           <span className="text-[14px] font-semibold text-[#343434]">

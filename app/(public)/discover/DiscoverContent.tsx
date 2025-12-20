@@ -114,7 +114,7 @@ export default function DiscoverContent() {
               {[...Array(18)].map((_, index) => (
                 <div
                   key={index}
-                  className="w-full aspect-square bg-gray-200 animate-pulse"
+                  className="w-full aspect-square bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse"
                 />
               ))}
             </div>

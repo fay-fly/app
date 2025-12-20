@@ -203,7 +203,7 @@ export default function MediaCarousel({
                   {!imageIsLoaded && !hasError && (
                     <div
                       className={clsx(
-                        "absolute inset-0 animate-pulse bg-gradient-to-br from-[#f0f0f0] to-[#dcdcdc]",
+                        "absolute inset-0 animate-pulse bg-gradient-to-br from-gray-200 to-gray-300",
                         rounded ? "rounded-2xl" : "rounded-none"
                       )}
                       aria-hidden="true"

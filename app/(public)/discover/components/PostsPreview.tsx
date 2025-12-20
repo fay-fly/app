@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { PostWithUser } from "@/types/postWithUser";
 import PostPreview from "@/app/(public)/components/Post";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import useScreenWidth from "@/hooks/useScreenWidth";
 import PostPreviewModal from "@/components/PostPreviewModal";
 import MultiplePhotos from "@/icons/MultiplePhotos";
@@ -20,14 +20,14 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
   const [previewMode, setPreviewMode] = useState("imagesList");
   const [open, setOpen] = useState(false);
 
-  const onPreviewOpen = (id: number) => {
+  const onPreviewOpen = useCallback((id: number) => {
     setPostIdToPreview(id);
     if (isMobile) {
       setPreviewMode("feed");
     } else {
       setOpen(true);
     }
-  };
+  }, [isMobile]);
 
   useEffect(() => {
     if (!postIdToPreview) {
@@ -49,67 +49,83 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
     }
   }, [isMobile, postIdToPreview, previewMode]);
 
-  const currentPostIndex = posts.findIndex(
-    (post) => post.id === postIdToPreview
+  const currentPostIndex = useMemo(
+    () => posts.findIndex((post) => post.id === postIdToPreview),
+    [posts, postIdToPreview]
   );
-  const postToPreview = posts[currentPostIndex];
 
-  const handleNext = () => {
+  const postToPreview = useMemo(
+    () => posts[currentPostIndex],
+    [posts, currentPostIndex]
+  );
+
+  const handleNext = useCallback(() => {
     if (currentPostIndex < posts.length - 1) {
       setPostIdToPreview(posts[currentPostIndex + 1].id);
     }
-  };
+  }, [currentPostIndex, posts]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentPostIndex > 0) {
       setPostIdToPreview(posts[currentPostIndex - 1].id);
     }
-  };
+  }, [currentPostIndex, posts]);
+
+  const handleCloseModal = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const gridContent = useMemo(
+    () => (
+      <div className={clsx("grid grid-cols-3 gap-[2px]", className)}>
+        {posts.map((post) => {
+          const primaryMedia = post.media?.[0];
+          const hasMultiple = (post.media?.length ?? 0) > 1;
+          return (
+            <div
+              key={post.id}
+              className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
+            >
+              {primaryMedia ? (
+                <SafeNextImage
+                  src={primaryMedia.url}
+                  alt="publication"
+                  className="w-full h-full object-cover"
+                  errorSize="small"
+                  showErrorText={false}
+                  sizes="33vw"
+                  width={primaryMedia.width || 400}
+                  height={primaryMedia.height || 400}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  No image
+                </div>
+              )}
+              {hasMultiple && (
+                <div className="absolute top-2 right-2">
+                  <MultiplePhotos />
+                </div>
+              )}
+              <div
+                className={clsx(
+                  "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
+                  "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
+                )}
+                onClick={() => onPreviewOpen(post.id)}
+              ></div>
+            </div>
+          );
+        })}
+      </div>
+    ),
+    [posts, className, onPreviewOpen]
+  );
 
   return (
     <>
       {previewMode === "imagesList" ? (
-        <div className={clsx("grid grid-cols-3 gap-[2px]", className)}>
-          {posts.map((post) => {
-            const primaryMedia = post.media?.[0];
-            const hasMultiple = (post.media?.length ?? 0) > 1;
-            return (
-              <div
-                key={post.id}
-                className="w-full aspect-square overflow-hidden bg-gray-100 relative h-full"
-              >
-                {primaryMedia ? (
-                  <SafeNextImage
-                    src={primaryMedia.url}
-                    alt="publication"
-                    className="w-full h-full object-cover"
-                    errorSize="small"
-                    showErrorText={false}
-                    sizes="33vw"
-                    width={primaryMedia.width || 400}
-                    height={primaryMedia.height || 400}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    No image
-                  </div>
-                )}
-                {hasMultiple && (
-                  <div className="absolute top-2 right-2">
-                    <MultiplePhotos />
-                  </div>
-                )}
-                <div
-                  className={clsx(
-                    "absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 opacity-0",
-                    "hover:opacity-70 transition-opacity duration-100 cursor-pointer"
-                  )}
-                  onClick={() => onPreviewOpen(post.id)}
-                ></div>
-              </div>
-            );
-          })}
-        </div>
+        gridContent
       ) : previewMode === "feed" ? (
         posts.map((post) => {
           return (
@@ -128,7 +144,7 @@ export default function PostsPreview({ posts, className }: PostPreviewProps) {
         <PostPreviewModal
           open={open}
           post={postToPreview}
-          onRequestClose={() => setOpen(false)}
+          onRequestClose={handleCloseModal}
           showNavigation={true}
           onNext={currentPostIndex < posts.length - 1 ? handleNext : undefined}
           onPrevious={currentPostIndex > 0 ? handlePrevious : undefined}

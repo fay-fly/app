@@ -252,12 +252,12 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                   {[...Array(8)].map((_, index) => (
                     <div
                       key={index}
-                      className="flex gap-2 px-[16px] py-[8px] animate-pulse"
+                      className="flex gap-2 px-[16px] py-[8px]"
                     >
-                      <div className="w-[32px] h-[32px] bg-gray-200 rounded-full flex-shrink-0" />
+                      <div className="w-[32px] h-[32px] bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex-shrink-0 animate-pulse" />
                       <div className="flex flex-col flex-1 gap-1">
-                        <div className="h-4 bg-gray-200 rounded w-24" />
-                        <div className="h-4 bg-gray-200 rounded w-full" />
+                        <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-24 animate-pulse" />
+                        <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-full animate-pulse" />
                       </div>
                     </div>
                   ))}
