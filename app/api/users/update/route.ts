@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
-import { put } from "@vercel/blob";
+import { uploadToBunny } from "@/utils/bunnyStorage";
 
 const prisma = new PrismaClient();
 
@@ -66,12 +66,9 @@ export async function POST(req: NextRequest) {
     const extension = mimeType.split("/")[1];
     const uniqueName = `profile-${userId}-${Date.now()}.${extension}`;
 
-    const blob = await put(uniqueName, buffer, {
-      access: "public",
-      contentType: mimeType,
-    });
+    const url = await uploadToBunny(buffer, uniqueName, mimeType);
 
-    updateData.pictureUrl = blob.url;
+    updateData.pictureUrl = url;
   } else if (pictureUrl) {
     updateData.pictureUrl = pictureUrl;
   }
@@ -83,12 +80,9 @@ export async function POST(req: NextRequest) {
     const extension = mimeType.split("/")[1];
     const uniqueName = `background-${userId}-${Date.now()}.${extension}`;
 
-    const blob = await put(uniqueName, buffer, {
-      access: "public",
-      contentType: mimeType,
-    });
+    const url = await uploadToBunny(buffer, uniqueName, mimeType);
 
-    updateData.profileBgUrl = blob.url;
+    updateData.profileBgUrl = url;
   } else if (profileBgUrl) {
     updateData.profileBgUrl = profileBgUrl;
   }

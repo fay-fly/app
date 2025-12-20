@@ -10,7 +10,8 @@
     "format": "prettier --check --ignore-path .gitignore .",
     "format:fix": "prettier --write --ignore-path .gitignore .",
     "queries": "ts-node ./src/queries.ts",
-    "caching": "ts-node ./src/caching.ts"
+    "caching": "ts-node ./src/caching.ts",
+    "migrate:bunny": "ts-node --project scripts/tsconfig.json scripts/migrate-to-bunny.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",

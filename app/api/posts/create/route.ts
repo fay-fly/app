@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+import { uploadToBunny } from "@/utils/bunnyStorage";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
@@ -84,25 +84,22 @@ export async function POST(req: NextRequest) {
       const processed = await processImage(file);
       const extension = processed.mimeType === "image/webp" ? "webp" : file.name.split(".").pop();
       const uniqueName = `${crypto.randomUUID()}.${extension}`;
-      const blob = await put(uniqueName, processed.buffer, {
-        access: "public",
-        contentType: processed.mimeType,
-        addRandomSuffix: false,
-      });
+      const url = await uploadToBunny(
+        processed.buffer,
+        uniqueName,
+        processed.mimeType
+      );
       return {
-        url: blob.url,
+        url,
         width: processed.dimensions.width,
         height: processed.dimensions.height,
       };
     } catch (error) {
       const extension = file.name.split(".").pop();
       const uniqueName = `${crypto.randomUUID()}.${extension}`;
-      const blob = await put(uniqueName, file, {
-        access: "public",
-        contentType: file.type,
-        addRandomSuffix: false,
-      });
-      return { url: blob.url, width: null, height: null };
+      const fileBuffer = Buffer.from(await file.arrayBuffer());
+      const url = await uploadToBunny(fileBuffer, uniqueName, file.type);
+      return { url, width: null, height: null };
     }
   });
 
