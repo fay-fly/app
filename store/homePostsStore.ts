@@ -7,6 +7,7 @@ interface HomePostsState {
   nextCursor: number | null;
   hasMore: boolean;
   loaded: boolean;
+  lastFetchedAt: number | null;
   error: string | null;
   scrollPosition: number;
   newPostsCount: number;
@@ -20,6 +21,7 @@ interface HomePostsState {
   setNextCursor: (cursor: number | null) => void;
   setHasMore: (hasMore: boolean) => void;
   setLoaded: (loaded: boolean) => void;
+  setLastFetchedAt: (timestamp: number | null) => void;
   setError: (error: string | null) => void;
   setScrollPosition: (position: number) => void;
   setNewPostsCount: (count: number) => void;
@@ -40,6 +42,7 @@ export const useHomePostsStore = create<HomePostsState>()(
       nextCursor: null,
       hasMore: true,
       loaded: false,
+      lastFetchedAt: null,
       error: null,
       scrollPosition: 0,
       newPostsCount: 0,
@@ -63,6 +66,7 @@ export const useHomePostsStore = create<HomePostsState>()(
       setNextCursor: (cursor) => set({ nextCursor: cursor }),
       setHasMore: (hasMore) => set({ hasMore }),
       setLoaded: (loaded) => set({ loaded }),
+      setLastFetchedAt: (timestamp) => set({ lastFetchedAt: timestamp }),
       setError: (error) => set({ error }),
       setScrollPosition: (position) => set({ scrollPosition: position }),
       setNewPostsCount: (count) => set({ newPostsCount: count }),
@@ -81,6 +85,7 @@ export const useHomePostsStore = create<HomePostsState>()(
           nextCursor: null,
           hasMore: true,
           loaded: false,
+          lastFetchedAt: null,
           error: null,
           scrollPosition: 0,
           newPostsCount: 0,
@@ -97,6 +102,7 @@ export const useHomePostsStore = create<HomePostsState>()(
         hasMore: state.hasMore,
         loaded: state.loaded,
         scrollPosition: state.scrollPosition,
+        lastFetchedAt: state.lastFetchedAt,
       }),
     }
   )

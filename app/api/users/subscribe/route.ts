@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       status: 200,
       message: "Unfollowed successfully",
+      isSubscribed: false,
     });
   } else {
     const targetUser = await prisma.user.findUnique({
@@ -81,6 +82,10 @@ export async function POST(req: NextRequest) {
 
     await prisma.$transaction(operations);
 
-    return NextResponse.json({ status: 200, message: "Followed successfully" });
+    return NextResponse.json({
+      status: 200,
+      message: "Followed successfully",
+      isSubscribed: true,
+    });
   }
 }

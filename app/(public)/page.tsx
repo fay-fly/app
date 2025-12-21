@@ -13,7 +13,7 @@ import { useHomePostsStore } from "@/store/homePostsStore";
 
 const PAGE_LIMIT = 10;
 const NEW_POSTS_CHECK_INTERVAL = 30000;
-const PREFETCH_THRESHOLD = 2;
+const FEED_REFRESH_INTERVAL = 60000;
 
 type FeedResponse = {
   posts: PostWithUser[];
@@ -34,6 +34,7 @@ export default function Home() {
     nextCursor,
     hasMore,
     loaded,
+    lastFetchedAt,
     error,
     scrollPosition,
     newPostsCount,
@@ -46,6 +47,7 @@ export default function Home() {
     setNextCursor,
     setHasMore,
     setLoaded,
+    setLastFetchedAt,
     setError,
     setScrollPosition,
     setNewPostsCount,
@@ -81,6 +83,7 @@ export default function Home() {
       appendPosts(response.data.posts);
       setNextCursor(response.data.nextCursor);
       setHasMore(response.data.hasMore);
+      setLastFetchedAt(Date.now());
     } catch (err) {
       setError("Failed to load more posts");
       console.error(err);
@@ -98,17 +101,20 @@ export default function Home() {
     appendPosts,
     setNextCursor,
     setHasMore,
+    setLastFetchedAt,
     setIsLoadingMore,
     setLoadingRequestId,
     setError,
   ]);
 
-  const fetchInitialPosts = useCallback(async () => {
+  const fetchInitialPosts = useCallback(async ({ showLoader = true } = {}) => {
     if (!session) {
       return;
     }
 
-    setIsInitialLoad(true);
+    if (showLoader) {
+      setIsInitialLoad(true);
+    }
     setError(null);
 
     try {
@@ -119,13 +125,25 @@ export default function Home() {
       setNextCursor(response.data.nextCursor);
       setHasMore(response.data.hasMore);
       setLoaded(true);
+      setLastFetchedAt(Date.now());
     } catch (err) {
       setError("Failed to load feed");
       console.error(err);
     } finally {
-      setIsInitialLoad(false);
+      if (showLoader) {
+        setIsInitialLoad(false);
+      }
     }
-  }, [session, buildEndpoint, setPosts, setNextCursor, setHasMore, setLoaded, setError]);
+  }, [
+    session,
+    buildEndpoint,
+    setPosts,
+    setNextCursor,
+    setHasMore,
+    setLoaded,
+    setLastFetchedAt,
+    setError,
+  ]);
 
   const checkNewPosts = useCallback(async () => {
     if (!session || posts.length === 0 || isLoadingNewPosts) {
@@ -162,6 +180,7 @@ export default function Home() {
 
       prependPosts(response.data.posts);
       setNewPostsCount(0);
+      setLastFetchedAt(Date.now());
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
@@ -170,7 +189,16 @@ export default function Home() {
     } finally {
       setIsLoadingNewPosts(false);
     }
-  }, [session, isLoadingNewPosts, buildEndpoint, prependPosts, setNewPostsCount, setIsLoadingNewPosts, setError]);
+  }, [
+    session,
+    isLoadingNewPosts,
+    buildEndpoint,
+    prependPosts,
+    setNewPostsCount,
+    setLastFetchedAt,
+    setIsLoadingNewPosts,
+    setError,
+  ]);
 
   useEffect(() => {
     if (sessionLoading) {
@@ -182,10 +210,15 @@ export default function Home() {
       return;
     }
 
-    if (!loaded) {
-      fetchInitialPosts();
+    const needsRefresh =
+      !loaded ||
+      !lastFetchedAt ||
+      Date.now() - lastFetchedAt > FEED_REFRESH_INTERVAL;
+
+    if (needsRefresh) {
+      fetchInitialPosts({ showLoader: !loaded });
     }
-  }, [session, sessionLoading, router, loaded, fetchInitialPosts]);
+  }, [session, sessionLoading, router, loaded, lastFetchedAt, fetchInitialPosts]);
 
   useEffect(() => {
     if (loaded && posts.length > 0 && scrollPosition > 0) {

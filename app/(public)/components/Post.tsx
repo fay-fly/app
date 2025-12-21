@@ -59,7 +59,7 @@ function Post({ post }: PostProps) {
     <div className="mb-[12px] flex flex-col">
       {post.isPinned && post.pinnedBy && (
         <div className="flex items-center gap-[8px] px-[16px] pt-[8px] text-[12px] text-[#A0A0A0]">
-          <PinFilled className="h-[14px] w-[14px]" />
+          <PinFilled className="h-[14px] w-[14px] text-[#7C89FF]" />
           <span>
             Pinned by{" "}
             <a

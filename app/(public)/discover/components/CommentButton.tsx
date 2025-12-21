@@ -17,7 +17,7 @@ export default function CommentButton({
   return (
     <>
       <div
-        className="flex gap-[4px] m-[8px] items-center cursor-pointer"
+        className="flex gap-[4px] m-[8px] items-center cursor-pointer select-none"
         onClick={() => setOpen(true)}
       >
         <Comments />

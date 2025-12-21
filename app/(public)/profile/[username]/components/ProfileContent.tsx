@@ -94,17 +94,20 @@ export default function ProfileContent({ username }: { username: string }) {
     }
   };
 
-  const handleSubscribe = () => {
+  const handleSubscribe = (nextState: boolean) => {
     if (!user) return;
     setUser((prev) => {
       if (!prev) return prev;
-      const newFollowState = !prev.isFollowedByMe;
+      if (prev.isFollowedByMe === nextState) {
+        return prev;
+      }
+      const followerDelta = nextState ? 1 : -1;
       return {
         ...prev,
-        isFollowedByMe: newFollowState,
+        isFollowedByMe: nextState,
         _count: {
           ...prev._count,
-          followers: prev._count.followers + (newFollowState ? 1 : -1),
+          followers: prev._count.followers + followerDelta,
         },
       };
     });

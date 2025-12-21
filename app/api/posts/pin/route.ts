@@ -6,6 +6,14 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const prisma = new PrismaClient();
 
+type PostCounts = {
+  _count: {
+    likes: number;
+    comments: number;
+    pins: number;
+  };
+};
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
@@ -25,7 +33,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (userHasPinnedPost) {
-    await prisma.$transaction([
+    const transactionResult = await prisma.$transaction([
       prisma.pin.delete({
         where: { id: userHasPinnedPost.id },
       }),
@@ -34,6 +42,15 @@ export async function POST(req: NextRequest) {
         data: {
           pinsCount: {
             decrement: 1,
+          },
+        },
+        select: {
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+              pins: true,
+            },
           },
         },
       }),
@@ -46,7 +63,14 @@ export async function POST(req: NextRequest) {
       }),
     ]);
 
-    return NextResponse.json({ status: 200 });
+    const updatedPost = transactionResult[1] as PostCounts;
+
+    return NextResponse.json({
+      status: 200,
+      likesCount: updatedPost._count.likes,
+      commentsCount: updatedPost._count.comments,
+      pinsCount: updatedPost._count.pins,
+    });
   } else {
     const post = await prisma.post.findUnique({
       where: { id: postId },
@@ -81,6 +105,15 @@ export async function POST(req: NextRequest) {
             increment: 1,
           },
         },
+        select: {
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+              pins: true,
+            },
+          },
+        },
       }),
     ];
 
@@ -96,8 +129,14 @@ export async function POST(req: NextRequest) {
       })
     );
 
-    await prisma.$transaction(operations);
+    const result = await prisma.$transaction(operations);
+    const updatedPost = result[1] as PostCounts;
 
-    return NextResponse.json({ status: 200 });
+    return NextResponse.json({
+      status: 200,
+      likesCount: updatedPost._count.likes,
+      commentsCount: updatedPost._count.comments,
+      pinsCount: updatedPost._count.pins,
+    });
   }
 }

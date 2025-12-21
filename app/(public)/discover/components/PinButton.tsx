@@ -23,6 +23,7 @@ export default function PinButton({
   const [count, setCount] = useState(pinsCount);
   const [hasPinnedByMe, setHasPinnedByMe] = useState(pinnedByMe);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const onClick = async () => {
     if (!session) {
@@ -30,21 +31,41 @@ export default function PinButton({
       return;
     }
 
+    if (isProcessing) {
+      return;
+    }
+
+    setIsProcessing(true);
     const newPin = !hasPinnedByMe;
     setHasPinnedByMe(newPin);
     setCount((prevCount) => (newPin ? prevCount + 1 : prevCount - 1));
-    await axios.post("/api/posts/pin", {
-      postId,
-    });
+
+    try {
+      const response = await axios.post("/api/posts/pin", {
+        postId,
+      });
+
+      if (response.data.pinsCount !== undefined) {
+        setCount(response.data.pinsCount);
+      }
+    } catch (error) {
+      setHasPinnedByMe(!newPin);
+      setCount((prevCount) => (newPin ? prevCount - 1 : prevCount + 1));
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
     <>
       <div
         className={clsx(
-          "flex gap-[4px] m-[8px] items-center",
-          disabled ? "text-[#A0A0A0] cursor-default" : "cursor-pointer",
-          hasPinnedByMe && !disabled ? "text-[#7C89FF]" : "text-[#A0A0A0]"
+          "flex gap-[4px] m-[8px] items-center select-none transition-opacity",
+          disabled
+            ? "text-[#D0D0D0] cursor-not-allowed opacity-60"
+            : hasPinnedByMe
+              ? "text-[#7C89FF] cursor-pointer"
+              : "text-[#A0A0A0] cursor-pointer"
         )}
         onClick={disabled ? undefined : onClick}
       >

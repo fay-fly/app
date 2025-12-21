@@ -54,8 +54,19 @@ export async function GET(req: NextRequest) {
         orderBy: { order: "asc" },
         select: {
           url: true,
+          thumbnailUrl: true,
+          smallUrl: true,
+          mediumUrl: true,
+          originalUrl: true,
           width: true,
           height: true,
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+          pins: true,
         },
       },
     },
@@ -109,8 +120,19 @@ export async function GET(req: NextRequest) {
             orderBy: { order: "asc" },
             select: {
               url: true,
+              thumbnailUrl: true,
+              smallUrl: true,
+              mediumUrl: true,
+              originalUrl: true,
               width: true,
               height: true,
+            },
+          },
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+              pins: true,
             },
           },
         },
@@ -118,7 +140,7 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  const postsWithFlags = posts.map(({ likes, pins, author, media, ...rest }) => ({
+  const postsWithFlags = posts.map(({ likes, pins, author, media, _count, ...rest }) => ({
     ...rest,
     author: {
       id: author?.id,
@@ -127,6 +149,9 @@ export async function GET(req: NextRequest) {
       role: author?.role,
     },
     media: media.length > 0 ? media : undefined,
+    likesCount: _count.likes,
+    commentsCount: _count.comments,
+    pinsCount: _count.pins,
     likedByMe: likes.length > 0,
     pinnedByMe: pins.length > 0,
     isFollowed: author?.followers ? author.followers.length > 0 : false,
@@ -136,26 +161,32 @@ export async function GET(req: NextRequest) {
 
   const pinsWithFlags = pins
     .filter((pin) => pin.post)
-    .map((pin) => ({
-      ...pin.post,
-      author: {
-        id: pin.post.author?.id,
-        username: pin.post.author?.username,
-        pictureUrl: pin.post.author?.pictureUrl,
-        role: pin.post.author?.role,
-      },
-      media: pin.post.media.length > 0 ? pin.post.media : undefined,
-      likedByMe: pin.post.likes.length > 0,
-      pinnedByMe: pin.post.pins.length > 0,
-      isFollowed: pin.user?.followers ? pin.user.followers.length > 0 : false,
-      isPinned: true,
-      pinnedBy: {
-        id: pin.user?.id ?? 0,
-      username: pin.user?.username ?? "",
-      pictureUrl: pin.user?.pictureUrl ?? "",
-      role: pin.user?.role,
-      },
-    }));
+    .map((pin) => {
+      const { _count, ...postRest } = pin.post;
+      return {
+        ...postRest,
+        author: {
+          id: pin.post.author?.id,
+          username: pin.post.author?.username,
+          pictureUrl: pin.post.author?.pictureUrl,
+          role: pin.post.author?.role,
+        },
+        media: pin.post.media.length > 0 ? pin.post.media : undefined,
+        likesCount: _count.likes,
+        commentsCount: _count.comments,
+        pinsCount: _count.pins,
+        likedByMe: pin.post.likes.length > 0,
+        pinnedByMe: pin.post.pins.length > 0,
+        isFollowed: pin.user?.followers ? pin.user.followers.length > 0 : false,
+        isPinned: true,
+        pinnedBy: {
+          id: pin.user?.id ?? 0,
+          username: pin.user?.username ?? "",
+          pictureUrl: pin.user?.pictureUrl ?? "",
+          role: pin.user?.role,
+        },
+      };
+    });
 
   const combined = [...postsWithFlags, ...pinsWithFlags].sort(
     (a, b) => b.id - a.id

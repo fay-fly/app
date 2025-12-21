@@ -176,7 +176,7 @@ export default function GroupedNotificationItem({ item }: Props) {
           <SubscribeButton
             subscribingId={item.cta.userId}
             isSubscribed={item.cta.isSubscribed ?? false}
-            onSuccess={() => {}}
+            onSuccess={(_isSubscribed) => {}}
           />
         )}
       </div>
