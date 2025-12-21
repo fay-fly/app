@@ -17,12 +17,16 @@ import { useRouter } from "next/navigation";
 import { handleError } from "@/utils/errors";
 import MediaCarousel from "@/components/media/MediaCarousel";
 import SafeNextImage from "@/components/SafeNextImage";
+import FireOutline from "@/icons/FireOutline";
+import Comments from "@/icons/Comments";
+import PinOutline from "@/icons/PinOutline";
 
 type PostProps = {
   post: PostWithUser;
+  previewMode?: boolean;
 };
 
-function Post({ post }: PostProps) {
+function Post({ post, previewMode = false }: PostProps) {
   const router = useRouter();
   const { session } = useSafeSession();
   const isOwnPost = session?.user?.id === post.author.id;
@@ -35,6 +39,9 @@ function Post({ post }: PostProps) {
   const canDelete = session && canDeletePost(session.user.role, isOwnPost);
 
   const handleImageDoubleClick = () => {
+    if (previewMode) {
+      return;
+    }
     likeButtonRef.current?.triggerLike();
     setShowLikeAnimation(true);
     setTimeout(() => setShowLikeAnimation(false), 1000);
@@ -45,7 +52,7 @@ function Post({ post }: PostProps) {
   };
 
   const handleDeletePost = async () => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
+    if (previewMode || !confirm("Are you sure you want to delete this post?")) return;
 
     try {
       await axios.post("/api/posts/delete", { postId: post.id });
@@ -108,7 +115,7 @@ function Post({ post }: PostProps) {
           {hasVerifiedBadge(post.author.role) && <Verified />}
         </div>
         <div className="flex items-center gap-[16px]">
-          {canDelete && (
+          {canDelete && !previewMode && (
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
@@ -151,25 +158,44 @@ function Post({ post }: PostProps) {
         </MediaCarousel>
       )}
 
-      <div className="mt-[8px] flex justify-between text-[#A0A0A0]">
-        <div className="flex">
-          <LikeButton
-            ref={likeButtonRef}
-            postId={post.id}
-            likesCount={post.likesCount}
-            likedByMe={post.likedByMe}
-          />
-          <CommentButton commentsCount={post.commentsCount} post={post} />
+      {previewMode ? (
+        <div className="mt-[8px] flex justify-between text-[#A0A0A0]">
+          <div className="flex">
+            <div className="flex gap-[4px] m-[8px] items-center">
+              <FireOutline className="text-[#F458A3]" />
+              {post.likesCount}
+            </div>
+            <div className="flex gap-[4px] m-[8px] items-center">
+              <Comments />
+              {post.commentsCount}
+            </div>
+          </div>
+          <div className="m-[8px] flex items-center gap-[4px]">
+            <PinOutline />
+            {post.pinsCount}
+          </div>
         </div>
-        <div className="m-[8px] flex items-center gap-[4px]">
-          <PinButton
-            postId={post.id}
-            pinsCount={post.pinsCount}
-            pinnedByMe={post.pinnedByMe}
-            disabled={isOwnPost}
-          />
+      ) : (
+        <div className="mt-[8px] flex justify-between text-[#A0A0A0]">
+          <div className="flex">
+            <LikeButton
+              ref={likeButtonRef}
+              postId={post.id}
+              likesCount={post.likesCount}
+              likedByMe={post.likedByMe}
+            />
+            <CommentButton commentsCount={post.commentsCount} post={post} />
+          </div>
+          <div className="m-[8px] flex items-center gap-[4px]">
+            <PinButton
+              postId={post.id}
+              pinsCount={post.pinsCount}
+              pinnedByMe={post.pinnedByMe}
+              disabled={isOwnPost}
+            />
+          </div>
         </div>
-      </div>
+      )}
       <p className="mt-[8px] px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
         <span className="font-semibold">{post.author.username}</span>{" "}
         <UserText postText={post.text} />

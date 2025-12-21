@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { canCreatePosts } from "@/lib/permissions";
 import { processImage } from "@/utils/imageProcessing";
+import { ensurePostPublication } from "@/lib/ensurePostPublication";
+import type { PostWithUser } from "@/types/postWithUser";
 
 const prisma = new PrismaClient();
 
@@ -33,13 +35,26 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
 
   const files = formData.getAll("images") as File[];
-  const text = formData.get("text") as string;
+  const textValue = formData.get("text");
+  const text = typeof textValue === "string" ? textValue : "";
 
-  if (!files || files.length === 0 || !text) {
+  if (!files || files.length === 0) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  const authorId = session.user.id;
+  const sessionUser = session.user as {
+    id: number;
+    username?: string | null;
+    name?: string | null;
+    email?: string | null;
+  };
+
+  const authorId = sessionUser.id;
+  const fallbackUsername =
+    sessionUser.username ??
+    sessionUser.name ??
+    sessionUser.email?.split("@")[0] ??
+    "you";
 
   // Validate maximum number of images (10 max)
   if (files.length > 10) {
@@ -115,12 +130,15 @@ export async function POST(req: NextRequest) {
   });
 
   const processedImages = await Promise.all(uploadPromises);
-  const hashtags = extractHashtags(text);
+  const hashtags = text ? extractHashtags(text) : [];
 
-  const post = await prisma.post.create({
+  const hasPublishedColumn = await ensurePostPublication(prisma);
+
+  const postRecord = await prisma.post.create({
     data: {
       text,
-      authorId: authorId,
+      authorId,
+      ...(hasPublishedColumn ? { published: false } : {}),
       media: {
         create: processedImages.map((img, index) => ({
           url: img.url,
@@ -132,6 +150,41 @@ export async function POST(req: NextRequest) {
           height: img.height || 600,
           order: index,
         })),
+      },
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+          bio: true,
+          fullName: true,
+          gender: true,
+          pictureUrl: true,
+          profileBgUrl: true,
+          role: true,
+          emailVerified: true,
+        },
+      },
+      media: {
+        orderBy: { order: "asc" },
+        select: {
+          url: true,
+          thumbnailUrl: true,
+          smallUrl: true,
+          mediumUrl: true,
+          originalUrl: true,
+          width: true,
+          height: true,
+          order: true,
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+          pins: true,
+        },
       },
     },
   });
@@ -150,7 +203,7 @@ export async function POST(req: NextRequest) {
 
       await tx.postHashtag.createMany({
         data: hashtagRecords.map((hashtag) => ({
-          postId: post.id,
+          postId: postRecord.id,
           hashtagId: hashtag.id,
         })),
         skipDuplicates: true,
@@ -158,5 +211,38 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return NextResponse.json({ success: true, post });
+  const mediaItems = postRecord.media.map(({ order, ...mediaRest }) => mediaRest);
+
+  const formattedPost: PostWithUser = {
+    id: postRecord.id,
+    text: postRecord.text,
+    published: hasPublishedColumn ? postRecord.published : true,
+    likesCount: postRecord._count.likes,
+    commentsCount: postRecord._count.comments,
+    pinsCount: postRecord._count.pins,
+    createdAt: postRecord.createdAt.toISOString(),
+    media: mediaItems.length > 0 ? mediaItems : undefined,
+    author: {
+      id: postRecord.author?.id ?? authorId,
+      username: postRecord.author?.username ?? fallbackUsername,
+      bio: postRecord.author?.bio ?? "",
+      fullName: postRecord.author?.fullName ?? "",
+      gender: (postRecord.author?.gender as "male" | "female") ?? "male",
+      pictureUrl: postRecord.author?.pictureUrl ?? "",
+      profileBgUrl: postRecord.author?.profileBgUrl ?? "",
+      role: postRecord.author?.role ?? "user",
+      emailVerified: postRecord.author?.emailVerified ?? false,
+    },
+    likedByMe: false,
+    pinnedByMe: false,
+    isFollowed: true,
+    isPinned: false,
+    pinnedBy: null,
+  };
+
+  return NextResponse.json({
+    success: true,
+    post: formattedPost,
+    previewSupported: hasPublishedColumn,
+  });
 }

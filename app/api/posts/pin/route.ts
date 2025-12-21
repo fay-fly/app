@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPromise } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { ensurePostPublication } from "@/lib/ensurePostPublication";
 
 const prisma = new PrismaClient();
 
@@ -15,6 +16,8 @@ type PostCounts = {
 };
 
 export async function POST(req: NextRequest) {
+  const hasPublishedColumn = await ensurePostPublication(prisma);
+
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   const { postId } = (await req.json()) as { postId: number };
@@ -77,7 +80,7 @@ export async function POST(req: NextRequest) {
       include: { author: true },
     });
 
-    if (!post) {
+    if (!post || (hasPublishedColumn && !post.published)) {
       return NextResponse.json(
         { error: "Post doesn't exist" },
         { status: 404 }

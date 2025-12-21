@@ -197,6 +197,9 @@ export default function MediaCarousel({
               const isAdjacent = Math.abs(index - currentIndex) <= 1;
               const imageIsLoaded = Boolean(loadedMap[item.url]);
               const hasError = Boolean(errorMap[item.url]);
+              const isLocalPreview =
+                typeof item.url === "string" &&
+                (item.url.startsWith("blob:") || item.url.startsWith("data:"));
 
               return (
                 <div key={`${item.url}-${index}`} className="relative h-full min-w-full">
@@ -230,6 +233,7 @@ export default function MediaCarousel({
                       onLoad={() => handleImageLoad(item.url)}
                       onError={() => handleImageError(item.url)}
                       draggable={false}
+                      unoptimized={isLocalPreview}
                     />
                   )}
                 </div>

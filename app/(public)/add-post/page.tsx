@@ -2,6 +2,7 @@
 import { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import Button from "@/components/Button";
+import clsx from "clsx";
 import UploadCloud from "@/icons/UploadCloud";
 import Close from "@/icons/Close";
 import axios from "axios";
@@ -9,8 +10,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { handleError } from "@/utils/errors";
 import { useSafeSession } from "@/hooks/useSafeSession";
-import {showToast} from "@/utils/toastify";
+import { showToast } from "@/utils/toastify";
 import { canCreatePosts } from "@/lib/permissions";
+import Post from "@/app/(public)/components/Post";
+import type { PostWithUser } from "@/types/postWithUser";
 
 export default function AddPost() {
   const router = useRouter();
@@ -18,13 +21,23 @@ export default function AddPost() {
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [text, setText] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [step, setStep] = useState<"compose" | "preview">("compose");
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [draftPost, setDraftPost] = useState<PostWithUser | null>(null);
+  const [draftPostId, setDraftPostId] = useState<number | null>(null);
 
   useEffect(() => {
     if (session && !canCreatePosts(session.user.role)) {
       router.push("/");
     }
   }, [session, router]);
+
+  useEffect(() => {
+    if (images.length === 0 && step === "preview") {
+      setStep("compose");
+    }
+  }, [images.length, step]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setImages(prev => {
@@ -65,101 +78,220 @@ export default function AddPost() {
     },
   });
 
-  if (!session || !canCreatePosts(session.user.role)) {
-    return null;
-  }
-
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
     setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
 
-  async function handlePublish(e: React.FormEvent) {
-    e.preventDefault();
-    if (images.length === 0 || !text.trim()) {
+  const deleteDraftOnServer = useCallback(async () => {
+    if (!draftPostId) {
+      setDraftPost(null);
+      setDraftPostId(null);
       return;
     }
 
-    setIsProcessing(true);
     try {
+      await axios.post("/api/posts/delete", { postId: draftPostId });
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setDraftPost(null);
+      setDraftPostId(null);
+    }
+  }, [draftPostId]);
+
+  const handleGeneratePreview = async () => {
+    if (images.length === 0) {
+      showToast("error", "Please add at least one image.");
+      return;
+    }
+
+    setIsPreviewLoading(true);
+    try {
+      if (draftPostId) {
+        await deleteDraftOnServer();
+      }
+
       const formData = new FormData();
       images.forEach((image) => {
         formData.append("images", image);
       });
       formData.append("text", text);
-      await axios.post("/api/posts/create", formData);
+
+      const response = await axios.post("/api/posts/create", formData);
+      const createdPost: PostWithUser | undefined = response.data?.post;
+      const previewSupported =
+        response.data?.previewSupported === undefined
+          ? true
+          : Boolean(response.data.previewSupported);
+
+      if (!createdPost) {
+        showToast("error", "Failed to generate preview. Please try again.");
+        return;
+      }
+
+      if (!previewSupported || createdPost.published) {
+        showToast("info", "Preview not available. Your post has been published.");
+        router.push("/");
+        return;
+      }
+
+      setDraftPost(createdPost);
+      setDraftPostId(createdPost.id);
+      setStep("preview");
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsPreviewLoading(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!draftPostId) {
+      showToast("error", "Preview is missing. Please try again.");
+      return;
+    }
+
+    setIsPublishing(true);
+    try {
+      await axios.post("/api/posts/publish", { postId: draftPostId });
+      setDraftPost(null);
+      setDraftPostId(null);
       router.push("/");
     } catch (error) {
       handleError(error);
     } finally {
-      setIsProcessing(false);
+      setIsPublishing(false);
     }
+  };
+
+  const handleBackFromPreview = async () => {
+    await deleteDraftOnServer();
+    setStep("compose");
+  };
+
+  useEffect(() => {
+    return () => {
+      if (draftPostId) {
+        deleteDraftOnServer().catch(() => undefined);
+      }
+    };
+  }, [draftPostId, deleteDraftOnServer]);
+
+  const backDisabled = isPublishing || isPreviewLoading;
+  const publishDisabled = isPublishing;
+
+  if (!session || !canCreatePosts(session.user.role)) {
+    return null;
   }
 
   return (
     <div>
       <div className="flex justify-center bg-(--fly-white) h-full pt-[24px] px-[24px] pb-[10px]">
         <form
-          onSubmit={handlePublish}
+          onSubmit={(event) => event.preventDefault()}
           className="space-y-4 w-full max-w-[630px]"
         >
-          <div
-            {...getRootProps()}
-            className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[120px] ${
-              isDragActive ? "bg-gray-100" : ""
-            }`}
-          >
-            <input {...getInputProps()} />
-            <div className="flex flex-col gap-[12px] items-center">
-              <UploadCloud />
-              <p>Take a photo or upload media</p>
-              <p className="text-xs">Supported: JPEG, PNG, GIF, WebP (max 10 images, 30MB each)</p>
-            </div>
-          </div>
-
-          {images.length > 0 && (
-            <div className="grid grid-cols-2 gap-4">
-              {previewUrls.map((url, index) => (
-                <div key={index} className="relative">
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute right-[-8px] top-[-8px] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer z-10"
-                  >
-                    <Close />
-                  </button>
-                  <Image
-                    src={url}
-                    alt={`Preview ${index + 1}`}
-                    className="w-full h-[200px] object-cover rounded"
-                    width={1}
-                    height={1}
-                    unoptimized
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-
-          <textarea
-            rows={4}
-            className="w-full rounded p-2"
-            placeholder="Add text or tag"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-
-          <div className="flex justify-end">
-            <div className="flex gap-[24px] items-center">
-              <Button
-                type="submit"
-                isProcessing={isProcessing}
-                className="px-[16px] py-[6px] bg-(--fly-primary) text-(--fly-white)"
+          {step === "compose" ? (
+            <>
+              <div
+                {...getRootProps()}
+                className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[120px] ${
+                  isDragActive ? "bg-gray-100" : ""
+                }`}
               >
-                Publish
-              </Button>
-            </div>
-          </div>
+                <input {...getInputProps()} />
+                <div className="flex flex-col gap-[12px] items-center">
+                  <UploadCloud />
+                  <p>Take a photo or upload media</p>
+                  <p className="text-xs">
+                    Supported: JPEG, PNG, GIF, WebP (max 10 images, 30MB each)
+                  </p>
+                </div>
+              </div>
+
+              {images.length > 0 && (
+                <div className="grid grid-cols-2 gap-4">
+                  {previewUrls.map((url, index) => (
+                    <div key={index} className="relative">
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute right-[-8px] top-[-8px] bg-(--fly-bg-primary) border-2 border-[#A0A0A0] rounded-full cursor-pointer z-10"
+                      >
+                        <Close />
+                      </button>
+                      <Image
+                        src={url}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-[200px] object-cover rounded"
+                        width={1}
+                        height={1}
+                        unoptimized
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <textarea
+                rows={4}
+                className="w-full rounded p-2"
+                placeholder="Add text or tag (optional)"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+              />
+
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  className="px-[16px] py-[6px] bg-(--fly-primary) text-(--fly-white)"
+                  disabled={images.length === 0 || isPreviewLoading}
+                  isProcessing={isPreviewLoading}
+                  onClick={handleGeneratePreview}
+                >
+                  Preview
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="rounded-2xl bg-white shadow-sm border border-(--fly-border-color) p-4">
+                {draftPost ? (
+                  <Post post={draftPost} previewMode />
+                ) : (
+                  <div className="flex h-[320px] items-center justify-center rounded-xl bg-gray-100 text-[#A0A0A0]">
+                    Preview unavailable
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-[12px]">
+                <Button
+                  type="button"
+                  className={clsx(
+                    "px-[16px] py-[6px]",
+                    backDisabled
+                      ? "bg-(--fly-primary) text-(--fly-white) opacity-60 border border-(--fly-primary)"
+                      : "bg-white text-(--fly-text-primary) border border-(--fly-border-color)"
+                  )}
+                  onClick={handleBackFromPreview}
+                  disabled={backDisabled}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="button"
+                  isProcessing={isPublishing}
+                  disabled={publishDisabled}
+                  className="px-[16px] py-[6px] bg-(--fly-primary) text-(--fly-white)"
+                  onClick={handlePublish}
+                >
+                  Publish
+                </Button>
+              </div>
+            </>
+          )}
         </form>
       </div>
     </div>

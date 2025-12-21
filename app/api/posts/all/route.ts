@@ -2,14 +2,18 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { ensurePostPublication } from "@/lib/ensurePostPublication";
 
 const prisma = new PrismaClient();
 
 export async function GET() {
+  const hasPublishedColumn = await ensurePostPublication(prisma);
+
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id ? session.user.id : null;
 
   const posts = await prisma.post.findMany({
+    where: hasPublishedColumn ? { published: true } : undefined,
     orderBy: { id: "desc" },
     include: {
       author: {

@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { ensurePostPublication } from "@/lib/ensurePostPublication";
 
 const prisma = new PrismaClient();
 const FETCH_MULTIPLIER = 2;
 
 export async function GET(req: NextRequest) {
+  const hasPublishedColumn = await ensurePostPublication(prisma);
+
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id ? session.user.id : null;
   const { searchParams } = new URL(req.url);
@@ -18,6 +21,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ posts: [], nextCursor: null, hasMore: false });
   }
 
+  const publishedFilter = hasPublishedColumn ? { published: true } : {};
+
   const posts = await prisma.post.findMany({
     where: {
       author: {
@@ -25,6 +30,7 @@ export async function GET(req: NextRequest) {
           some: { followerId: userId },
         },
       },
+      ...publishedFilter,
       ...(cursor ? { id: { lt: cursor } } : {}),
     },
     orderBy: { id: "desc" },
@@ -79,7 +85,10 @@ export async function GET(req: NextRequest) {
           some: { followerId: userId },
         },
       },
-      ...(cursor ? { post: { id: { lt: cursor } } } : {}),
+      post: {
+        ...(cursor ? { id: { lt: cursor } } : {}),
+        ...(hasPublishedColumn ? { published: true } : {}),
+      },
     },
     orderBy: {
       post: { id: "desc" },

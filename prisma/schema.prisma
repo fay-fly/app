@@ -42,6 +42,7 @@ model Post {
   text          String
   author        User?          @relation(fields: [authorId], references: [id])
   authorId      Int
+  published     Boolean        @default(false)
   likesCount    Int            @default(0)
   commentsCount Int            @default(0)
   pinsCount     Int            @default(0)

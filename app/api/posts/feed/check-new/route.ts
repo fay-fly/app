@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { ensurePostPublication } from "@/lib/ensurePostPublication";
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
+  const hasPublishedColumn = await ensurePostPublication(prisma);
+
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id ? session.user.id : null;
   const { searchParams } = new URL(req.url);
@@ -21,6 +24,8 @@ export async function GET(req: NextRequest) {
   }
 
   // Count posts from followed users that are newer than sinceId
+  const publishedFilter = hasPublishedColumn ? { published: true } : {};
+
   const newPostsCount = await prisma.post.count({
     where: {
       author: {
@@ -29,6 +34,7 @@ export async function GET(req: NextRequest) {
         },
       },
       id: { gt: sinceId },
+      ...publishedFilter,
     },
   });
 
@@ -42,6 +48,7 @@ export async function GET(req: NextRequest) {
       },
       post: {
         id: { gt: sinceId },
+        ...(hasPublishedColumn ? { published: true } : {}),
       },
     },
   });

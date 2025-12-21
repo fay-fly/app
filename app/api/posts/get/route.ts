@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { ensurePostPublication } from "@/lib/ensurePostPublication";
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
+  const hasPublishedColumn = await ensurePostPublication(prisma);
+
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const session = await getServerSession(authOptions);
@@ -15,8 +18,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Post ID is required" }, { status: 400 });
   }
 
-  const post = await prisma.post.findUnique({
-    where: { id: Number(id) },
+  const where: Parameters<typeof prisma.post.findFirst>[0]["where"] = {
+    id: Number(id),
+  };
+
+  if (hasPublishedColumn) {
+    if (userId) {
+      where.OR = [{ published: true }, { authorId: userId }];
+    } else {
+      where.published = true;
+    }
+  }
+
+  const post = await prisma.post.findFirst({
+    where,
     include: {
       author: {
         select: {
