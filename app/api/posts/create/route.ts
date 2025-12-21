@@ -10,6 +10,9 @@ import type { PostWithUser } from "@/types/postWithUser";
 
 const prisma = new PrismaClient();
 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 const extractHashtags = (content: string) => {
   const matches = content.match(/#[A-Za-z0-9_]+/g) ?? [];
   const normalized = matches
@@ -64,9 +67,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Validate file sizes (30MB limit per file)
-  const maxSize = 30 * 1024 * 1024; // 30MB
-
   // Allowed image formats that browsers can display
   const allowedTypes = [
     'image/jpeg',
@@ -79,13 +79,6 @@ export async function POST(req: NextRequest) {
   ];
 
   for (const file of files) {
-    if (file.size > maxSize) {
-      return NextResponse.json(
-        { error: `File "${file.name}" exceeds 30MB limit` },
-        { status: 400 }
-      );
-    }
-
     if (!allowedTypes.includes(file.type.toLowerCase())) {
       return NextResponse.json(
         { error: `File "${file.name}" has unsupported format. Please use JPEG, PNG, GIF, WebP, SVG, or AVIF.` },

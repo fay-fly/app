@@ -69,7 +69,6 @@ export default function AddPost() {
       "image/svg+xml": [".svg"],
       "image/avif": [".avif"]
     },
-    maxSize: 30 * 1024 * 1024, // 30MB limit
     onDropRejected: (fileRejections) => {
       fileRejections.forEach((rejection) => {
         const errors = rejection.errors.map((e) => e.message).join(", ");
@@ -205,7 +204,7 @@ export default function AddPost() {
                   <UploadCloud />
                   <p>Take a photo or upload media</p>
                   <p className="text-xs">
-                    Supported: JPEG, PNG, GIF, WebP (max 10 images, 30MB each)
+                    Supported: JPEG, PNG, GIF, WebP (max 10 images)
                   </p>
                 </div>
               </div>

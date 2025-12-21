@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
+  experimental: {
+    proxyClientMaxBodySize: 100 * 1024 * 1024, // 100MB in bytes
+  },
   images: {
     remotePatterns: [
       {
@@ -30,4 +33,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default nextConfig as NextConfig;
