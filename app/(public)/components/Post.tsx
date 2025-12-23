@@ -162,7 +162,7 @@ function Post({ post, previewMode = false }: PostProps) {
         <div className="mt-[8px] flex justify-between text-[#A0A0A0]">
           <div className="flex">
             <div className="flex gap-[4px] m-[8px] items-center">
-              <FireOutline className="text-[#F458A3]" />
+              <FireOutline />
               {post.likesCount}
             </div>
             <div className="flex gap-[4px] m-[8px] items-center">
