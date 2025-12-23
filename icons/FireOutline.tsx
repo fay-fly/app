@@ -1,4 +1,4 @@
-export default function FireOutline() {
+export default function FireOutline({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,6 +6,7 @@ export default function FireOutline() {
       height="24"
       viewBox="0 0 24 24"
       fill="currentColor"
+      className={className}
     >
       <path
         fillRule="evenodd"

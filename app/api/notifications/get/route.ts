@@ -34,6 +34,10 @@ export async function GET() {
             orderBy: { order: "asc" },
             select: {
               url: true,
+              thumbnailUrl: true,
+              smallUrl: true,
+              mediumUrl: true,
+              originalUrl: true,
               width: true,
               height: true,
             },
@@ -57,6 +61,20 @@ export async function GET() {
           username: notification.sender.username,
           pictureUrl: notification.sender.pictureUrl,
           role: notification.sender.role,
+        }
+      : null,
+    post: notification.post
+      ? {
+          ...notification.post,
+          media: notification.post.media.map(m => ({
+            url: m.url,
+            thumbnailUrl: m.thumbnailUrl ?? undefined,
+            smallUrl: m.smallUrl ?? undefined,
+            mediumUrl: m.mediumUrl ?? undefined,
+            originalUrl: m.originalUrl ?? undefined,
+            width: m.width,
+            height: m.height,
+          })),
         }
       : null,
   }));

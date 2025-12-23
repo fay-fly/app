@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { ensurePostPublication } from "@/lib/ensurePostPublication";
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Post ID is required" }, { status: 400 });
   }
 
-  const where: Parameters<typeof prisma.post.findFirst>[0]["where"] = {
+  const where: Prisma.PostWhereInput = {
     id: Number(id),
   };
 
@@ -53,6 +53,10 @@ export async function GET(req: NextRequest) {
         orderBy: { order: "asc" },
         select: {
           url: true,
+          thumbnailUrl: true,
+          smallUrl: true,
+          mediumUrl: true,
+          originalUrl: true,
           width: true,
           height: true,
         },
@@ -96,9 +100,21 @@ export async function GET(req: NextRequest) {
     post.author?.followers && post.author.followers.length > 0
   );
 
+  const media = post.media.length > 0
+    ? post.media.map(m => ({
+        url: m.url,
+        thumbnailUrl: m.thumbnailUrl ?? undefined,
+        smallUrl: m.smallUrl ?? undefined,
+        mediumUrl: m.mediumUrl ?? undefined,
+        originalUrl: m.originalUrl ?? undefined,
+        width: m.width,
+        height: m.height,
+      }))
+    : undefined;
+
   const response = {
     ...post,
-    media: post.media.length > 0 ? post.media : undefined,
+    media,
     likedByMe,
     pinnedByMe,
     isFollowed,

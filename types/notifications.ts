@@ -12,6 +12,10 @@ export type NotificationWithRelations = Notification & {
     id: number;
     media: {
       url: string;
+      thumbnailUrl?: string;
+      smallUrl?: string;
+      mediumUrl?: string;
+      originalUrl?: string;
       width: number;
       height: number;
     }[];

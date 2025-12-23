@@ -204,7 +204,15 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const mediaItems = postRecord.media.map(({ order, ...mediaRest }) => mediaRest);
+  const mediaItems = postRecord.media.map(({ order, ...mediaRest }) => ({
+    url: mediaRest.url,
+    thumbnailUrl: mediaRest.thumbnailUrl ?? undefined,
+    smallUrl: mediaRest.smallUrl ?? undefined,
+    mediumUrl: mediaRest.mediumUrl ?? undefined,
+    originalUrl: mediaRest.originalUrl ?? undefined,
+    width: mediaRest.width,
+    height: mediaRest.height,
+  }));
 
   const formattedPost: PostWithUser = {
     id: postRecord.id,
