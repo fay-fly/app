@@ -15,6 +15,9 @@ import { canCreatePosts } from "@/lib/permissions";
 import Post from "@/app/(public)/components/Post";
 import type { PostWithUser } from "@/types/postWithUser";
 
+const MAX_FILE_SIZE_MB = 30; // Maximum size per individual file
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 export default function AddPost() {
   const router = useRouter();
   const { session } = useSafeSession();
@@ -26,6 +29,17 @@ export default function AddPost() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [draftPost, setDraftPost] = useState<PostWithUser | null>(null);
   const [draftPostId, setDraftPostId] = useState<number | null>(null);
+
+  /**
+   * Format bytes to human-readable MB string
+   * @param bytes - Size in bytes
+   * @returns Formatted string (e.g., "15.5 MB")
+   */
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return "0 MB";
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(1)} MB`;
+  };
 
   useEffect(() => {
     if (session && !canCreatePosts(session.user.role)) {
@@ -40,12 +54,24 @@ export default function AddPost() {
   }, [images.length, step]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    // Check for files exceeding individual size limit
+    const oversizedFiles = acceptedFiles.filter(file => file.size > MAX_FILE_SIZE_BYTES);
+    if (oversizedFiles.length > 0) {
+      const filesList = oversizedFiles.map(f => `"${f.name}" (${formatFileSize(f.size)})`).join(", ");
+      showToast(
+        "error",
+        `${oversizedFiles.length} file(s) exceed the ${MAX_FILE_SIZE_MB}MB limit: ${filesList}`
+      );
+      return;
+    }
+
     setImages(prev => {
       const totalImages = prev.length + acceptedFiles.length;
       if (totalImages > 10) {
         showToast("error", `Maximum 10 images allowed. You can only add ${10 - prev.length} more image(s).`);
         return prev;
       }
+
       return [...prev, ...acceptedFiles];
     });
     setPreviewUrls(prev => {
@@ -204,7 +230,7 @@ export default function AddPost() {
                   <UploadCloud />
                   <p>Take a photo or upload media</p>
                   <p className="text-xs">
-                    Supported: JPEG, PNG, GIF, WebP (max 10 images)
+                    Supported: JPEG, PNG, GIF, WebP (max 10 images, 30MB each)
                   </p>
                 </div>
               </div>
@@ -228,6 +254,9 @@ export default function AddPost() {
                         height={1}
                         unoptimized
                       />
+                      <div className="absolute bottom-1 right-1 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                        {formatFileSize(images[index].size)}
+                      </div>
                     </div>
                   ))}
                 </div>

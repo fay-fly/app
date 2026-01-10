@@ -13,6 +13,9 @@ const prisma = new PrismaClient();
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
+const MAX_FILE_SIZE_MB = 30; // Maximum size per individual file
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 const extractHashtags = (content: string) => {
   const matches = content.match(/#[A-Za-z0-9_]+/g) ?? [];
   const normalized = matches
@@ -87,6 +90,20 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Validate individual file sizes (30MB limit per file)
+  const oversizedFiles = files.filter(file => file.size > MAX_FILE_SIZE_BYTES);
+  if (oversizedFiles.length > 0) {
+    const filesList = oversizedFiles.map(f => {
+      const sizeMB = (f.size / (1024 * 1024)).toFixed(1);
+      return `"${f.name}" (${sizeMB}MB)`;
+    }).join(', ');
+    console.error(`Individual file size exceeded: ${filesList} (max ${MAX_FILE_SIZE_MB}MB per file)`);
+    return NextResponse.json(
+      { error: `${oversizedFiles.length} file(s) exceed the ${MAX_FILE_SIZE_MB}MB limit per file: ${filesList}` },
+      { status: 413 }
+    );
+  }
+
   const uploadPromises = files.map(async (file) => {
     try {
       const processed = await processImage(file);
@@ -131,7 +148,7 @@ export async function POST(req: NextRequest) {
     data: {
       text,
       authorId,
-      ...(hasPublishedColumn ? { published: false } : {}),
+      ...(hasPublishedColumn ? { published: true } : {}),
       media: {
         create: processedImages.map((img, index) => ({
           url: img.url,
@@ -244,6 +261,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     success: true,
     post: formattedPost,
-    previewSupported: hasPublishedColumn,
+    previewSupported: false, // Auto-publish posts immediately, no preview step needed
   });
 }
