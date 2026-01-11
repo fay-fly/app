@@ -83,30 +83,13 @@ export default function DiscoverContent() {
   return (
     <div className="w-full bg-white">
       <div className="w-full mr-auto ml-auto max-w-[1000px]">
-        <div className="px-4 md:px-0">
-          {activeHashtag && (
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-(--fly-primary)/30 bg-(--fly-primary)/5 px-4 py-3 text-sm text-(--fly-text-primary)">
-              <div className="flex flex-col">
-                <span>
-                  Showing posts for{" "}
-                  <span className="font-semibold">#{activeHashtag}</span>
-                </span>
-                {typeof posts !== "undefined" && (
-                  <span className="text-xs text-[#909090]">
-                    {posts.length} {posts.length === 1 ? "post" : "posts"}
-                  </span>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={clearHashtagFilter}
-                className="rounded-full border border-(--fly-primary) px-3 py-1 text-(--fly-primary) transition hover:bg-(--fly-primary)/10"
-              >
-                Clear filter
-              </button>
-            </div>
-          )}
-        </div>
+        {activeHashtag && (
+          <div className="flex flex-col gap-[24px] items-center pt-[24px] mb-[24px]">
+            <h1 className="font-semibold text-[20px] text-[#343434] tracking-[-0.2px] leading-[24px]">
+              {activeHashtag}
+            </h1>
+          </div>
+        )}
 
         <div>
           {!posts ? (

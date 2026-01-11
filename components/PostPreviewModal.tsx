@@ -238,14 +238,10 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
               </button>
             </div>
             <div ref={commentsRef} className="flex-1 overflow-auto min-h-0">
-              <p className="px-[8px] text-[#5B5B5B] whitespace-pre-wrap overflow-auto">
-                <span className="font-semibold">
-                  {props.post.author.username}
-                </span>{" "}
-                <UserText postText={props.post.text} />
-              </p>
-              <div className="px-[8px] text-[#A0A0A0]">
-                {getFormattedDate(props.post.createdAt)}
+              <div className="pt-[16px] pb-[8px] px-[16px]">
+                <p className="text-[16px] text-[#5b5b5b] leading-[22px] whitespace-pre-wrap">
+                  <UserText postText={props.post.text} />
+                </p>
               </div>
               {processing ? (
                 <>
@@ -266,28 +262,31 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                 <CommentList comments={comments} />
               )}
             </div>
-            <div className="flex justify-between text-[#A0A0A0] flex-shrink-0 border-t border-(--fly-border-color)">
-              <div className="flex">
-                <LikeButton
-                  ref={likeButtonRef}
-                  postId={props.post.id}
-                  likesCount={props.post.likesCount}
-                  likedByMe={props.post.likedByMe}
-                />
-                <div className="flex gap-[4px] m-[8px] items-center cursor-pointer">
-                  <Comments />
-                  {props.post.commentsCount}
-                </div>
-              </div>
-              <div>
-                <div className="flex gap-[4px] m-[8px] items-center">
-                  <PinButton
+            <div className="flex flex-col gap-[4px] flex-shrink-0 border-t border-(--fly-border-color)">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-[4px]">
+                  <LikeButton
+                    ref={likeButtonRef}
                     postId={props.post.id}
-                    pinsCount={props.post.pinsCount}
-                    pinnedByMe={props.post.pinnedByMe}
-                    disabled={isOwnPost}
+                    likesCount={props.post.likesCount}
+                    likedByMe={props.post.likedByMe}
                   />
+                  <div className="flex items-center justify-center gap-[4px] h-[40px] p-[8px] text-[#a0a0a0]">
+                    <Comments />
+                    <span className="text-[14px] font-medium tracking-[-0.42px] leading-[22px]">{props.post.commentsCount}</span>
+                  </div>
                 </div>
+                <PinButton
+                  postId={props.post.id}
+                  pinsCount={props.post.pinsCount}
+                  pinnedByMe={props.post.pinnedByMe}
+                  disabled={isOwnPost}
+                />
+              </div>
+              <div className="px-[16px] pb-[4px]">
+                <p className="text-[12px] text-[#a0a0a0] tracking-[0.12px] leading-[14px]">
+                  {getFormattedDate(props.post.createdAt)}
+                </p>
               </div>
             </div>
             <div className="flex-shrink-0">

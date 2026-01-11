@@ -51,46 +51,46 @@ export function CommentForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="flex gap-[8px] border-t-[1px] border-(--fly-border-color) px-[16px] py-[8px]"
+      className="flex gap-[8px] h-[56px] items-center px-[16px] py-[8px] border-t border-[#ededed]"
     >
-      <div className="w-[32px] h-[32px]">
-        <div className="w-[32px] h-[32px] relative">
-          {session?.user.image ? (
-            <SafeNextImage
-              src={session?.user.image}
-              alt="profile image"
-              className="rounded-full w-[32px] h-[32px] object-cover"
-              width={32}
-              height={32}
-              errorSize="small"
-              showErrorText={false}
-              sizes="32px"
-            />
-          ) : (
-            <div
-              className={clsx(
-                "w-full h-full bg-(--fly-primary) flex",
-                "justify-center items-center text-(--fly-white) rounded-full"
-              )}
-            >
-              {session?.user.username?.charAt(0).toUpperCase()}
-            </div>
-          )}
-        </div>
+      <div className="w-[32px] h-[32px] flex-shrink-0">
+        {session?.user.image ? (
+          <SafeNextImage
+            src={session?.user.image}
+            alt="profile image"
+            className="rounded-full w-[32px] h-[32px] object-cover"
+            width={32}
+            height={32}
+            errorSize="small"
+            showErrorText={false}
+            sizes="32px"
+          />
+        ) : (
+          <div
+            className={clsx(
+              "w-full h-full bg-[#9da6ff] flex",
+              "justify-center items-center text-[#f9f9f9] rounded-full font-semibold text-[16px] tracking-[-0.16px]"
+            )}
+          >
+            {session?.user.username?.charAt(0).toUpperCase()}
+          </div>
+        )}
       </div>
-      <textarea
+      <input
+        type="text"
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
-        cols={30}
-        rows={1}
-        placeholder="Comment"
+        placeholder="Add a comment"
         disabled={processing || !!disabled}
-        className="flex-1"
-      ></textarea>
+        className="flex-1 text-[16px] text-[#343434] leading-[22px] placeholder:text-[#a0a0a0] outline-none bg-transparent"
+      />
       <button
         type="submit"
-        disabled={processing || !!disabled}
-        className="bg-[#F7F8FF] w-[32px] h-[32px] rounded-full flex justify-center items-center cursor-pointer"
+        disabled={processing || !!disabled || !newComment.trim()}
+        className={clsx(
+          "w-[32px] h-[32px] rounded-full flex justify-center items-center cursor-pointer transition-colors",
+          newComment.trim() ? "bg-[#7c89ff] text-white" : "bg-[#F7F8FF] text-[#7c89ff]"
+        )}
       >
         <Send />
       </button>

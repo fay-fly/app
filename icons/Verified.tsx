@@ -1,4 +1,6 @@
-export default function Verified() {
+import { SVGProps } from "react";
+
+export default function Verified(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,6 +8,7 @@ export default function Verified() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
+      {...props}
     >
       <title>Verified</title>
       <path
