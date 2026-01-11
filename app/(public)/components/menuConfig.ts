@@ -1,9 +1,9 @@
 import { ComponentType } from "react";
 import Home from "@/icons/menu/Home";
 import Discover from "@/icons/menu/Discover";
-import AddPost from "@/icons/menu/AddPost";
+import Messages from "@/icons/menu/Messages";
 import Notifications from "@/icons/menu/Notifications";
-// import Messages from "@/icons/menu/Messages";
+import AddPost from "@/icons/menu/AddPost";
 
 type MenuItem = {
   route: string;
@@ -12,6 +12,7 @@ type MenuItem = {
   mobileIndex: number;
   requiresAuth?: boolean;
   requiredRoles?: string[];
+  hideInDesktop?: boolean;
 };
 
 const menuConfig: MenuItem[] = [
@@ -38,7 +39,7 @@ const menuConfig: MenuItem[] = [
   {
     route: "/notifications",
     icon: Notifications,
-    text: "Notifications",
+    text: "Notification",
     mobileIndex: 4,
     requiresAuth: true,
   },
@@ -49,6 +50,7 @@ const menuConfig: MenuItem[] = [
     mobileIndex: 3,
     requiresAuth: true,
     requiredRoles: ["creator", "admin"],
+    hideInDesktop: true,
   },
 ];
 

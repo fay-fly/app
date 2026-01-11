@@ -13,13 +13,14 @@
   --fly-primary: #7c89ff;
   --ply-primary-disabled: rgba(0, 0, 0, 0.3);
   --fly-text-secondary: rgba(50, 50, 50, 0.85);
-  --fly-border-color: rgba(0, 0, 0, 0.08);
-  --fly-input-placeholder-color: rgba(0, 0, 0, 0.4);
+  --fly-border-color: #ededed;
+  --fly-input-placeholder-color: #a0a0a0;
   --fly-success: #55bd5f;
   --fly-link: #1795f0;
   --fly-text-primary: #323232;
   --fly-text-white-disabled: rgba(255, 255, 255, 0.6);
   --fly-text-disabled: rgba(0, 0, 0, 0.5);
+  --fly-text-gray: #807d7d;
 }
 
 @keyframes like-burst {
@@ -47,5 +48,10 @@
 
 .animate-like-burst {
   animation: like-burst 1s ease-out;
+}
+
+/* Placeholder color for inputs */
+input::placeholder {
+  color: #a0a0a0;
 }
 

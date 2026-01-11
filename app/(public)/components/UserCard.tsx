@@ -21,6 +21,7 @@ type UserCardProps = {
   showDescription?: boolean;
   clickable?: boolean;
   disableHoverUnderline?: boolean;
+  hideUsername?: boolean;
 };
 
 export function UserCard({
@@ -32,6 +33,7 @@ export function UserCard({
   showDescription = false,
   clickable = false,
   disableHoverUnderline = false,
+  hideUsername = false,
 }: UserCardProps) {
   const initials = user.username?.charAt(0).toUpperCase() ?? "";
   const profileUrl = `/profile/${user.username}`;
@@ -100,28 +102,30 @@ export function UserCard({
       ) : (
         avatarContent
       )}
-      <div
-        className={clsx(
-          "flex min-w-0 flex-col",
-          !alwaysShowUsername && "hidden md:flex"
-        )}
-      >
-        {clickable ? (
-          <Link
-            href={profileUrl}
-            className={clsx(!disableHoverUnderline && "hover:underline")}
-          >
-            {usernameContent}
-          </Link>
-        ) : (
-          usernameContent
-        )}
-        {showDescription && user.description && (
-          <span className="text-sm text-[#909090] truncate">
-            {user.description}
-          </span>
-        )}
-      </div>
+      {!hideUsername && (
+        <div
+          className={clsx(
+            "flex min-w-0 flex-col",
+            !alwaysShowUsername && "hidden md:flex"
+          )}
+        >
+          {clickable ? (
+            <Link
+              href={profileUrl}
+              className={clsx(!disableHoverUnderline && "hover:underline")}
+            >
+              {usernameContent}
+            </Link>
+          ) : (
+            usernameContent
+          )}
+          {showDescription && user.description && (
+            <span className="text-sm text-[#909090] truncate">
+              {user.description}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

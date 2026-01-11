@@ -287,7 +287,7 @@ export default function DiscoverSearchInput({
     "w-full text-(--fly-text-primary)",
     "focus:border-(--fly-primary) focus:outline-none",
     variant === "desktop"
-      ? "pl-4 pr-24 py-2 text-sm"
+      ? "pl-4 pr-24 h-[40px] text-[16px] leading-[22px]"
       : "pl-3 pr-20 py-2 text-[16px]"
   );
 

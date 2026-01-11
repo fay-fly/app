@@ -9,16 +9,25 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 export default function PublicLayout({ children }: LayoutProps) {
   return (
     <NotificationProvider>
-      <div className="flex flex-col h-full">
-        <div className="flex flex-col md:flex-row flex-1">
-          <LeftSidebar />
-          <div className="w-full bg-white flex-1 md:ml-[220px] mb-[48px] md:mb-0">
-            <MobileHeader />
-            <MainDesktopHeader />
-            {children}
-          </div>
-          <MobileMenu />
+      <div className="flex flex-col min-h-screen">
+        {/* Desktop Header - fixed at top, full width */}
+        <div className="hidden md:block fixed top-0 left-0 right-0 z-20">
+          <MainDesktopHeader />
         </div>
+
+        {/* Mobile Header */}
+        <MobileHeader />
+
+        {/* Sidebar - fixed, below header */}
+        <LeftSidebar />
+
+        {/* Main content area */}
+        <div className="flex-1 bg-white md:ml-[220px] md:mt-[56px] mb-[48px] md:mb-0">
+          <main>{children}</main>
+        </div>
+
+        {/* Mobile bottom navigation */}
+        <MobileMenu />
       </div>
     </NotificationProvider>
   );

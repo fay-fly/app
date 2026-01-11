@@ -17,11 +17,7 @@ export default function UserMenu() {
   const { session } = useSafeSession();
 
   if (!session) {
-    return (
-      <Link href="/auth/login" className="text-(--fly-primary) text-semibold">
-        Login
-      </Link>
-    );
+    return null;
   }
 
   return (
@@ -36,7 +32,7 @@ export default function UserMenu() {
                 role: session.user.role,
               }}
               showStatus={true}
-              alwaysShowUsername={false}
+              hideUsername={true}
               size={32}
             />
           </MenuButton>
