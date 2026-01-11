@@ -6,6 +6,9 @@ import { ensurePostPublication } from "@/lib/ensurePostPublication";
 
 const prisma = new PrismaClient();
 
+const DEFAULT_LIMIT = 18;
+const MAX_LIMIT = 50;
+
 export async function GET(req: NextRequest) {
   const hasPublishedColumn = await ensurePostPublication(prisma);
 
@@ -15,6 +18,15 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const rawName = searchParams.get("name") ?? "";
   const normalized = rawName.replace(/^#/, "").trim().toLowerCase();
+
+  const cursorParam = searchParams.get("cursor");
+  const limitParam = searchParams.get("limit");
+
+  const cursor = cursorParam ? parseInt(cursorParam, 10) : null;
+  const limit = Math.min(
+    Math.max(1, limitParam ? parseInt(limitParam, 10) : DEFAULT_LIMIT),
+    MAX_LIMIT
+  );
 
   if (!normalized) {
     return NextResponse.json(
@@ -26,6 +38,7 @@ export async function GET(req: NextRequest) {
   const posts = await prisma.post.findMany({
     where: {
       ...(hasPublishedColumn ? { published: true } : {}),
+      ...(cursor ? { id: { lt: cursor } } : {}),
       hashtags: {
         some: {
           hashtag: {
@@ -35,6 +48,7 @@ export async function GET(req: NextRequest) {
       },
     },
     orderBy: { id: "desc" },
+    take: limit + 1,
     include: {
       author: {
         select: {
@@ -89,7 +103,10 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  const postsWithFlags = posts.map(({ likes, pins, author, hashtags, media, ...rest }) => ({
+  const hasMore = posts.length > limit;
+  const postsToReturn = hasMore ? posts.slice(0, limit) : posts;
+
+  const postsWithFlags = postsToReturn.map(({ likes, pins, author, hashtags, media, ...rest }) => ({
     ...rest,
     author: {
       id: author?.id,
@@ -105,5 +122,13 @@ export async function GET(req: NextRequest) {
     hashtags: hashtags.map((entry) => entry.hashtag.name),
   }));
 
-  return NextResponse.json(postsWithFlags);
+  const nextCursor = hasMore && postsWithFlags.length > 0
+    ? postsWithFlags[postsWithFlags.length - 1].id
+    : null;
+
+  return NextResponse.json({
+    posts: postsWithFlags,
+    nextCursor,
+    hasMore,
+  });
 }

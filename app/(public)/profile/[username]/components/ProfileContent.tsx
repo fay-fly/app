@@ -151,8 +151,8 @@ export default function ProfileContent({ username }: { username: string }) {
           </div>
         )}
         {hasMultiple && (
-          <div className="absolute top-2 right-2">
-            <MultiplePhotos />
+          <div className="absolute top-[8px] right-[8px]">
+            <MultiplePhotos className="w-[24px] h-[24px] text-white" />
           </div>
         )}
         <div

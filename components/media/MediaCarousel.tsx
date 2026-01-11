@@ -13,6 +13,7 @@ type MediaCarouselProps = {
   className?: string;
   showControls?: boolean;
   showIndicators?: boolean;
+  showCounter?: boolean;
   ariaLabel?: string;
   children?: React.ReactNode;
   rounded?: boolean;
@@ -30,6 +31,7 @@ export default function MediaCarousel({
   className,
   showControls = true,
   showIndicators = true,
+  showCounter = false,
   ariaLabel = "Post media carousel",
   children,
   rounded = true,
@@ -300,6 +302,14 @@ export default function MediaCarousel({
                 </button>
               )}
             </>
+          )}
+
+          {showCounter && canonicalMedia.length > 1 && (
+            <div className="absolute top-[8px] right-[8px] bg-[#343434] px-[8px] h-[20px] flex items-center justify-center rounded-[8px]">
+              <span className="text-[12px] text-[#f5f5f5] tracking-[0.12px] leading-[14px]">
+                {currentIndex + 1}/{canonicalMedia.length}
+              </span>
+            </div>
           )}
 
           {showIndicators && canonicalMedia.length > 1 && (

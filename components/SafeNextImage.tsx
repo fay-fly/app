@@ -52,7 +52,8 @@ export default function SafeNextImage({
   }
 
   const isUnsupportedFormat = /\.(tif|tiff)$/i.test(src);
-  const shouldUnoptimize = unoptimized || isUnsupportedFormat || imageError;
+  const isUnsplash = src.includes("images.unsplash.com");
+  const shouldUnoptimize = unoptimized || isUnsupportedFormat || imageError || isUnsplash;
 
   return (
     <Image
