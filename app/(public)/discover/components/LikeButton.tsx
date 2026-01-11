@@ -7,6 +7,7 @@ import { useSafeSession } from "@/hooks/useSafeSession";
 import AuthRequiredModal from "@/components/AuthRequiredModal";
 import { useHomePostsStore } from "@/store/homePostsStore";
 import { useDiscoverPostsStore } from "@/store/discoverPostsStore";
+import { handleError } from "@/utils/errors";
 
 type LikeButtonProps = {
   likesCount: number;
@@ -18,17 +19,36 @@ export type LikeButtonRef = {
   triggerLike: () => void;
 };
 
+const DEBOUNCE_MS = 300;
+
 const LikeButton = forwardRef<LikeButtonRef, LikeButtonProps>(
   ({ likesCount, postId, likedByMe }, ref) => {
     const { session } = useSafeSession();
     const updateHomePost = useHomePostsStore((state) => state.updatePost);
     const updateDiscoverPost = useDiscoverPostsStore((state) => state.updatePost);
+
+    // UI state
     const [count, setCount] = useState(likesCount);
     const [hasLikedByMe, setHasLikedByMe] = useState(likedByMe);
     const [showAuthModal, setShowAuthModal] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const isProcessingRef = useRef(false);
+
+    // Server state reference (what we last confirmed from server)
+    const serverStateRef = useRef({ liked: likedByMe, count: likesCount });
+
+    // Pending/desired state after all clicks (null = no pending changes)
+    const pendingLikedRef = useRef<boolean | null>(null);
+
+    // Debounce timer
+    const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // AbortController for cancelling in-flight requests
+    const abortControllerRef = useRef<AbortController | null>(null);
+
+    // Track post ID changes
     const prevPostIdRef = useRef(postId);
+
+    // Track current postId for API response validation
+    const currentPostIdRef = useRef(postId);
 
     const syncStores = useCallback(
       (nextLikesCount: number, nextLikedByMe: boolean) => {
@@ -44,67 +64,141 @@ const LikeButton = forwardRef<LikeButtonRef, LikeButtonProps>(
       [postId, updateHomePost, updateDiscoverPost]
     );
 
+    // Sync with props when they change (e.g., post navigation in modal)
     useEffect(() => {
+      // Clear any pending operations when post changes
       if (prevPostIdRef.current !== postId) {
-        setCount(likesCount);
-        setHasLikedByMe(likedByMe);
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+          debounceTimerRef.current = null;
+        }
+        // Cancel any in-flight API requests
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+          abortControllerRef.current = null;
+        }
+        pendingLikedRef.current = null;
         prevPostIdRef.current = postId;
-      } else {
-        setCount(likesCount);
-        setHasLikedByMe(likedByMe);
       }
+
+      // Update current postId ref for API response validation
+      currentPostIdRef.current = postId;
+
+      // Update server state reference and UI
+      serverStateRef.current = { liked: likedByMe, count: likesCount };
+      setCount(likesCount);
+      setHasLikedByMe(likedByMe);
     }, [likesCount, likedByMe, postId]);
 
-    const onClick = async () => {
+    // Cleanup on unmount
+    useEffect(() => {
+      return () => {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+      };
+    }, []);
+
+    const onClick = useCallback(() => {
       if (!session) {
         setShowAuthModal(true);
         return;
       }
 
-      if (isProcessing || isProcessingRef.current) {
-        return;
+      // Calculate new desired state based on current displayed state
+      const currentDisplayed = pendingLikedRef.current ?? hasLikedByMe;
+      const newDesiredState = !currentDisplayed;
+      pendingLikedRef.current = newDesiredState;
+
+      // Immediately update UI (optimistic)
+      setHasLikedByMe(newDesiredState);
+
+      // Calculate count based on server state + delta
+      const delta = newDesiredState === serverStateRef.current.liked ? 0 : (newDesiredState ? 1 : -1);
+      const newCount = Math.max(0, serverStateRef.current.count + delta);
+      setCount(newCount);
+      syncStores(newCount, newDesiredState);
+
+      // Clear existing debounce timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
 
-      setIsProcessing(true);
-      isProcessingRef.current = true;
-      const previousCount = count;
-      const previousLikedState = hasLikedByMe;
-      const newLiked = !previousLikedState;
-      const optimisticCount = newLiked
-        ? previousCount + 1
-        : Math.max(previousCount - 1, 0);
+      // Set new debounce timer
+      debounceTimerRef.current = setTimeout(async () => {
+        const desiredState = pendingLikedRef.current;
+        const targetPostId = currentPostIdRef.current;
 
-      setHasLikedByMe(newLiked);
-      setCount(optimisticCount);
-      syncStores(optimisticCount, newLiked);
-
-      try {
-        const response = await axios.post("/api/posts/like", {
-          postId,
-        });
-
-        if (response.data?.likesCount !== undefined && typeof response.data.likesCount === "number") {
-          setCount(response.data.likesCount);
-          setHasLikedByMe(newLiked);
-          syncStores(response.data.likesCount, newLiked);
-        } else {
-          setHasLikedByMe(previousLikedState);
-          setCount(previousCount);
-          syncStores(previousCount, previousLikedState);
+        // If desired state matches server state, no API call needed
+        if (desiredState === null || desiredState === serverStateRef.current.liked) {
+          pendingLikedRef.current = null;
+          return;
         }
-      } catch (error) {
-        setHasLikedByMe(previousLikedState);
-        setCount(previousCount);
-        syncStores(previousCount, previousLikedState);
-      } finally {
-        setIsProcessing(false);
-        isProcessingRef.current = false;
-      }
-    };
+
+        // Cancel any previous in-flight request
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
+
+        try {
+          const response = await axios.post(
+            "/api/posts/like",
+            { postId: targetPostId },
+            { signal: abortControllerRef.current.signal }
+          );
+
+          // Validate response is for current post and user hasn't clicked again
+          if (currentPostIdRef.current !== targetPostId) {
+            return; // Post changed, ignore response
+          }
+
+          if (pendingLikedRef.current !== desiredState) {
+            // User clicked again during API call - let the next debounce handle it
+            // But still update server state reference since the API call succeeded
+            serverStateRef.current = {
+              liked: desiredState,
+              count: response.data.likesCount,
+            };
+            return;
+          }
+
+          // Update server state reference (API toggled to desiredState)
+          serverStateRef.current = {
+            liked: desiredState,
+            count: response.data.likesCount,
+          };
+
+          setCount(response.data.likesCount);
+          setHasLikedByMe(desiredState);
+          syncStores(response.data.likesCount, desiredState);
+          pendingLikedRef.current = null;
+        } catch (error) {
+          // Ignore aborted requests
+          if (axios.isCancel(error)) {
+            return;
+          }
+
+          // Show error to user
+          handleError(error);
+
+          // Revert to server state on error
+          setHasLikedByMe(serverStateRef.current.liked);
+          setCount(serverStateRef.current.count);
+          syncStores(serverStateRef.current.count, serverStateRef.current.liked);
+          pendingLikedRef.current = null;
+        }
+      }, DEBOUNCE_MS);
+    }, [session, hasLikedByMe, syncStores]);
 
     useImperativeHandle(ref, () => ({
       triggerLike: () => {
-        if (!hasLikedByMe) {
+        // Only trigger if not already liked (for double-click to like feature)
+        const currentDisplayed = pendingLikedRef.current ?? hasLikedByMe;
+        if (!currentDisplayed) {
           onClick();
         }
       },

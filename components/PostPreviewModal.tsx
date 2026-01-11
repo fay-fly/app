@@ -8,7 +8,7 @@ import PinButton from "@/app/(public)/discover/components/PinButton";
 import { CommentForm } from "@/components/comments/CommentForm";
 import ReactModal from "react-modal";
 import { CommentWithUser, PostWithUser } from "@/types/postWithUser";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import axios from "axios";
 import UserCard from "@/app/(public)/components/UserCard";
 import ChevronLeft from "@/icons/ChevronLeft";
@@ -18,6 +18,8 @@ import Verified from "@/icons/Verified";
 import { hasVerifiedBadge } from "@/lib/permissions";
 import MediaCarousel from "@/components/media/MediaCarousel";
 import { useSafeSession } from "@/hooks/useSafeSession";
+import { useHomePostsStore } from "@/store/homePostsStore";
+import { useDiscoverPostsStore } from "@/store/discoverPostsStore";
 
 type PostPreviewModalProps = {
   open: boolean;
@@ -40,6 +42,28 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const mediaItems = props.post.media ?? [];
   const isOwnPost = session?.user?.id === props.post.author.id;
+
+  // Get latest post state from stores to ensure like/pin state is synced
+  const homePost = useHomePostsStore((state) =>
+    state.posts.find((p) => p.id === props.post.id)
+  );
+  const discoverPost = useDiscoverPostsStore((state) =>
+    state.posts.find((p) => p.id === props.post.id)
+  );
+
+  // Use store values if available, otherwise fall back to props
+  const currentPost = useMemo(() => {
+    const storePost = homePost ?? discoverPost;
+    if (!storePost) return props.post;
+    return {
+      ...props.post,
+      likesCount: storePost.likesCount,
+      likedByMe: storePost.likedByMe,
+      pinsCount: storePost.pinsCount,
+      pinnedByMe: storePost.pinnedByMe,
+      commentsCount: storePost.commentsCount,
+    };
+  }, [props.post, homePost, discoverPost]);
 
   useEffect(() => {
     if (shouldAutoScrollRef.current && commentsRef.current) {
@@ -190,8 +214,8 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
             <ChevronLeft />
           </button>
         )}
-        <div className="flex w-full flex-1 flex-col lg:w-auto lg:flex-row lg:max-h-[90vh] lg:max-w-[calc(100vw-120px)]">
-          <div className="flex w-full items-center justify-center bg-black overflow-hidden lg:w-[900px] lg:max-w-[calc(100vw-620px)] lg:h-[90vh] lg:max-h-[90vh]">
+        <div className="flex w-full h-full flex-col lg:h-auto lg:w-auto lg:flex-row lg:max-h-[90vh] lg:max-w-[calc(100vw-120px)]">
+          <div className="flex w-full items-center justify-center bg-black overflow-hidden shrink-0 h-[40vh] lg:h-[90vh] lg:w-[900px] lg:max-w-[calc(100vw-620px)] lg:max-h-[90vh]">
             {mediaItems.length > 0 ? (
               <MediaCarousel
                 className="w-full h-full"
@@ -218,7 +242,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
               </div>
             )}
           </div>
-          <div className="flex h-full w-full flex-col lg:h-[90vh] lg:max-h-[90vh] lg:min-w-[400px] lg:w-[500px]">
+          <div className="flex flex-1 min-h-0 w-full flex-col lg:h-[90vh] lg:max-h-[90vh] lg:min-w-[400px] lg:w-[500px]">
             <div className="flex justify-between items-center px-[16px] py-[8px] border-b-1 border-(--fly-border-color) flex-shrink-0">
               <UserCard
                 user={{
@@ -267,19 +291,19 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                 <div className="flex items-center gap-[4px]">
                   <LikeButton
                     ref={likeButtonRef}
-                    postId={props.post.id}
-                    likesCount={props.post.likesCount}
-                    likedByMe={props.post.likedByMe}
+                    postId={currentPost.id}
+                    likesCount={currentPost.likesCount}
+                    likedByMe={currentPost.likedByMe}
                   />
                   <div className="flex items-center justify-center gap-[4px] h-[40px] p-[8px] text-[#a0a0a0]">
                     <Comments />
-                    <span className="text-[14px] font-medium tracking-[-0.42px] leading-[22px]">{props.post.commentsCount}</span>
+                    <span className="text-[14px] font-medium tracking-[-0.42px] leading-[22px]">{currentPost.commentsCount}</span>
                   </div>
                 </div>
                 <PinButton
-                  postId={props.post.id}
-                  pinsCount={props.post.pinsCount}
-                  pinnedByMe={props.post.pinnedByMe}
+                  postId={currentPost.id}
+                  pinsCount={currentPost.pinsCount}
+                  pinnedByMe={currentPost.pinnedByMe}
                   disabled={isOwnPost}
                 />
               </div>
