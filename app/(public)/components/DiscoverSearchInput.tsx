@@ -335,7 +335,7 @@ export default function DiscoverSearchInput({
         </span>
       </div>
       {shouldShowDropdown && (
-        <div className="absolute top-[calc(100%+8px)] z-50 flex w-full flex-col rounded-2xl border border-gray-200 bg-white shadow-lg">
+        <div className="absolute top-[calc(100%+8px)] z-50 flex w-full flex-col rounded-2xl border border-gray-200 bg-white shadow-lg animate-fade-in">
           <div className="px-4 pt-6 pb-8 max-h-80 w-full overflow-y-auto">
             {showRecentList ? (
               <div className="flex w-full items-center justify-between py-[7px] mb-[16px]">

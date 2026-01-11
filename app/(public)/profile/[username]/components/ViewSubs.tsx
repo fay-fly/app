@@ -76,16 +76,16 @@ export default function ViewSubs({
 
         <div className="p-2">
           {loading ? (
-            <div className="overflow-auto flex flex-col gap-2">
+            <div className="overflow-auto flex flex-col gap-2 animate-fade-in">
               {[...Array(3)].map((_, index) => (
                 <div key={index} className="flex gap-[8px] items-center">
-                  <div className="w-[32px] h-[32px] rounded-full bg-gray-200"></div>
-                  <span className="h-4 bg-gray-200 rounded w-24"></span>
+                  <div className="w-[32px] h-[32px] rounded-full bg-gray-200 animate-pulse"></div>
+                  <span className="h-4 bg-gray-200 rounded w-24 animate-pulse"></span>
                 </div>
               ))}
             </div>
           ) : items && items.length > 0 ? (
-            <div className="max-h-96 overflow-auto flex flex-col gap-2">
+            <div className="max-h-96 overflow-auto flex flex-col gap-2 animate-fade-in">
               {items.map((subscriber) => {
                 return (
                   <a
@@ -105,7 +105,7 @@ export default function ViewSubs({
               })}
             </div>
           ) : (
-            <div className="text-center text-[#A0A0A0]">No {kind} yet</div>
+            <div className="text-center text-[#A0A0A0] animate-fade-in">No {kind} yet</div>
           )}
         </div>
       </Modal>

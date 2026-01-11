@@ -114,7 +114,36 @@ export default function ProfileContent({ username }: { username: string }) {
   };
 
   if (!user) {
-    return null;
+    return (
+      <div className="w-full max-w-[1000px] mx-auto animate-fade-in">
+        <div className="h-[124px] bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+        <div className="px-4 mt-[-32px]">
+          <div className="w-[80px] h-[80px] rounded-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse ring-[1.5px] ring-white" />
+        </div>
+        <div className="mx-[16px] mt-[24px] space-y-3">
+          <div className="h-[14px] w-[60px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
+          <div className="h-[16px] w-[120px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
+          <div className="h-[24px] w-[180px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
+          <div className="flex gap-[24px]">
+            <div className="h-[16px] w-[100px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
+            <div className="h-[16px] w-[100px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="flex mt-[24px] border-b border-gray-100">
+          <div className="flex-1 flex justify-center py-[11px]">
+            <div className="h-[16px] w-[100px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
+          </div>
+          <div className="flex-1 flex justify-center py-[11px]">
+            <div className="h-[16px] w-[60px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="w-full aspect-square bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const publicationsCount = user.posts.length;
@@ -166,7 +195,7 @@ export default function ProfileContent({ username }: { username: string }) {
   };
 
   return (
-    <div className="w-full max-w-[1000px] mx-auto">
+    <div className="w-full max-w-[1000px] mx-auto animate-fade-in">
       <div className="h-[124px] relative">
         <div
           className="absolute inset-0"

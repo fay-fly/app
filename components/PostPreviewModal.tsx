@@ -268,7 +268,7 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                 </p>
               </div>
               {processing ? (
-                <>
+                <div className="animate-fade-in">
                   {[...Array(8)].map((_, index) => (
                     <div
                       key={index}
@@ -281,9 +281,11 @@ export default function PostPreviewModal(props: PostPreviewModalProps) {
                       </div>
                     </div>
                   ))}
-                </>
+                </div>
               ) : (
-                <CommentList comments={comments} />
+                <div className="animate-fade-in">
+                  <CommentList comments={comments} />
+                </div>
               )}
             </div>
             <div className="flex flex-col gap-[4px] flex-shrink-0 border-t border-(--fly-border-color)">

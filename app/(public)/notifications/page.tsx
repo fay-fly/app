@@ -176,9 +176,11 @@ export default function Notifications() {
   return (
     <>
       {!notifications ? (
-        renderSkeletonLoader()
+        <div className="animate-fade-in">
+          {renderSkeletonLoader()}
+        </div>
       ) : (
-        <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-0 mt-3">
+        <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-0 mt-3 animate-fade-in">
           {renderDateGroup()}
         </div>
       )}

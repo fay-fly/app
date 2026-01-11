@@ -218,7 +218,7 @@ export default function AddPost() {
           className="space-y-4 w-full max-w-[630px]"
         >
           {step === "compose" ? (
-            <>
+            <div className="animate-fade-in">
               <div
                 {...getRootProps()}
                 className={`flex justify-center text-[#A0A0A0] items-center border-dashed border-2 border-[#A0A0A0] rounded p-6 text-center cursor-pointer min-h-[120px] ${
@@ -281,9 +281,9 @@ export default function AddPost() {
                   Preview
                 </Button>
               </div>
-            </>
+            </div>
           ) : (
-            <>
+            <div className="animate-fade-in">
               <div className="rounded-2xl bg-white shadow-sm border border-(--fly-border-color) p-4">
                 {draftPost ? (
                   <Post post={draftPost} previewMode />
@@ -294,7 +294,7 @@ export default function AddPost() {
                 )}
               </div>
 
-              <div className="flex justify-end gap-[12px]">
+              <div className="flex justify-end gap-[12px] mt-4">
                 <Button
                   type="button"
                   className={clsx(
@@ -318,7 +318,7 @@ export default function AddPost() {
                   Publish
                 </Button>
               </div>
-            </>
+            </div>
           )}
         </form>
       </div>

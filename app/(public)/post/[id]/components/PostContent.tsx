@@ -33,7 +33,15 @@ export default function PostContent({ id }: { id: number }) {
       {/*  <h1>Post</h1>*/}
       {/*</div>*/}
       <div className="w-full mr-auto ml-auto max-w-[630px]">
-        {!post ? <PageLoader /> : <Post post={post} />}
+        {!post ? (
+          <div className="animate-fade-in">
+            <PageLoader />
+          </div>
+        ) : (
+          <div className="animate-fade-in">
+            <Post post={post} />
+          </div>
+        )}
       </div>
     </div>
   );

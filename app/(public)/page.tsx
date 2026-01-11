@@ -320,15 +320,17 @@ export default function Home() {
 
         <div className="flex flex-col">
           {isInitialLoad && !loaded ? (
-            <>
+            <div className="animate-fade-in">
               {Array.from({ length: 3 }).map((_, i) => (
                 <PostSkeleton key={`skeleton-${i}`} />
               ))}
-            </>
+            </div>
           ) : posts.length === 0 ? (
-            renderEmptyState()
+            <div className="animate-fade-in">
+              {renderEmptyState()}
+            </div>
           ) : (
-            <>
+            <div className="animate-fade-in">
               {isLoadingNewPosts && (
                 <>
                   {Array.from({ length: 2 }).map((_, i) => (
@@ -337,11 +339,14 @@ export default function Home() {
                 </>
               )}
 
-              {posts.map((post) => (
-                <Post
+              {posts.map((post, index) => (
+                <div
                   key={`${post.id}-${post.isPinned ? "pin" : "post"}-${post.pinnedBy?.id ?? "none"}`}
-                  post={post}
-                />
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${Math.min(index * 50, 250)}ms`, opacity: 0 }}
+                >
+                  <Post post={post} />
+                </div>
               ))}
 
               <div ref={loadMoreRef} className="h-1" />
@@ -366,7 +371,7 @@ export default function Home() {
                   }}
                 />
               )}
-            </>
+            </div>
           )}
         </div>
       </div>

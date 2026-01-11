@@ -209,7 +209,7 @@ export default function DiscoverContent() {
 
         <div>
           {showInitialLoading ? (
-            <div className="grid grid-cols-3 gap-[2px]">
+            <div className="grid grid-cols-3 gap-[2px] animate-fade-in">
               {[...Array(18)].map((_, index) => (
                 <div
                   key={index}
@@ -218,7 +218,7 @@ export default function DiscoverContent() {
               ))}
             </div>
           ) : (
-            <>
+            <div className="animate-fade-in">
               <PostsPreview posts={posts} />
               {/* Load more trigger */}
               {hasMore && (
@@ -235,7 +235,7 @@ export default function DiscoverContent() {
                   )}
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
