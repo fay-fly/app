@@ -63,13 +63,21 @@ export default function SubscribeButton({
     processQueue();
   };
 
-  return (
+  return hasSubscribeState ? (
+    <button
+      onClick={handleFollow}
+      type="button"
+      className="px-[16px] py-[5px] text-[14px] font-semibold text-[#7c89ff] leading-[22px] tracking-[-0.14px] cursor-pointer"
+    >
+      Unsub
+    </button>
+  ) : (
     <Button
       onClick={handleFollow}
       type="button"
-      className="bg-(--fly-primary) text-(--fly-white) px-[12px] py-[5px] h-[32px] text-[14px] max-w-[100px]"
+      className="bg-[#7c89ff] text-white px-[16px] py-[5px] text-[14px] font-medium leading-[22px] tracking-[-0.42px]"
     >
-      {hasSubscribeState ? "Unsub" : "Subscribe"}
+      Subscribe
     </Button>
   );
 }

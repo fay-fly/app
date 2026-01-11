@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
     data: {
       text,
       authorId,
-      ...(hasPublishedColumn ? { published: true } : {}),
+      ...(hasPublishedColumn ? { published: false } : {}),
       media: {
         create: processedImages.map((img, index) => ({
           url: img.url,
@@ -234,7 +234,7 @@ export async function POST(req: NextRequest) {
   const formattedPost: PostWithUser = {
     id: postRecord.id,
     text: postRecord.text,
-    published: hasPublishedColumn ? postRecord.published : true,
+    published: hasPublishedColumn ? postRecord.published : false,
     likesCount: postRecord._count.likes,
     commentsCount: postRecord._count.comments,
     pinsCount: postRecord._count.pins,
@@ -261,6 +261,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     success: true,
     post: formattedPost,
-    previewSupported: false, // Auto-publish posts immediately, no preview step needed
+    previewSupported: true,
   });
 }

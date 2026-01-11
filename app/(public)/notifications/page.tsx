@@ -64,17 +64,19 @@ export default function Notifications() {
     if (notifications.length === 0) return null;
 
     return (
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-[#5B5B5B] mb-4 ml-[16px]">
-          {title}
-        </h2>
-        <div className="flex flex-col gap-1 w-full px-[16px]">
+      <div className="flex flex-col gap-[16px]">
+        <div className="pl-[16px]">
+          <h2 className="text-[15px] font-semibold text-[#343434] leading-[20px] tracking-[-0.15px]">
+            {title}
+          </h2>
+        </div>
+        <div className="flex flex-col w-full">
           {notifications.map((item) => (
             <div
               key={item.id}
               className={clsx(
                 item.unread && "bg-[#7c89ff21]",
-                "flex items-center gap-[5px] py-2 w-full"
+                "flex items-center gap-[8px] min-h-[56px] px-[16px] py-[12px] w-full"
               )}
             >
               <GroupedNotificationItem item={item} />
@@ -95,10 +97,10 @@ export default function Notifications() {
     ];
 
     return (
-      <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-0 mt-3">
-        <div className="mb-6">
-          <div className="h-5 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-32 mb-4 ml-[16px] animate-pulse" />
-          <div className="flex flex-col gap-1 w-full px-[16px]">
+      <div className="flex flex-col gap-[24px] justify-center mr-auto ml-auto max-w-[612px] w-full pt-[24px]">
+        <div className="flex flex-col gap-[16px]">
+          <div className="h-5 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-32 ml-[16px] animate-pulse" />
+          <div className="flex flex-col w-full">
             {[...Array(5)].map((_, index) => {
               const hasPreview = index === 1 || index === 3;
               const [mainWidth, timeWidth] = textWidths[index % textWidths.length];
@@ -106,13 +108,13 @@ export default function Notifications() {
               return (
                 <div
                   key={index}
-                  className="flex items-start py-2 w-full"
+                  className="flex items-center min-h-[56px] px-[16px] py-[12px] w-full"
                 >
-                  <div className="flex gap-[8px] items-start flex-1 min-w-0">
+                  <div className="flex gap-[8px] items-center flex-1 min-w-0">
                     <div className="w-[40px] h-[40px] bg-gradient-to-br from-gray-200 to-gray-300 rounded-full animate-pulse flex-shrink-0" />
-                    <div className="flex-1 min-w-0 space-y-1.5">
-                      <div className={clsx("h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", mainWidth)} />
-                      <div className={clsx("h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", timeWidth)} />
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className={clsx("h-[22px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", mainWidth)} />
+                      <div className={clsx("h-[20px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", timeWidth)} />
                     </div>
                     {hasPreview && (
                       <div className="w-[40px] h-[40px] bg-gradient-to-br from-gray-200 to-gray-300 rounded animate-pulse flex-shrink-0" />
@@ -123,9 +125,9 @@ export default function Notifications() {
             })}
           </div>
         </div>
-        <div className="mb-6">
-          <div className="h-5 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-28 mb-4 ml-[16px] animate-pulse" />
-          <div className="flex flex-col gap-1 w-full px-[16px]">
+        <div className="flex flex-col gap-[16px]">
+          <div className="h-5 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-28 ml-[16px] animate-pulse" />
+          <div className="flex flex-col w-full">
             {[...Array(3)].map((_, index) => {
               const hasPreview = index === 0;
               const [mainWidth, timeWidth] = textWidths[index % textWidths.length];
@@ -133,13 +135,13 @@ export default function Notifications() {
               return (
                 <div
                   key={index}
-                  className="flex items-start py-2 w-full"
+                  className="flex items-center min-h-[56px] px-[16px] py-[12px] w-full"
                 >
-                  <div className="flex gap-[8px] items-start flex-1 min-w-0">
+                  <div className="flex gap-[8px] items-center flex-1 min-w-0">
                     <div className="w-[40px] h-[40px] bg-gradient-to-br from-gray-200 to-gray-300 rounded-full animate-pulse flex-shrink-0" />
-                    <div className="flex-1 min-w-0 space-y-1.5">
-                      <div className={clsx("h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", mainWidth)} />
-                      <div className={clsx("h-3 bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", timeWidth)} />
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className={clsx("h-[22px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", mainWidth)} />
+                      <div className={clsx("h-[20px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse", timeWidth)} />
                     </div>
                     {hasPreview && (
                       <div className="w-[40px] h-[40px] bg-gradient-to-br from-gray-200 to-gray-300 rounded animate-pulse flex-shrink-0" />
@@ -174,16 +176,16 @@ export default function Notifications() {
   };
 
   return (
-    <>
+    <div className="bg-white flex-1 flex flex-col items-center w-full">
       {!notifications ? (
-        <div className="animate-fade-in">
+        <div className="animate-fade-in w-full">
           {renderSkeletonLoader()}
         </div>
       ) : (
-        <div className="flex flex-col justify-center mr-auto ml-auto max-w-[612px] px-0 mt-3 animate-fade-in">
+        <div className="flex flex-col gap-[24px] justify-center mr-auto ml-auto max-w-[612px] w-full pt-[24px] animate-fade-in">
           {renderDateGroup()}
         </div>
       )}
-    </>
+    </div>
   );
 }

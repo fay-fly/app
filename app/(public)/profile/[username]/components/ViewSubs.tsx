@@ -49,10 +49,16 @@ export default function ViewSubs({
 
   return (
     <>
-      <li className="cursor-pointer" onClick={openAndFetch}>
+      <button
+        type="button"
+        className="text-[14px] leading-[20px] tracking-[-0.14px] cursor-pointer"
+        onClick={openAndFetch}
+      >
         <span className="font-bold text-[#343434]">{count}</span>{" "}
-        {kind.charAt(0).toUpperCase() + kind.slice(1)}
-      </li>
+        <span className="font-normal text-[#A0A0A0]">
+          {kind.charAt(0).toUpperCase() + kind.slice(1)}
+        </span>
+      </button>
 
       <Modal
         isOpen={open}

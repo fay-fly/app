@@ -116,28 +116,40 @@ export default function ProfileContent({ username }: { username: string }) {
   if (!user) {
     return (
       <div className="w-full max-w-[1000px] mx-auto animate-fade-in">
+        {/* Cover skeleton */}
         <div className="h-[124px] bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
-        <div className="px-4 mt-[-32px]">
-          <div className="w-[80px] h-[80px] rounded-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse ring-[1.5px] ring-white" />
+
+        {/* Avatar and action buttons skeleton */}
+        <div className="flex items-start justify-between px-[16px] mt-[-32px]">
+          <div className="w-[80px] h-[80px] rounded-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse ring-[2px] ring-white flex-shrink-0" />
+          <div className="flex items-center gap-[8px] mt-[40px]">
+            <div className="w-[80px] h-[32px] rounded-[8px] bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+          </div>
         </div>
-        <div className="mx-[16px] mt-[24px] space-y-3">
+
+        {/* User info skeleton */}
+        <div className="px-[16px] mt-[16px] space-y-2">
           <div className="h-[14px] w-[60px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
           <div className="h-[16px] w-[120px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
           <div className="h-[24px] w-[180px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
-          <div className="flex gap-[24px]">
+          <div className="flex gap-[16px] pt-[4px]">
             <div className="h-[16px] w-[100px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
             <div className="h-[16px] w-[100px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
           </div>
         </div>
-        <div className="flex mt-[24px] border-b border-gray-100">
-          <div className="flex-1 flex justify-center py-[11px]">
+
+        {/* Tabs skeleton */}
+        <div className="flex mt-[24px]">
+          <div className="flex-1 flex justify-center py-[12px]">
             <div className="h-[16px] w-[100px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
           </div>
-          <div className="flex-1 flex justify-center py-[11px]">
+          <div className="flex-1 flex justify-center py-[12px]">
             <div className="h-[16px] w-[60px] bg-gradient-to-r from-gray-200 to-gray-300 rounded animate-pulse" />
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
+
+        {/* Grid skeleton */}
+        <div className="grid grid-cols-3 gap-[2px] mt-[16px]">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="w-full aspect-square bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
           ))}
@@ -196,142 +208,166 @@ export default function ProfileContent({ username }: { username: string }) {
 
   return (
     <div className="w-full max-w-[1000px] mx-auto animate-fade-in">
+      {/* Cover Banner */}
       <div className="h-[124px] relative">
         <div
           className="absolute inset-0"
           style={{ background: profileBackgroundValue }}
         />
-        <div className="absolute -bottom-[48px] left-4 flex items-end gap-[24px]">
-          {user.pictureUrl ? (
-            <div className="relative w-[80px] h-[80px]">
-              <SafeNextImage
-                src={user.pictureUrl}
-                alt="profile picture"
-                className="ring-[1.5px] ring-white w-[80px] h-[80px] rounded-full object-cover"
-                width={80}
-                height={80}
-                errorSize="small"
-                showErrorText={false}
-                sizes="80px"
-              />
-            </div>
-          ) : (
-            <div className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[1.5px] ring-white">
-              {user.username.charAt(0).toUpperCase()}
-            </div>
-          )}
-        </div>
       </div>
-      {isOwnProfile ? (
-        <div className="flex justify-end mt-[16px] mr-[16px] p-[8px]">
-          <div
-            className="bg-[#F7F8FF] rounded-full cursor-pointer"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <Edit />
+
+      {/* Avatar and Action Buttons Row */}
+      <div className="flex items-start justify-between px-[16px] mt-[-32px]">
+        {/* Avatar */}
+        {user.pictureUrl ? (
+          <div className="relative w-[80px] h-[80px] flex-shrink-0">
+            <SafeNextImage
+              src={user.pictureUrl}
+              alt="profile picture"
+              className="ring-[2px] ring-white w-[80px] h-[80px] rounded-full object-cover"
+              width={80}
+              height={80}
+              errorSize="small"
+              showErrorText={false}
+              sizes="80px"
+            />
           </div>
-          <ProfileEditModal
-            isOpen={isModalOpen}
-            onCloseAction={() => setIsModalOpen(false)}
-            onSaveAction={handleSaveProfile}
-            username={user.username}
-            pictureUrl={user.pictureUrl}
-            bio={user.bio}
-            fullName={user.fullName}
-            profileBgUrl={user.profileBgUrl}
-          />
-        </div>
-      ) : session && (
-        <div className="flex justify-end p-[8px]">
-          <SubscribeButton
-            subscribingId={user.id}
-            isSubscribed={user.isFollowedByMe}
-            onSuccess={handleSubscribe}
-          />
-        </div>
-      )}
-      <div
-        className={isOwnProfile || session ? "mx-[16px]" : "mx-[16px] mb-[16px] mt-[60px]"}
-      >
-        <div className="space-y-1">
-          <span
-            className={clsx(
-              "font-semibold text-[14px]",
-              user.role === "admin" && "text-[#EB4C4C]",
-              user.role === "creator" && "text-[#7C89FF]",
-              user.role === "lead" && "text-[#19B4F6]",
-              user.role === "user" && "text-[#F883B8]",
-              !user.role && "text-[#F883B8]"
-            )}
-          >
-            {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "User"}
-          </span>
-          <h1 className="text-[#A0A0A0] font-bold text-[16px] flex items-center gap-[8px] w-fit">
-            <span>@{user.username}</span>
-            {hasVerifiedBadge(user.role) && <Verified />}
-          </h1>
-          {user.fullName && (
-            <h1 className="text-[24px] text-[#343434] font-bold">
-              {user.fullName}
-            </h1>
-          )}
-          <ul className="flex gap-[24px] mt-[10px] text-[#A0A0A0]">
-            <ViewSubs
-              count={user._count.followers}
-              kind="subscribers"
-              fetchUrl="/api/users/subscribers"
-              userId={user.id}
+        ) : (
+          <div className="w-[80px] h-[80px] rounded-full bg-(--fly-primary) flex items-center justify-center text-white font-bold text-[22px] ring-[2px] ring-white flex-shrink-0">
+            {user.username.charAt(0).toUpperCase()}
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-[8px] mt-[40px]">
+          {isOwnProfile ? (
+            <>
+              <div
+                className="w-[40px] h-[40px] bg-[#F7F8FF] rounded-full cursor-pointer flex items-center justify-center"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Edit />
+              </div>
+              <ProfileEditModal
+                isOpen={isModalOpen}
+                onCloseAction={() => setIsModalOpen(false)}
+                onSaveAction={handleSaveProfile}
+                username={user.username}
+                pictureUrl={user.pictureUrl}
+                bio={user.bio}
+                fullName={user.fullName}
+                profileBgUrl={user.profileBgUrl}
+              />
+            </>
+          ) : session && (
+            <SubscribeButton
+              subscribingId={user.id}
+              isSubscribed={user.isFollowedByMe}
+              onSuccess={handleSubscribe}
             />
-            <ViewSubs
-              count={user._count.subscriptions}
-              kind="subscriptions"
-              fetchUrl="/api/users/subscriptions"
-              userId={user.id}
-            />
-          </ul>
-          {user.bio && (
-            <p className="text-[#5B5B5B] text-[14px] my-[12px]">
-              {user.bio}
-            </p>
           )}
         </div>
       </div>
-      <div className="flex">
+      {/* User Info Section */}
+      <div className="px-[16px] mt-[16px]">
+        {/* Role Label */}
+        <span
+          className={clsx(
+            "font-semibold text-[14px] leading-[20px] tracking-[-0.14px]",
+            user.role === "admin" && "text-[#EB4C4C]",
+            user.role === "creator" && "text-[#7C89FF]",
+            user.role === "lead" && "text-[#19B4F6]",
+            user.role === "user" && "text-[#F883B8]",
+            !user.role && "text-[#F883B8]"
+          )}
+        >
+          {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "Author"}
+        </span>
+
+        {/* Username */}
+        <p className="text-[#A0A0A0] font-medium text-[16px] leading-[22px] tracking-[-0.16px] mt-[4px]">
+          @{user.username}
+        </p>
+
+        {/* Full Name with Verified Badge */}
+        {user.fullName && (
+          <h1 className="text-[24px] text-[#343434] font-bold leading-[32px] tracking-[-0.24px] mt-[4px] flex items-center gap-[4px]">
+            {user.fullName}
+            {hasVerifiedBadge(user.role) && <Verified className="w-[20px] h-[20px]" />}
+          </h1>
+        )}
+
+        {/* Stats */}
+        <div className="flex gap-[16px] mt-[12px]">
+          <ViewSubs
+            count={user._count.followers}
+            kind="subscribers"
+            fetchUrl="/api/users/subscribers"
+            userId={user.id}
+          />
+          <ViewSubs
+            count={user._count.subscriptions}
+            kind="subscriptions"
+            fetchUrl="/api/users/subscriptions"
+            userId={user.id}
+          />
+        </div>
+
+        {/* Bio */}
+        {user.bio && (
+          <p className="text-[#5B5B5B] text-[14px] leading-[20px] tracking-[-0.14px] mt-[12px]">
+            {user.bio}
+          </p>
+        )}
+      </div>
+      {/* Tabs */}
+      <div className="flex mt-[24px]">
         {canShowPosts && (
           <div className="flex-1 flex justify-center">
-            <div
+            <button
+              type="button"
               className={clsx(
-                "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit text-center",
-                tabs === "publications" &&
-                  "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]"
+                "text-[14px] leading-[20px] tracking-[-0.14px] cursor-pointer py-[12px] px-[16px] relative",
+                tabs === "publications"
+                  ? "font-semibold text-[#5B5B5B]"
+                  : "font-normal text-[#A0A0A0]"
               )}
               onClick={() => setTabs("publications")}
             >
               {`${publicationsCount} Publications`}
-            </div>
+              {tabs === "publications" && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#F458A3]" />
+              )}
+            </button>
           </div>
         )}
         <div className={clsx(canShowPosts ? "flex-1" : "w-full", "flex justify-center")}>
-          <div
+          <button
+            type="button"
             className={clsx(
-              "text-[#A0A0A0] cursor-pointer py-[11px] text-[14px] max-w-fit min-w-[80px] text-center",
-              tabs === "pins" &&
-                "border-b-2 border-[#F458A3] font-semibold text-[#5B5B5B]"
+              "text-[14px] leading-[20px] tracking-[-0.14px] cursor-pointer py-[12px] px-[16px] relative",
+              tabs === "pins"
+                ? "font-semibold text-[#5B5B5B]"
+                : "font-normal text-[#A0A0A0]"
             )}
             onClick={() => setTabs("pins")}
           >
             {`${pinsCount} Pins`}
-          </div>
+            {tabs === "pins" && (
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#F458A3]" />
+            )}
+          </button>
         </div>
       </div>
+      {/* Content Grid */}
       {tabs === "publications" && (
         <>
           {publicationsCount === 0 ? (
-            <div className="flex justify-center mt-[10px] text-[#A0A0A0]">
+            <div className="flex justify-center py-[40px] text-[#A0A0A0] text-[14px]">
               No publications yet
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
+            <div className="grid grid-cols-3 gap-[2px] mt-[16px]">
               {user.posts.map((post) => renderPostTile(post))}
             </div>
           )}
@@ -340,11 +376,11 @@ export default function ProfileContent({ username }: { username: string }) {
       {tabs === "pins" && (
         <>
           {pinsCount === 0 ? (
-            <div className="flex justify-center mt-[10px] text-[#A0A0A0]">
+            <div className="flex justify-center py-[40px] text-[#A0A0A0] text-[14px]">
               No pinned posts yet
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-[2px] mt-[15px]">
+            <div className="grid grid-cols-3 gap-[2px] mt-[16px]">
               {user.pins.map((pin) => renderPostTile(pin.post))}
             </div>
           )}

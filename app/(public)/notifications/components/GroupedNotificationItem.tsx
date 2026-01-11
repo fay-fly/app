@@ -22,14 +22,14 @@ const AvatarStack = ({
   const maxDisplay = 3;
   const count = Math.min(avatars.length, maxDisplay);
   const baseWidth = 40; // px
-  const overlap = 20; // px
+  const overlap = 16; // px (adjusted for tighter overlap as shown in Figma)
   const width = baseWidth + (count - 1) * overlap;
   const displayAvatars = avatars.slice(0, maxDisplay);
   const hasOverflow = avatars.length > maxDisplay;
 
   return (
     <div
-      className="relative flex h-8 flex-shrink-0"
+      className="relative flex h-[40px] flex-shrink-0 items-center"
       style={{ width: `${width}px` }}
     >
       {displayAvatars.map((avatar, index) => {
@@ -43,20 +43,18 @@ const AvatarStack = ({
           <div
             key={avatar.id}
             className="absolute top-0"
-            style={{ left: offset }}
+            style={{ left: offset, zIndex: displayAvatars.length - index }}
           >
             {isLastSlot ? (
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-(--fly-primary) text-sm font-semibold text-white"
-                style={{ boxShadow: "0 0 0 1.5px #fff" }}
+                className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-(--fly-primary) text-sm font-semibold text-white border-[1.5px] border-white"
               >
                 +{overflowCount}
               </div>
             ) : hasImage ? (
               <Link
                 href={avatar.username ? `/profile/${avatar.username}` : "#"}
-                className="block h-10 w-10 rounded-full overflow-hidden"
-                style={{ boxShadow: "0 0 0 1.5px #fff" }}
+                className="block h-[40px] w-[40px] rounded-full overflow-hidden border-[1.5px] border-white"
               >
                 <SafeNextImage
                   src={avatar.pictureUrl ?? ""}
@@ -74,8 +72,7 @@ const AvatarStack = ({
                 href={avatar.username ? `/profile/${avatar.username}` : "#"}
               >
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-(--fly-primary) text-sm font-semibold text-white"
-                  style={{ boxShadow: "0 0 0 1.5px #fff" }}
+                  className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-(--fly-primary) text-sm font-semibold text-white border-[1.5px] border-white"
                 >
                   {initials}
                 </div>
@@ -110,9 +107,9 @@ export default function GroupedNotificationItem({ item }: Props) {
         : " and ";
 
     const content = (
-      <span className="inline-flex items-center gap-1 text-[14px] font-semibold text-[#343434]">
+      <span className="inline-flex items-center gap-0 text-[14px] font-semibold text-[#343434] leading-[22px] tracking-[-0.14px]">
         <span>{displayName}</span>
-        {user.role && hasVerifiedBadge(user.role) && <Verified />}
+        {user.role && hasVerifiedBadge(user.role) && <Verified className="w-[16px] h-[16px]" />}
       </span>
     );
 
@@ -121,16 +118,16 @@ export default function GroupedNotificationItem({ item }: Props) {
         {user.username ? (
           <Link
             href={`/profile/${user.username}`}
-            className="inline-flex items-center gap-1 text-[14px] font-semibold text-[#343434] cursor-pointer"
+            className="inline-flex items-center gap-0 text-[14px] font-semibold text-[#343434] leading-[22px] tracking-[-0.14px] cursor-pointer"
           >
             <span>{displayName}</span>
-            {user.role && hasVerifiedBadge(user.role) && <Verified />}
+            {user.role && hasVerifiedBadge(user.role) && <Verified className="w-[16px] h-[16px]" />}
           </Link>
         ) : (
           content
         )}
         {separator && (
-          <span className="text-[14px] font-semibold text-[#343434]">
+          <span className="text-[14px] font-semibold text-[#343434] leading-[22px] tracking-[-0.14px]">
             {separator}
           </span>
         )}
@@ -139,31 +136,31 @@ export default function GroupedNotificationItem({ item }: Props) {
   };
 
   return (
-    <div className="flex w-full items-start justify-between gap-3">
-      <div className="flex flex-1 items-start gap-[8px]">
+    <div className="flex w-full items-center justify-between gap-[8px]">
+      <div className="flex flex-1 items-center gap-[8px] min-w-0">
         <AvatarStack avatars={item.avatarUsers} />
-        <div className="flex flex-col">
-          <span className="text-[14px] font-semibold text-[#343434]">
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="text-[14px] font-semibold text-[#343434] leading-[22px] tracking-[-0.14px] flex flex-wrap items-center">
             {nameUsers.map(renderName)}
             {hasOverflow && (
-              <span className="text-[14px] font-semibold text-[#343434]">
+              <span className="text-[14px] font-semibold text-[#343434] leading-[22px] tracking-[-0.14px]">
                 {" "}
                 and others
               </span>
             )}
           </span>
-          <span className="text-[14px] text-[#5B5B5B]">
-            {item.secondaryText} · {formatDistanceToNow(new Date(item.timestamp), { addSuffix: true })}
+          <span className="text-[14px] font-normal text-[#5b5b5b] leading-[20px] tracking-[-0.14px] whitespace-pre-wrap">
+            {item.secondaryText}
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-[8px] flex-shrink-0">
         {item.preview && (
-          <Link href={item.preview.href} className="relative h-10 w-10 flex-shrink-0">
+          <Link href={item.preview.href} className="relative h-[40px] w-[40px] flex-shrink-0">
             <SafeNextImage
               src={item.preview.imageUrl}
               alt="Preview"
-              className="h-10 w-10 object-cover"
+              className="h-[40px] w-[40px] object-cover"
               errorSize="small"
               showErrorText={false}
               sizes="40px"
