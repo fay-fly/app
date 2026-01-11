@@ -225,8 +225,17 @@ export default function ProfileContent({ username }: { username: string }) {
         className={isOwnProfile || session ? "mx-[16px]" : "mx-[16px] mb-[16px] mt-[60px]"}
       >
         <div className="space-y-1">
-          <span className="text-[#F883B8] font-semibold text-[14px]">
-            Member
+          <span
+            className={clsx(
+              "font-semibold text-[14px]",
+              user.role === "admin" && "text-[#EB4C4C]",
+              user.role === "creator" && "text-[#7C89FF]",
+              user.role === "lead" && "text-[#19B4F6]",
+              user.role === "user" && "text-[#F883B8]",
+              !user.role && "text-[#F883B8]"
+            )}
+          >
+            {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "User"}
           </span>
           <h1 className="text-[#A0A0A0] font-bold text-[16px] flex items-center gap-[8px] w-fit">
             <span>@{user.username}</span>

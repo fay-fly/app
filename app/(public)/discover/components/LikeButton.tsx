@@ -114,13 +114,13 @@ const LikeButton = forwardRef<LikeButtonRef, LikeButtonProps>(
       <>
         <div
           className={clsx(
-            "flex gap-[4px] m-[8px] items-center cursor-pointer select-none",
-            hasLikedByMe ? "text-[#F458A3]" : "text-[#A0A0A0]"
+            "flex items-center justify-center gap-[4px] h-[40px] p-[8px] cursor-pointer select-none",
+            hasLikedByMe ? "text-[#F458A3]" : "text-[#a0a0a0]"
           )}
           onClick={onClick}
         >
           {hasLikedByMe ? <FireFilled /> : <FireOutline />}
-          {count}
+          <span className="text-[14px] font-medium tracking-[-0.42px] leading-[22px]">{count}</span>
         </div>
         <AuthRequiredModal
           isOpen={showAuthModal}

@@ -10,7 +10,6 @@ import PinButton from "@/app/(public)/discover/components/PinButton";
 import { useSafeSession } from "@/hooks/useSafeSession";
 import { useState, useRef, memo } from "react";
 import FireFilled from "@/icons/FireFilled";
-import PinFilled from "@/icons/PinFilled";
 import { hasVerifiedBadge, canDeletePost } from "@/lib/permissions";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -20,6 +19,7 @@ import SafeNextImage from "@/components/SafeNextImage";
 import FireOutline from "@/icons/FireOutline";
 import Comments from "@/icons/Comments";
 import PinOutline from "@/icons/PinOutline";
+import Repeat from "@/icons/Repeat";
 
 type PostProps = {
   post: PostWithUser;
@@ -63,81 +63,86 @@ function Post({ post, previewMode = false }: PostProps) {
   };
 
   return (
-    <div className="mb-[12px] flex flex-col">
-      {post.isPinned && post.pinnedBy && (
-        <div className="flex items-center gap-[8px] px-[16px] pt-[8px] text-[12px] text-[#A0A0A0]">
-          <PinFilled className="h-[14px] w-[14px] text-[#7C89FF]" />
-          <span>
-            Pinned by{" "}
-            <a
-              href={`/profile/${post.pinnedBy.username}`}
-              className="font-semibold hover:underline"
-            >
-              {post.pinnedBy.username}
-            </a>
-          </span>
-        </div>
-      )}
-      <div className="mb-[8px] flex justify-between px-[16px] py-[8px]">
-        <div className="flex items-center gap-[8px]">
-          <a
-            href={`/profile/${post.author.username}`}
-            className="h-[32px] w-[32px] relative block"
-          >
-            {post.author.pictureUrl ? (
-              <SafeNextImage
-                src={post.author.pictureUrl}
-                alt="profile image"
-                width={32}
-                height={32}
-                className="rounded-full object-cover"
-                errorSize="small"
-                showErrorText={false}
-                sizes="32px"
-              />
-            ) : (
-              <div
-                className={clsx(
-                  "flex h-full w-full items-center justify-center rounded-full",
-                  "bg-(--fly-primary) text-(--fly-white)"
-                )}
-              >
-                {post.author.username.charAt(0).toUpperCase()}
-              </div>
-            )}
-          </a>
-          <a
-            href={`/profile/${post.author.username}`}
-            className="font-semibold text-(--fly-text-primary)"
-          >
-            {post.author.username}
-          </a>
-          {hasVerifiedBadge(post.author.role) && <Verified />}
-        </div>
-        <div className="flex items-center gap-[16px]">
-          {canDelete && !previewMode && (
-            <div className="relative">
-              <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="cursor-pointer"
-              >
-                <ThreeDots />
-              </button>
-              {showMenu && (
-                <div className="absolute right-0 top-8 z-10 min-w-[120px] rounded-lg border bg-white shadow-lg">
-                  <button
-                    onClick={handleDeletePost}
-                    className="block w-full rounded-lg px-4 py-2 text-left text-red-600 hover:bg-gray-100"
-                  >
-                    Delete Post
-                  </button>
-                </div>
+    <div className="flex flex-col gap-[6px] max-w-[612px] w-full py-[24px]">
+      {/* Header - nav profile */}
+      <div className="flex items-center gap-[8px] px-[16px]">
+        {/* Avatar */}
+        <a
+          href={`/profile/${post.author.username}`}
+          className="h-[32px] w-[32px] relative block shrink-0"
+        >
+          {post.author.pictureUrl ? (
+            <SafeNextImage
+              src={post.author.pictureUrl}
+              alt="profile image"
+              width={32}
+              height={32}
+              className="rounded-full object-cover w-full h-full"
+              errorSize="small"
+              showErrorText={false}
+              sizes="32px"
+            />
+          ) : (
+            <div
+              className={clsx(
+                "flex h-full w-full items-center justify-center rounded-full",
+                "bg-[#7c89ff] text-white font-semibold text-[14px]"
               )}
+            >
+              {post.author.username.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </a>
+
+        {/* Username and verified badge */}
+        <div className="flex-1 flex flex-col gap-[2px] min-w-0">
+          <div className="flex items-center h-[22px]">
+            <a
+              href={`/profile/${post.author.username}`}
+              className="font-semibold text-[16px] text-[#343434] tracking-[-0.16px] leading-[20px]"
+            >
+              {post.author.username}
+            </a>
+            {hasVerifiedBadge(post.author.role) && <Verified />}
+          </div>
+          {/* Repost/Pinned indicator */}
+          {post.isPinned && post.pinnedBy && (
+            <div className="flex items-center gap-[4px]">
+              <Repeat className="w-[18px] h-[20px] text-[#a0a0a0]" />
+              <a
+                href={`/profile/${post.pinnedBy.username}`}
+                className="font-semibold text-[14px] text-[#a0a0a0] tracking-[-0.14px] leading-[22px]"
+              >
+                {post.pinnedBy.username}
+              </a>
             </div>
           )}
         </div>
+
+        {/* Menu button */}
+        {canDelete && !previewMode && (
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="flex items-center justify-center w-[32px] h-[32px] bg-[#f7f8ff] rounded-full cursor-pointer"
+            >
+              <ThreeDots />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 top-[40px] z-10 w-[200px] rounded-[12px] bg-white shadow-[0px_4px_6px_-1px_rgba(75,75,75,0.1),0px_2px_4px_-2px_rgba(75,75,75,0.12)]">
+                <button
+                  onClick={handleDeletePost}
+                  className="flex items-center gap-[8px] w-full h-[44px] px-[16px] text-left text-[16px] text-[#eb4c4c] hover:bg-gray-50 rounded-[12px] cursor-pointer"
+                >
+                  Delete Post
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* Media */}
       {mediaItems.length > 0 && (
         <MediaCarousel
           className="cursor-pointer select-none"
@@ -158,26 +163,27 @@ function Post({ post, previewMode = false }: PostProps) {
         </MediaCarousel>
       )}
 
+      {/* Action buttons */}
       {previewMode ? (
-        <div className="mt-[8px] flex justify-between text-[#A0A0A0]">
-          <div className="flex">
-            <div className="flex gap-[4px] m-[8px] items-center">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-[4px]">
+            <div className="flex items-center justify-center gap-[4px] h-[40px] p-[8px] text-[#a0a0a0]">
               <FireOutline />
-              {post.likesCount}
+              <span className="text-[14px] font-medium tracking-[-0.42px]">{post.likesCount}</span>
             </div>
-            <div className="flex gap-[4px] m-[8px] items-center">
+            <div className="flex items-center justify-center gap-[4px] h-[40px] p-[8px] text-[#a0a0a0]">
               <Comments />
-              {post.commentsCount}
+              <span className="text-[14px] font-medium tracking-[-0.42px]">{post.commentsCount}</span>
             </div>
           </div>
-          <div className="m-[8px] flex items-center gap-[4px]">
+          <div className="flex items-center justify-center gap-[4px] h-[40px] p-[8px] text-[#a0a0a0]">
             <PinOutline />
-            {post.pinsCount}
+            <span className="text-[14px] font-medium tracking-[-0.42px]">{post.pinsCount}</span>
           </div>
         </div>
       ) : (
-        <div className="mt-[8px] flex justify-between text-[#A0A0A0]">
-          <div className="flex">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-[4px]">
             <LikeButton
               ref={likeButtonRef}
               postId={post.id}
@@ -186,22 +192,32 @@ function Post({ post, previewMode = false }: PostProps) {
             />
             <CommentButton commentsCount={post.commentsCount} post={post} />
           </div>
-          <div className="m-[8px] flex items-center gap-[4px]">
-            <PinButton
-              postId={post.id}
-              pinsCount={post.pinsCount}
-              pinnedByMe={post.pinnedByMe}
-              disabled={isOwnPost}
-            />
-          </div>
+          <PinButton
+            postId={post.id}
+            pinsCount={post.pinsCount}
+            pinnedByMe={post.pinnedByMe}
+            disabled={isOwnPost}
+          />
         </div>
       )}
-      <p className="mt-[8px] px-[16px] text-[#5B5B5B] whitespace-pre-wrap">
-        <span className="font-semibold">{post.author.username}</span>{" "}
-        <UserText postText={post.text} />
-      </p>
-      <div className="px-[16px] text-[#A0A0A0]">
-        {getFormattedDate(post.createdAt)}
+
+      {/* Content - Description and Date */}
+      <div className="flex flex-col gap-[10px]">
+        <div className="flex flex-col gap-[6px]">
+          {/* Description */}
+          <p className="text-[14px] tracking-[-0.14px] text-[#343434] whitespace-pre-wrap">
+            <span className="font-semibold text-[16px] tracking-[-0.16px] leading-[20px]">{post.author.username}</span>
+            <span className="font-semibold"> </span>
+            <span className="text-[16px] text-[#5b5b5b] leading-[22px]">
+              <UserText postText={post.text} />
+            </span>
+          </p>
+          {/* Date */}
+          <p className="text-[12px] text-[#a0a0a0] tracking-[0.12px] leading-[14px]">
+            {getFormattedDate(post.createdAt)}
+          </p>
+        </div>
+
       </div>
     </div>
   );

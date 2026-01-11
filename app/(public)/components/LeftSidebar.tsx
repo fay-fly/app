@@ -88,8 +88,8 @@ export default function LeftSidebar() {
       {/* Footer */}
       <div className="border-t border-[#ededed] px-[32px] py-[24px]">
         <div className="text-[14px] leading-[20px] tracking-[-0.14px] text-[#807d7d]">
-          <Link href="/privacy-policy" className="block cursor-pointer hover:underline">Privacy Policy</Link>
-          <Link href="/contacts" className="block cursor-pointer hover:underline">Help and support</Link>
+          <Link href="/privacy-policy" className="block cursor-pointer">Privacy Policy</Link>
+          <Link href="/contacts" className="block cursor-pointer">Help and support</Link>
           <p className="mb-0">&nbsp;</p>
           <p className="mb-0">© 2025 FayFlay</p>
         </div>

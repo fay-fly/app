@@ -60,17 +60,17 @@ export default function PinButton({
     <>
       <div
         className={clsx(
-          "flex gap-[4px] m-[8px] items-center select-none transition-opacity",
+          "flex items-center justify-center gap-[4px] h-[40px] p-[8px] select-none transition-opacity",
           disabled
             ? "text-[#D0D0D0] cursor-not-allowed opacity-60"
             : hasPinnedByMe
               ? "text-[#7C89FF] cursor-pointer"
-              : "text-[#A0A0A0] cursor-pointer"
+              : "text-[#a0a0a0] cursor-pointer"
         )}
         onClick={disabled ? undefined : onClick}
       >
         {hasPinnedByMe ? <PinFilled /> : <PinOutline />}
-        {count}
+        <span className="text-[14px] font-medium tracking-[-0.42px] leading-[22px]">{count}</span>
       </div>
       <AuthRequiredModal
         isOpen={showAuthModal}
