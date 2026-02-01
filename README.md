@@ -1,177 +1,53 @@
-## FayFly
+<h1 align="center">FayFly</h1>
+
+![FayFly](./public/preview-desktop.png)
+
+## About
+
+FayFly is a full-featured social media starter built with Next.js, Prisma, and NextAuth.
+
+### Features
+
+- **Authentication** - Email/password and Google OAuth with NextAuth.js, including email verification and password reset
+- **User Profiles** - Profile pages with avatar and cover image uploads, bio, and editable settings
+- **Follow System** - Subscriber/subscription relationships between users
+- **Posts** - Create, delete, and display posts with image uploads and hashtag support
+- **Engagement** - Like and comment system with real-time counters
+- **Pins** - Save posts to a personal collection
+- **Notifications** - In-app notification system with unread counts and mark-as-read
+- **Search** - Search users and posts by hashtags with recent search history
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-# Prisma Postgres Example: Queries, Connection Pooling & Caching
-
-This project contains a sample application demonstrating various capabilities and workflows of [Prisma Postgres](https://prisma.io/data-platform/postgres):
-
-- Schema migrations and queries (via [Prisma ORM](https://www.prisma.io/orm))
-- Connection pooling and caching (via [Prisma Accelerate](https://prisma.io/data-platform/accelerate))
-
-## Getting started
-
-### 1. Set up a Prisma Postgres database in Prisma Data Platform
-
-Follow these steps to create your Prisma Postgres database:
-
-1. Log in to [Prisma Data Platform](https://console.prisma.io/).
-1. In a [workspace](https://www.prisma.io/docs/platform/about#workspace) of your choice, click the **New project** button.
-1. Type a name for your project in the **Name** field, e.g. **hello-ppg**.
-1. In the **Prisma Postgres** section, click the **Get started** button.
-1. In the **Region** dropdown, select the region that's closest to your current location, e.g. **US East (N. Virginia)**.
-1. Click the **Create project** button.
-
-At this point, you'll be redirected to the **Database** page where you will need to wait a few seconds while the status of your database changes from **`PROVISIONING`**, to **`ACTIVATING`** to **`CONNECTED`**.
-
-Once the green **`CONNECTED`** label appears, your database is ready to use!
-
-Then, find your database credentials in the **Set up database access** section, copy the `DATABASE_URL` environment variable and store it securely.
-
-```bash no-copy
-DATABASE_URL=<your-database-url>
-```
-
-> These `DATABASE_URL` environment variable will be required in the next steps.
-
-Once that setup process has finished, move to the next step.
-
-### 2. Download example and install dependencies
-
-Copy the `try-prisma` command that', paste it into your terminal, and execute it:
-
-```terminal
-npx try-prisma@latest \
-  --template databases/prisma-postgres \
-  --name hello-prisma \
-  --install npm
-```
-
-<!-- For reference, this is what the command looks like (note that the `__YOUR_DATABASE_CONNECTION_STRING__` placeholder must be replaced with _your_ actual database connection string):
-
-```
-npx try-prisma@latest
-  --template databases/prisma-postgres
-  --connection-string __YOUR_DATABASE_CONNECTION_STRING__
-  --name hello-prisma
-  --install npm
-```
-
-Your connection string that should replace the `__YOUR_DATABASE_CONNECTION_STRING__` placeholder looks similar to this: `prisma+postgres://accelerate.prisma-data.net/?api_key=ey...`
--->
-
-Navigate into the project directory and (if you haven't done so via the CLI wizard) install dependencies:
-
-```terminal
-cd hello-prisma
 npm install
 ```
 
-### 3. Set database connection
-
-The connection to your database is configured via environment variables in a `.env` file.
-
-First, rename the existing `.env.example` file to just `.env`:
-
-```terminal
-mv .env.example .env
-```
-
-Then, find your database credentials in the **Set up database access** section, copy the `DATABASE_URL` environment variable and paste them into the `.env` file.
-
-For reference, the file should now look similar to this:
+2. Set up environment variables:
 
 ```bash
-DATABASE_URL="prisma+postgres://accelerate.prisma-data.net/?api_key=ey...."
+cp .env.example .env
 ```
 
-### 4. Create database tables (with a schema migration)
+3. Set up the database:
 
-Next, you need to create the tables in your database. You can do this by creating and executing a schema migration with the following command of the Prisma CLI:
-
-```terminal
-npx prisma migrate dev --name init
+```bash
+npx prisma migrate dev
 ```
 
-This will map the `User` and `Post` models that are defined in your [Prisma schema](./prisma/schema.prisma) to your database. You can also review the SQL migration that was executed and created the tables in the newly created `prisma/migrations` directory.
+4. Run the development server:
 
-### 5. Execute queries with Prisma ORM
-
-The [`src/queries.ts`](./src/queries.ts) script contains a number of CRUD queries that will write and read data in your database. You can execute it by running the following command in your terminal:
-
-```terminal
-npm run queries
+```bash
+npm run dev
 ```
 
-Once the script has completed, you can inspect the logs in your terminal or use Prisma Studio to explore what records have been created in the database:
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-```terminal
-npx prisma studio
-```
+## Tech Stack
 
-### 6. Explore caching with Prisma Accelerate
-
-The [`src/caching.ts`](./src/caching.ts) script contains a sample query that uses [Stale-While-Revalidate](https://www.prisma.io/docs/accelerate/caching#stale-while-revalidate-swr) (SWR) and [Time-To-Live](https://www.prisma.io/docs/accelerate/caching#time-to-live-ttl) (TTL) to cache a database query using Prisma Accelerate. You can execute it as follows:
-
-```terminal
-npm run caching
-```
-
-Take note of the time that it took to execute the query, e.g.:
-
-```terminal
-The query took 2009.2467149999998ms.
-```
-
-Now, run the script again:
-
-```terminal
-npm run caching
-```
-
-You'll notice that the time the query took will be a lot shorter this time, e.g.:
-
-```terminal
-The query took 300.5655280000001ms.
-```
-
-## Next steps
-
-- Check out the [Prisma docs](https://www.prisma.io/docs)
-- [Join our community on Discord](https://pris.ly/discord?utm_source=github&utm_medium=prisma_examples&utm_content=next_steps_section) to share feedback and interact with other users.
-- [Subscribe to our YouTube channel](https://pris.ly/youtube?utm_source=github&utm_medium=prisma_examples&utm_content=next_steps_section) for live demos and video tutorials.
-- [Follow us on X](https://pris.ly/x?utm_source=github&utm_medium=prisma_examples&utm_content=next_steps_section) for the latest updates.
-- Report issues or ask [questions on GitHub](https://pris.ly/github?utm_source=github&utm_medium=prisma_examples&utm_content=next_steps_section).
+- **Framework**: Next.js 14 with App Router
+- **Database**: Prisma with PostgreSQL
+- **Authentication**: NextAuth.js
+- **Styling**: Tailwind CSS
