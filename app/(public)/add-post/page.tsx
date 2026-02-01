@@ -14,6 +14,7 @@ import { showToast } from "@/utils/toastify";
 import { canCreatePosts } from "@/lib/permissions";
 import Post from "@/app/(public)/components/Post";
 import type { PostWithUser } from "@/types/postWithUser";
+import { useDiscoverPostsStore } from "@/store/discoverPostsStore";
 
 const MAX_FILE_SIZE_MB = 30; // Maximum size per individual file
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -21,6 +22,7 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 export default function AddPost() {
   const router = useRouter();
   const { session } = useSafeSession();
+  const resetDiscoverPosts = useDiscoverPostsStore((state) => state.reset);
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [text, setText] = useState("");
@@ -182,7 +184,8 @@ export default function AddPost() {
       await axios.post("/api/posts/publish", { postId: draftPostId });
       setDraftPost(null);
       setDraftPostId(null);
-      router.push("/");
+      resetDiscoverPosts();
+      router.push("/discover");
     } catch (error) {
       handleError(error);
     } finally {

@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { ensurePostPublication } from "@/lib/ensurePostPublication";
 
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
+  const hasPublishedColumn = await ensurePostPublication(prisma);
   const session = await getServerSession(authOptions);
   const currentUserId = session?.user?.id ? session.user.id : null;
 
   const { searchParams } = new URL(req.url);
   const username = searchParams.get("username");
-  console.log("test", username);
   if (!username) {
     return NextResponse.json(
       { error: "Username is required" },
@@ -19,10 +20,14 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // Check if viewer is the profile owner
+  const isOwnProfile = session?.user?.username === username;
+
   const user = await prisma.user.findUnique({
     where: { username },
     include: {
       posts: {
+        where: hasPublishedColumn && !isOwnProfile ? { published: true } : {},
         orderBy: {
           createdAt: 'desc',
         },
@@ -73,8 +78,6 @@ export async function GET(req: NextRequest) {
   });
 
   if (!user) {
-    console.log("test2", username);
-    console.log("test3", JSON.stringify(user));
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
